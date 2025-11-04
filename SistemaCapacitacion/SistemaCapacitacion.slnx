@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../SistemaCapacitacion.API/SistemaCapacitacion.API.csproj" />
+  <Project Path="../SistemaCapacitacion.Core/SistemaCapacitacion.Core.csproj" />
+  <Project Path="../SistemaCapacitacion.Data/SistemaCapacitacion.Data.csproj" />
+</Solution>
