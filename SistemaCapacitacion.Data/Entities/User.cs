@@ -2,23 +2,27 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace SistemaCapacitacion.Core.Entities
-{
-    public class User
-    {
-        public string Id { get; set; } // FK a AspNetUsers.Id 
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Position { get; set; }
-        public string Department { get; set; }
-        public DateTime HireDate { get; set; }
-        public int Status { get; set; }
-        public DateTime? LastLoginDate { get; set; }
-        public string Avatar { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+using System;
+using System.ComponentModel.DataAnnotations;
 
-        // Propiedad de navegación para Identity (requerirá un paso extra)
-        // public virtual AspNetUser AspNetUser { get; set; } 
-    }
+namespace SistemaCapacitacion.Data.Entities;
+
+public class User
+{
+    [Key]
+    public Guid IdUser { get; set; }            // TEXT/UUID (PK)
+    [Required] public string FirstName { get; set; } = "";
+    [Required] public string LastName { get; set; } = "";
+    [Required] public string Email { get; set; } = ""; // UNIQUE
+    public string? Position { get; set; }
+
+    public int? DepartmentId { get; set; }      // FK → Department.IdDepartment
+    public string Status { get; set; } = "Active";
+    public DateTime? HireDate { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    // Navegación (opcional)
+    public Department? Department { get; set; }
 }

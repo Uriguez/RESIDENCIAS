@@ -1,8 +1,6 @@
-﻿using SistemaCapacitacion.Core.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
 namespace SistemaCapacitacion.Data.Entities;
 
 public class Progress
@@ -23,4 +21,5 @@ public class Progress
     public CourseContent? Content { get; set; }
     public User? User { get; set; }
 }
+
 

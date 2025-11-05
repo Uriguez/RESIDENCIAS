@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "NhBHj4g5Oio=",
+  "dgSpecHash": "qLel7fx8kEA=",
   "success": true,
   "projectFilePath": "D:\\VisualStudio\\SistemaCapacitacion\\SistemaCapacitacion.API\\SistemaCapacitacion.API.csproj",
   "expectedPackageFiles": [
@@ -19,7 +19,7 @@
     "C:\\Users\\uri61\\.nuget\\packages\\microsoft.codeanalysis.workspaces.msbuild\\4.8.0\\microsoft.codeanalysis.workspaces.msbuild.4.8.0.nupkg.sha512",
     "C:\\Users\\uri61\\.nuget\\packages\\microsoft.data.sqlclient\\5.1.6\\microsoft.data.sqlclient.5.1.6.nupkg.sha512",
     "C:\\Users\\uri61\\.nuget\\packages\\microsoft.data.sqlclient.sni.runtime\\5.1.1\\microsoft.data.sqlclient.sni.runtime.5.1.1.nupkg.sha512",
-    "C:\\Users\\uri61\\.nuget\\packages\\microsoft.dotnet.ilcompiler\\10.0.0-rc.1.25451.107\\microsoft.dotnet.ilcompiler.10.0.0-rc.1.25451.107.nupkg.sha512",
+    "C:\\Users\\uri61\\.nuget\\packages\\microsoft.dotnet.ilcompiler\\10.0.0-rc.2.25502.107\\microsoft.dotnet.ilcompiler.10.0.0-rc.2.25502.107.nupkg.sha512",
     "C:\\Users\\uri61\\.nuget\\packages\\microsoft.entityframeworkcore\\9.0.10\\microsoft.entityframeworkcore.9.0.10.nupkg.sha512",
     "C:\\Users\\uri61\\.nuget\\packages\\microsoft.entityframeworkcore.abstractions\\9.0.10\\microsoft.entityframeworkcore.abstractions.9.0.10.nupkg.sha512",
     "C:\\Users\\uri61\\.nuget\\packages\\microsoft.entityframeworkcore.analyzers\\9.0.10\\microsoft.entityframeworkcore.analyzers.9.0.10.nupkg.sha512",
@@ -62,7 +62,7 @@
     "C:\\Users\\uri61\\.nuget\\packages\\system.security.cryptography.protecteddata\\6.0.0\\system.security.cryptography.protecteddata.6.0.0.nupkg.sha512",
     "C:\\Users\\uri61\\.nuget\\packages\\system.security.permissions\\6.0.0\\system.security.permissions.6.0.0.nupkg.sha512",
     "C:\\Users\\uri61\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512",
-    "C:\\Users\\uri61\\.nuget\\packages\\runtime.win-x64.microsoft.dotnet.ilcompiler\\10.0.0-rc.1.25451.107\\runtime.win-x64.microsoft.dotnet.ilcompiler.10.0.0-rc.1.25451.107.nupkg.sha512"
+    "C:\\Users\\uri61\\.nuget\\packages\\runtime.win-x64.microsoft.dotnet.ilcompiler\\10.0.0-rc.2.25502.107\\runtime.win-x64.microsoft.dotnet.ilcompiler.10.0.0-rc.2.25502.107.nupkg.sha512"
   ],
   "logs": []
 }

@@ -469,7 +469,7 @@
           }
         }
       },
-      "Microsoft.DotNet.ILCompiler/10.0.0-rc.1.25451.107": {
+      "Microsoft.DotNet.ILCompiler/10.0.0-rc.2.25502.107": {
         "type": "package",
         "build": {
           "build/Microsoft.DotNet.ILCompiler.props": {}
@@ -2340,10 +2340,10 @@
         "runtimes/win-x86/native/Microsoft.Data.SqlClient.SNI.dll"
       ]
     },
-    "Microsoft.DotNet.ILCompiler/10.0.0-rc.1.25451.107": {
-      "sha512": "pGlnnJrQ4s3pjbvaTlC1MeZ+x18t2iYn25Jz+nzzgp0BCndbSxbxHzFL2IzV55bbeKecJszF8/8RHFKwVjRKpQ==",
+    "Microsoft.DotNet.ILCompiler/10.0.0-rc.2.25502.107": {
+      "sha512": "jmMMOim4ZCn89tV0lzEZ5M5vq6jjd2i6eG8L3vulg72gLzlx8c5+NBbNv2GdIwxP7gZphDUr77fSx0Vhi0s7Cg==",
       "type": "package",
-      "path": "microsoft.dotnet.ilcompiler/10.0.0-rc.1.25451.107",
+      "path": "microsoft.dotnet.ilcompiler/10.0.0-rc.2.25502.107",
       "hasTools": true,
       "files": [
         ".nupkg.metadata",
@@ -2361,7 +2361,7 @@
         "build/NativeAOT.natvis",
         "build/WindowsAPIs.txt",
         "build/findvcvarsall.bat",
-        "microsoft.dotnet.ilcompiler.10.0.0-rc.1.25451.107.nupkg.sha512",
+        "microsoft.dotnet.ilcompiler.10.0.0-rc.2.25502.107.nupkg.sha512",
         "microsoft.dotnet.ilcompiler.nuspec",
         "runtime.json",
         "tools/netstandard/ILCompiler.Build.Tasks.deps.json",
@@ -3585,7 +3585,7 @@
   "projectFileDependencyGroups": {
     "net10.0": [
       "Microsoft.AspNetCore.OpenApi >= 10.0.0-rc.1.25451.107",
-      "Microsoft.DotNet.ILCompiler >= 10.0.0-rc.1.25451.107",
+      "Microsoft.DotNet.ILCompiler >= 10.0.0-rc.2.25502.107",
       "Microsoft.EntityFrameworkCore.SqlServer >= 9.0.10",
       "Microsoft.EntityFrameworkCore.Tools >= 9.0.10",
       "Microsoft.NET.ILLink.Tasks >= 10.0.0-rc.2.25502.107",
@@ -3658,7 +3658,7 @@
           "Microsoft.DotNet.ILCompiler": {
             "suppressParent": "All",
             "target": "Package",
-            "version": "[10.0.0-rc.1.25451.107, )",
+            "version": "[10.0.0-rc.2.25502.107, )",
             "autoReferenced": true
           },
           "Microsoft.EntityFrameworkCore.SqlServer": {
@@ -3696,7 +3696,7 @@
         "downloadDependencies": [
           {
             "name": "runtime.win-x64.Microsoft.DotNet.ILCompiler",
-            "version": "[10.0.0-rc.1.25451.107, 10.0.0-rc.1.25451.107]"
+            "version": "[10.0.0-rc.2.25502.107, 10.0.0-rc.2.25502.107]"
           }
         ],
         "frameworkReferences": {
