@@ -71,3 +71,23 @@ Asegúrate de que la cadena de conexión en el archivo `appsettings.json` de tu 
     "DefaultConnection": "Server=TU_SERVIDOR_SQL;Database=GriverTrainingSystem;Trusted_Connection=True;TrustServerCertificate=True;"
   }
 }
+# Ejecuta este comando en el NuGet Package Manager Console
+# o directamente en tu terminal dentro del proyecto WebAPI:
+dotnet tool install --global Microsoft.Playwright.CLI
+playwright install
+
+Iniciar la Aplicación
+Establece el proyecto SistemaCapacitacion.WebAPI como proyecto de inicio.
+
+Presiona F5 en Visual Studio.
+
+El sistema API se iniciará, abriendo la documentación Swagger para probar los endpoints.
+
+🤝 Contacto y Contribución
+Si encuentras errores o deseas contribuir al desarrollo del sistema, por favor contacta a los desarrolladores:
+
+Uriel Castillo Rodríguez
+
+Javier Herrera Uscanga
+
+¡Gracias por tu apoyo al futuro del comercio exterior!
