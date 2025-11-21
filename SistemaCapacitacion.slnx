@@ -1,1 +1,11 @@
-<Solution />
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="../SistemaCapacitacion.API/SistemaCapacitacion.API.csproj">
+    <Platform Solution="*|x86" Project="x86" />
+  </Project>
+  <Project Path="../SistemaCapacitacion.Core/SistemaCapacitacion.Core.csproj" />
+  <Project Path="../SistemaCapacitacion.Data/SistemaCapacitacion.Data.csproj" />
+</Solution>

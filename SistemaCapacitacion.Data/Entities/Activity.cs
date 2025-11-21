@@ -6,6 +6,7 @@ namespace SistemaCapacitacion.Data.Entities;
 
 public class Activity
 {
+
     public int IdActivity { get; set; }         // PK AUTOINCREMENT
     public Guid UserId { get; set; }            // FK → User.IdUser
 

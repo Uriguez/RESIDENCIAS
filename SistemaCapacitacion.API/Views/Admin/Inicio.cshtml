@@ -1,0 +1,124 @@
+﻿@using Humanizer.Localisation
+@model SistemaCapacitacion.Core.ViewModels.DashboardAdminViewModel
+@{
+    ViewData["Title"] = "Inicio";
+}
+
+<h1 class="display-6 mb-1">Dashboard Griver</h1>
+<p class="text-muted mb-4">Resumen general del sistema de capacitación empresarial • Última actualización: @DateTime.Now.ToString("HH:mm:ss")</p>
+
+<!-- Tarjetas principales -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="small text-muted">Usuarios Totales</div>
+                <div class="fs-3 fw-semibold">@Model.TotalUsers</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="small text-muted">Cursos Activos</div>
+                <div class="fs-3 fw-semibold">@Model.ActiveCourses</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="small text-muted">Tasa de Finalización</div>
+                <div class="fs-3 fw-semibold">@Model.CompletionRate.ToString("0.0")%</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-md-6 col-lg-3">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="small text-muted">Certificados Emitidos</div>
+                <div class="fs-3 fw-semibold">@Model.CertificatesIssued</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Actividad Reciente -->
+    <div class="col-12 col-xl-8">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Actividad Reciente</h5>
+                <ul class="list-group list-group-flush">
+                    @foreach (var a in Model.RecentActivities)
+                    {
+                        <li class="list-group-item px-0 d-flex justify-content-between">
+                            <div>
+                                <strong>@a.Actor</strong>
+                                <span class="text-muted"> @a.Action </span>
+                                <strong>@a.Target</strong>
+                            </div>
+                            <small class="text-muted">
+                                @((DateTime.Now - a.At).Humanize(culture: new System.Globalization.CultureInfo("es-MX")))
+                            </small>
+                        </li>
+                    }
+                    @if (!Model.RecentActivities.Any())
+                    {
+                        <li class="list-group-item px-0 text-muted">Sin actividad reciente.</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cursos más populares -->
+    <div class="col-12 col-xl-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Cursos Más Populares</h5>
+                <div class="vstack gap-3">
+                    @foreach (var c in Model.TopCourses)
+                    {
+                        var pct = c.Enrolled > 0 ? Math.Round((double)c.Completed / c.Enrolled * 100) : 0;
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <div class="fw-semibold">@c.Title</div>
+                                <div class="small text-muted">@c.Category • @c.Completed/@c.Enrolled</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="fw-semibold">@pct%</div>
+                                <div class="small text-muted">completado</div>
+                            </div>
+                        </div>
+                    }
+                    @if (!Model.TopCourses.Any())
+                    {
+                        <div class="text-muted">Aún no hay cursos con inscripciones.</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones Rápidas -->
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title mb-3">Acciones Rápidas</h5>
+        <div class="row g-3">
+            <div class="col-12 col-md-6 col-xl-3">
+                <a asp-controller="Usuarios" asp-action="Create" class="btn btn-outline-primary w-100">👤 Agregar Usuario</a>
+            </div>
+            <div class="col-12 col-md-6 col-xl-3">
+                <a asp-controller="Cursos" asp-action="Create" class="btn btn-outline-info w-100">📚 Crear Curso</a>
+            </div>
+            <div class="col-12 col-md-6 col-xl-3">
+                <a asp-controller="Reportes" asp-action="Export" class="btn btn-outline-secondary w-100">⬇️ Exportar Datos</a>
+            </div>
+            <div class="col-12 col-md-6 col-xl-3">
+                <a asp-controller="Configuracion" asp-action="Index" class="btn btn-outline-warning w-100">⚙️ Configuración</a>
+            </div>
+        </div>
+    </div>
+</div>

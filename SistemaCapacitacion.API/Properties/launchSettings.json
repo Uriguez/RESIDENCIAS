@@ -1,11 +1,28 @@
 {
-    "profiles": {
-        "SistemaCapacitacion.API": {
-            "commandName": "Project",
-            "launchBrowser": true,
-            "dotnetRunMessages": true,
-            "environmentVariables": { "ASPNETCORE_ENVIRONMENT": "Development" },
-            "applicationUrl": "https://localhost:7001;http://localhost:7000"
-        }
+  "profiles": {
+    "SistemaCapacitacion.API": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7001;http://localhost:7000"
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     }
+  },
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:52278/",
+      "sslPort": 44310
+    }
+  }
 }

@@ -1,0 +1,11 @@
+﻿namespace SistemaCapacitacion.API.Views.Admin {
+    public class ActivityDto {
+        var recent = await dbo.Activity .OrderByDescending(a => a.CreatedAt) 
+        .Take(6)
+        .Select(a => new ActivityDto( 
+            Actor: a.Source ?? "Sistema", // columna opcional 
+            Action: a.Event ?? "actualizó", 
+        Target: a.Target ?? "curso", At: a.CreatedAt 
+        )) .ToListAsync();
+    }
+}
