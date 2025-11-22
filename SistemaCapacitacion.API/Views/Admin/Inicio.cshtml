@@ -1,124 +1,138 @@
-﻿@using Humanizer.Localisation
-@model SistemaCapacitacion.Core.ViewModels.DashboardAdminViewModel
-@{
-    ViewData["Title"] = "Inicio";
+﻿@{
+    ViewData["Title"] = "Panel de Control - Administrador";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1 class="display-6 mb-1">Dashboard Griver</h1>
-<p class="text-muted mb-4">Resumen general del sistema de capacitación empresarial • Última actualización: @DateTime.Now.ToString("HH:mm:ss")</p>
+<!-- Stats Cards -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="flex justify-between items-start">
+            <div>
+                <p class="stat-label">Usuarios Totales</p>
+                <h3 class="stat-value">@ViewBag.TotalUsers</h3>
+            </div>
+            <div class="p-3 bg-blue-100 text-blue-600 rounded-lg">
+                <i class="fas fa-users fa-lg"></i>
+            </div>
+        </div>
+        <div class="mt-4 text-sm text-green-600">
+            <i class="fas fa-arrow-up"></i> +12% vs mes anterior
+        </div>
+    </div>
 
-<!-- Tarjetas principales -->
-<div class="row g-3 mb-4">
-    <div class="col-12 col-md-6 col-lg-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <div class="small text-muted">Usuarios Totales</div>
-                <div class="fs-3 fw-semibold">@Model.TotalUsers</div>
+    <div class="stat-card">
+        <div class="flex justify-between items-start">
+            <div>
+                <p class="stat-label">Cursos Activos</p>
+                <h3 class="stat-value">@ViewBag.ActiveCourses</h3>
+            </div>
+            <div class="p-3 bg-green-100 text-green-600 rounded-lg">
+                <i class="fas fa-book-open fa-lg"></i>
             </div>
         </div>
-    </div>
-    <div class="col-12 col-md-6 col-lg-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <div class="small text-muted">Cursos Activos</div>
-                <div class="fs-3 fw-semibold">@Model.ActiveCourses</div>
-            </div>
+        <div class="mt-4 text-sm text-gray-500">
+            5 nuevos esta semana
         </div>
     </div>
-    <div class="col-12 col-md-6 col-lg-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <div class="small text-muted">Tasa de Finalización</div>
-                <div class="fs-3 fw-semibold">@Model.CompletionRate.ToString("0.0")%</div>
+
+    <div class="stat-card">
+        <div class="flex justify-between items-start">
+            <div>
+                <p class="stat-label">Tasa Completado</p>
+                <h3 class="stat-value">@ViewBag.CompletionRate</h3>
+            </div>
+            <div class="p-3 bg-purple-100 text-purple-600 rounded-lg">
+                <i class="fas fa-chart-pie fa-lg"></i>
             </div>
         </div>
+        <div class="mt-4 text-sm text-green-600">
+            <i class="fas fa-arrow-up"></i> Objetivo cumplido
+        </div>
     </div>
-    <div class="col-12 col-md-6 col-lg-3">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <div class="small text-muted">Certificados Emitidos</div>
-                <div class="fs-3 fw-semibold">@Model.CertificatesIssued</div>
+
+    <div class="stat-card">
+        <div class="flex justify-between items-start">
+            <div>
+                <p class="stat-label">Pendientes</p>
+                <h3 class="stat-value text-orange-500">@ViewBag.PendingApprovals</h3>
             </div>
+            <div class="p-3 bg-orange-100 text-orange-600 rounded-lg">
+                <i class="fas fa-clock fa-lg"></i>
+            </div>
+        </div>
+        <div class="mt-4 text-sm text-orange-600 font-medium">
+            Requiere atención
         </div>
     </div>
 </div>
 
-<div class="row g-4">
-    <!-- Actividad Reciente -->
-    <div class="col-12 col-xl-8">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Actividad Reciente</h5>
-                <ul class="list-group list-group-flush">
-                    @foreach (var a in Model.RecentActivities)
-                    {
-                        <li class="list-group-item px-0 d-flex justify-content-between">
-                            <div>
-                                <strong>@a.Actor</strong>
-                                <span class="text-muted"> @a.Action </span>
-                                <strong>@a.Target</strong>
-                            </div>
-                            <small class="text-muted">
-                                @((DateTime.Now - a.At).Humanize(culture: new System.Globalization.CultureInfo("es-MX")))
-                            </small>
-                        </li>
-                    }
-                    @if (!Model.RecentActivities.Any())
-                    {
-                        <li class="list-group-item px-0 text-muted">Sin actividad reciente.</li>
-                    }
-                </ul>
-            </div>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Recent Activity -->
+    <div class="card">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="card-header mb-0">Actividad Reciente</h3>
+            <button class="text-sm text-blue-600 hover:underline">Ver todo</button>
         </div>
-    </div>
-
-    <!-- Cursos más populares -->
-    <div class="col-12 col-xl-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Cursos Más Populares</h5>
-                <div class="vstack gap-3">
-                    @foreach (var c in Model.TopCourses)
-                    {
-                        var pct = c.Enrolled > 0 ? Math.Round((double)c.Completed / c.Enrolled * 100) : 0;
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="fw-semibold">@c.Title</div>
-                                <div class="small text-muted">@c.Category • @c.Completed/@c.Enrolled</div>
-                            </div>
-                            <div class="text-end">
-                                <div class="fw-semibold">@pct%</div>
-                                <div class="small text-muted">completado</div>
-                            </div>
-                        </div>
-                    }
-                    @if (!Model.TopCourses.Any())
-                    {
-                        <div class="text-muted">Aún no hay cursos con inscripciones.</div>
-                    }
+        <div class="space-y-4">
+            <div class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg transition">
+                <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-800">Nuevo usuario registrado</p>
+                    <p class="text-xs text-gray-500">Hace 15 minutos • Juan Pérez</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg transition">
+                <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-800">Curso completado</p>
+                    <p class="text-xs text-gray-500">Hace 1 hora • María García - Seguridad Industrial</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg transition">
+                <div class="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-800">Reporte generado</p>
+                    <p class="text-xs text-gray-500">Hace 3 horas • Reporte Mensual RH</p>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Acciones Rápidas -->
-<div class="card mt-4">
-    <div class="card-body">
-        <h5 class="card-title mb-3">Acciones Rápidas</h5>
-        <div class="row g-3">
-            <div class="col-12 col-md-6 col-xl-3">
-                <a asp-controller="Usuarios" asp-action="Create" class="btn btn-outline-primary w-100">👤 Agregar Usuario</a>
-            </div>
-            <div class="col-12 col-md-6 col-xl-3">
-                <a asp-controller="Cursos" asp-action="Create" class="btn btn-outline-info w-100">📚 Crear Curso</a>
-            </div>
-            <div class="col-12 col-md-6 col-xl-3">
-                <a asp-controller="Reportes" asp-action="Export" class="btn btn-outline-secondary w-100">⬇️ Exportar Datos</a>
-            </div>
-            <div class="col-12 col-md-6 col-xl-3">
-                <a asp-controller="Configuracion" asp-action="Index" class="btn btn-outline-warning w-100">⚙️ Configuración</a>
-            </div>
+    <!-- Quick Actions -->
+    <div class="card">
+        <h3 class="card-header">Acciones Rápidas</h3>
+        <div class="grid grid-cols-2 gap-4">
+            <a href="#" class="p-4 border rounded-xl hover:border-blue-500 hover:bg-blue-50 transition flex flex-col items-center text-center group">
+                <div class="h-10 w-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <span class="text-sm font-medium text-gray-700">Agregar Usuario</span>
+            </a>
+            <a href="#" class="p-4 border rounded-xl hover:border-green-500 hover:bg-green-50 transition flex flex-col items-center text-center group">
+                <div class="h-10 w-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <span class="text-sm font-medium text-gray-700">Crear Curso</span>
+            </a>
+            <a href="#" class="p-4 border rounded-xl hover:border-purple-500 hover:bg-purple-50 transition flex flex-col items-center text-center group">
+                <div class="h-10 w-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-file-download"></i>
+                </div>
+                <span class="text-sm font-medium text-gray-700">Exportar Data</span>
+            </a>
+            <a href="#" class="p-4 border rounded-xl hover:border-orange-500 hover:bg-orange-50 transition flex flex-col items-center text-center group">
+                <div class="h-10 w-10 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-envelope"></i>
+                </div>
+                <span class="text-sm font-medium text-gray-700">Enviar Avisos</span>
+            </a>
         </div>
     </div>
 </div>

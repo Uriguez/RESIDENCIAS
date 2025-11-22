@@ -25,4 +25,5 @@ public class User
 
     // Navegación (opcional)
     public Department? Department { get; set; }
+    public string? Passwords { get; set; }
 }

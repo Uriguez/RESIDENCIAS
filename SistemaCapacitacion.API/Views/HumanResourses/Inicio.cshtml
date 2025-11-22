@@ -1,0 +1,121 @@
+﻿@{
+    ViewData["Title"] = "Gestión de Recursos Humanos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="card bg-gradient-to-br from-purple-600 to-purple-800 text-white border-none">
+        <div class="flex items-center gap-4">
+            <div class="p-3 bg-white/20 rounded-lg">
+                <i class="fas fa-user-graduate text-2xl"></i>
+            </div>
+            <div>
+                <p class="text-purple-100 text-sm">Empleados en Capacitación</p>
+                <h3 class="text-3xl font-bold">245</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-gradient-to-br from-blue-600 to-blue-800 text-white border-none">
+        <div class="flex items-center gap-4">
+            <div class="p-3 bg-white/20 rounded-lg">
+                <i class="fas fa-tasks text-2xl"></i>
+            </div>
+            <div>
+                <p class="text-blue-100 text-sm">Cursos Asignados (Mes)</p>
+                <h3 class="text-3xl font-bold">1,204</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="card bg-gradient-to-br from-pink-600 to-pink-800 text-white border-none">
+        <div class="flex items-center gap-4">
+            <div class="p-3 bg-white/20 rounded-lg">
+                <i class="fas fa-exclamation-triangle text-2xl"></i>
+            </div>
+            <div>
+                <p class="text-pink-100 text-sm">Cumplimiento Vencido</p>
+                <h3 class="text-3xl font-bold">12</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="card-header mb-0">Seguimiento de Departamentos</h3>
+        <div class="flex gap-2">
+            <select class="form-control py-1 px-3 text-sm w-auto">
+                <option>Todos los departamentos</option>
+                <option>Tecnología</option>
+                <option>Ventas</option>
+                <option>Operaciones</option>
+            </select>
+            <button class="btn-primary py-1 px-3 text-sm w-auto">
+                <i class="fas fa-download mr-1"></i> Reporte
+            </button>
+        </div>
+    </div>
+
+    <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr class="bg-gray-50 border-b border-gray-200 text-xs uppercase text-gray-500 font-semibold">
+                    <th class="p-4">Departamento</th>
+                    <th class="p-4">Total Empleados</th>
+                    <th class="p-4">Cursos Completados</th>
+                    <th class="p-4">Promedio Evaluación</th>
+                    <th class="p-4">Estado</th>
+                    <th class="p-4">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 text-sm">
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="p-4 font-medium text-gray-800">Tecnología e Innovación</td>
+                    <td class="p-4">45</td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-green-600 font-bold">92%</span>
+                            <div class="w-24 bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-green-500 h-1.5 rounded-full" style="width: 92%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4">9.4/10</td>
+                    <td class="p-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-medium">Excelente</span></td>
+                    <td class="p-4 text-blue-600 cursor-pointer hover:underline">Detalles</td>
+                </tr>
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="p-4 font-medium text-gray-800">Ventas Corporativas</td>
+                    <td class="p-4">28</td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-yellow-600 font-bold">74%</span>
+                            <div class="w-24 bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-yellow-500 h-1.5 rounded-full" style="width: 74%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4">8.1/10</td>
+                    <td class="p-4"><span class="bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-medium">Regular</span></td>
+                    <td class="p-4 text-blue-600 cursor-pointer hover:underline">Detalles</td>
+                </tr>
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="p-4 font-medium text-gray-800">Operaciones</td>
+                    <td class="p-4">150</td>
+                    <td class="p-4">
+                        <div class="flex items-center gap-2">
+                            <span class="text-green-600 font-bold">88%</span>
+                            <div class="w-24 bg-gray-200 rounded-full h-1.5">
+                                <div class="bg-green-500 h-1.5 rounded-full" style="width: 88%"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4">8.9/10</td>
+                    <td class="p-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-xs font-medium">Bueno</span></td>
+                    <td class="p-4 text-blue-600 cursor-pointer hover:underline">Detalles</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

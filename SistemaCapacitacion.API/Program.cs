@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using SistemaCapacitacion.Data;
 // using SistemaCapacitacion.Core.Abstractions;   // si registras interfaces
@@ -13,6 +14,17 @@ builder.Services.AddSwaggerGen();             // <-- registra ISwaggerProvider
 // DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Configurar Autenticación por Cookies
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/Login";
+        options.SlidingExpiration = true;
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+    });
 
 // Repos (opcional; quita si aún no existen)
 // builder.Services.AddScoped<ICourseRepository, CourseRepository>();
@@ -35,7 +47,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Admin}/{action=Inicio}/{id?}");
+    pattern: "{controller=Account}/{action=Login}/{id?}");
 
 app.MapControllers();
 app.Run();

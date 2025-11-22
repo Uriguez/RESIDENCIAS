@@ -1,0 +1,121 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Griver Dashboard</title>
+    <!-- Tailwind CSS CDN para compatibilidad visual inmediata -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <!-- Estilos Locales -->
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navegación -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="h-8 w-8 bg-white rounded flex items-center justify-center text-[#1a365d] font-bold">G</div>
+                <span class="sidebar-logo">GRIVER</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="px-4 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Menu Principal
+                </div>
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <a href="/Admin/Dashboard" class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString() == "Admin" ? "active" : "")">
+                        <i class="fas fa-chart-line nav-icon"></i> Dashboard
+                    </a>
+                    <a href="/Admin/Users" class="nav-item">
+                        <i class="fas fa-users nav-icon"></i> Usuarios
+                    </a>
+                    <a href="/Admin/Reports" class="nav-item">
+                        <i class="fas fa-file-alt nav-icon"></i> Reportes
+                    </a>
+                    <a href="/Admin/Settings" class="nav-item">
+                        <i class="fas fa-cog nav-icon"></i> Configuración
+                    </a>
+                }
+                else if (User.IsInRole("RH"))
+                {
+                    <a href="/HumanResources/Dashboard" class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString() == "HumanResources" ? "active" : "")">
+                        <i class="fas fa-users-cog nav-icon"></i> Panel RH
+                    </a>
+                    <a href="/HumanResources/Courses" class="nav-item">
+                        <i class="fas fa-book nav-icon"></i> Gestión Cursos
+                    </a>
+                    <a href="/HumanResources/Assignments" class="nav-item">
+                        <i class="fas fa-tasks nav-icon"></i> Asignaciones
+                    </a>
+                }
+                else
+                {
+                    <a href="/Employee/Dashboard" class="nav-item @(ViewContext.RouteData.Values["Controller"].ToString() == "Employee" ? "active" : "")">
+                        <i class="fas fa-graduation-cap nav-icon"></i> Mis Cursos
+                    </a>
+                    <a href="/Employee/History" class="nav-item">
+                        <i class="fas fa-history nav-icon"></i> Historial
+                    </a>
+                    <a href="/Employee/Certificates" class="nav-item">
+                        <i class="fas fa-certificate nav-icon"></i> Certificados
+                    </a>
+                }
+
+                <div class="mt-8 px-4 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Cuenta
+                </div>
+                <a href="/Account/Profile" class="nav-item">
+                    <i class="fas fa-user-circle nav-icon"></i> Mi Perfil
+                </a>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="w-full">
+                    <button type="submit" class="nav-item w-full text-left cursor-pointer border-0 bg-transparent">
+                        <i class="fas fa-sign-out-alt nav-icon"></i> Cerrar Sesión
+                    </button>
+                </form>
+            </nav>
+
+            <div class="p-4 border-t border-white/10">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold">
+                        @User.Identity.Name?.Substring(0, 1)
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-sm font-medium truncate">@User.Identity.Name</p>
+                        <p class="text-xs text-gray-400 truncate">@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content bg-gray-50">
+            <!-- Topbar -->
+            <header class="flex justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">@ViewData["Title"]</h2>
+                    <p class="text-sm text-gray-500">@DateTime.Now.ToLongDateString()</p>
+                </div>
+                <div class="flex gap-4">
+                    <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-full relative">
+                        <i class="fas fa-bell"></i>
+                        <span class="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <button class="p-2 text-gray-500 hover:bg-gray-100 rounded-full">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/js/site.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
