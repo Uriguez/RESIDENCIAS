@@ -9,120 +9,90 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Login — Griver</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-    <style>
-        body {
-            min-height: 100vh;
-            background: radial-gradient(1200px 700px at 10% 10%, #0b1830, #0a1a3a 45%, #081122 80%);
-            color: #0d1b2a;
-        }
+    <!-- Bootstrap 5 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
 
-        .auth-card {
-            max-width: 460px;
-            border: none;
-            border-radius: 18px;
-            box-shadow: 0 20px 60px rgba(0,0,0,.35);
-            overflow: hidden;
-        }
-
-        .brand {
-            width: 74px;
-            height: 74px;
-            background: #0b5ed7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 16px;
-            margin: -38px auto 12px;
-            box-shadow: 0 8px 24px rgba(13,110,253,.45);
-        }
-
-            .brand img {
-                width: 44px;
-                height: 44px;
-            }
-
-        .muted {
-            color: #6c757d;
-        }
-
-        .btn-primary {
-            border-radius: 12px;
-            padding: .75rem 1rem;
-            font-weight: 600;
-        }
-
-        .form-control {
-            border-radius: 12px;
-            padding: .7rem .9rem;
-        }
-
-        .invalid {
-            border-radius: 12px;
-        }
-    </style>
+    <!-- Tu CSS global -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
-<body>
-    <div class="container py-5">
-        <div class="d-flex align-items-center justify-content-center" style="min-height:100vh;">
-            <div class="card auth-card bg-white">
-                <div class="card-body p-4 p-sm-5">
+<body class="page-login">
+    <!-- Fondo con gradiente naranja->azul y brillos -->
+    <div class="login-bg">
+        <div class="container py-5">
+            <div class="d-flex justify-content-center align-items-center min-vh-100">
+                <div class="auth-card card border-0 shadow-xxl">
+                    <div class="card-body p-4 p-md-5 position-relative">
 
-                    <div class="brand">
-                        <!-- logo.png: va en wwwroot/img/logo.jpg -->
-                        <img src="~/img/logo.jpg" alt="Griver" />
+                        <!-- “Bisel” con el logotipo dentro -->
+                        <div class="brand">
+                            <img src="~/img/logo.jpg" alt="Griver" loading="lazy" />
+                        </div>
+
+                        <h5 class="text-center mb-1 fw-semibold text-navy-900">
+                            Bienvenido a <span class="text-navy-700 fw-bold">Griver</span>
+                        </h5>
+                        <p class="text-center text-muted mb-4">Sistema de Gestión de Capacitación</p>
+
+                        @if (!string.IsNullOrEmpty(Model?.Error))
+                        {
+                            <div class="alert alert-danger rounded-3 py-2 px-3 mb-4" role="alert">
+                                @Model.Error
+                            </div>
+                        }
+
+                        <form asp-action="Login" method="post" novalidate>
+                            @Html.AntiForgeryToken()
+
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Correo electrónico</label>
+                                <div class="input-group input-group-lg grp">
+                                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                    <input asp-for="Email"
+                                           class="form-control"
+                                           type="email"
+                                           placeholder="usuario@griver.com"
+                                           autocomplete="username"
+                                           required />
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-medium">Contraseña</label>
+                                <div class="input-group input-group-lg grp">
+                                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                    <input asp-for="Passwords"
+                                           class="form-control"
+                                           type="password"
+                                           placeholder="Ingresa tu contraseña"
+                                           autocomplete="current-password"
+                                           required />
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div class="form-check">
+                                    <input asp-for="RememberMe" class="form-check-input" type="checkbox" id="remember" />
+                                    <label class="form-check-label" for="remember">Recordarme</label>
+                                </div>
+                                <a class="link-offset-2 text-decoration-none small" href="#">¿Olvidaste tu contraseña?</a>
+                            </div>
+
+                            <button class="btn btn-login w-100 btn-lg" type="submit">
+                                Iniciar Sesión
+                            </button>
+
+                            <p class="text-center text-muted mt-4 mb-0 small">
+                                © 2025 Griver. Todos los derechos reservados.
+                            </p>
+                        </form>
                     </div>
-
-                    <h4 class="text-center mb-1">Bienvenido a <strong>Griver</strong></h4>
-                    <p class="text-center mb-4 muted">Sistema de Gestión de Capacitación</p>
-
-                    @if (!string.IsNullOrEmpty(Model?.Error))
-                    {
-                        <div class="alert alert-danger invalid" role="alert">
-                            @Model.Error
-                        </div>
-                    }
-
-                    <form asp-action="Login" method="post">
-                        @Html.AntiForgeryToken()
-
-                        <div class="mb-3">
-                            <label class="form-label">Correo electrónico</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                <input asp-for="Email" class="form-control" type="email" placeholder="usuario@griver.com" autofocus />
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Contraseña</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                <input asp-for="Passwords" class="form-control" type="password" placeholder="Ingresa tu contraseña" />
-                            </div>
-                        </div>
-
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <div class="form-check">
-                                <input asp-for="RememberMe" class="form-check-input" type="checkbox" id="remember" />
-                                <label class="form-check-label" for="remember">Recordarme</label>
-                            </div>
-                            <a href="#" class="small text-decoration-none">¿Olvidaste tu contraseña?</a>
-                        </div>
-
-                        <button class="btn btn-primary w-100" type="submit">Iniciar Sesión</button>
-
-                        <p class="text-center mt-4 muted mb-0">
-                            © 2025 Griver. Todos los derechos reservados.
-                        </p>
-                    </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap icons (opcional) -->
+    <!-- Iconos de Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

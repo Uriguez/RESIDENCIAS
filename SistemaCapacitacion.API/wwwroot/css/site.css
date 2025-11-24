@@ -1,3 +1,155 @@
+/* ==========================================================================
+   LOGIN THEME – GRIVER Educational
+   Reproduce la estética azul marino + naranja con una card “glass”.
+   Está namespaced con .page-login para no afectar otras pantallas.
+   ========================================================================== */
+
+/* ---- Paleta base (puedes afinar tonos si lo deseas) --------------------- */
+:root {
+    --griver-navy-900: #0B2447; /* azul profundo de fondo */
+    --griver-navy-800: #0E2A47;
+    --griver-navy-700: #153a63; /* títulos y acentos */
+    --griver-sky-500: #2B77AD; /* foco/links */
+    --griver-orange-500: #E95C2B; /* naranja corporativo */
+    --griver-orange-400: #F27649;
+    --griver-white: #ffffff;
+    --griver-card: #ffffffF0; /* blanco con leve transparencia */
+    --griver-shadow: 0 25px 80px rgba(3,18,36,.35);
+}
+
+/* ---- Fondo con gradiente y brillos ------------------------------------- */
+.page-login .login-bg {
+    min-height: 100vh;
+    background: radial-gradient(1200px 700px at 15% -10%, var(--griver-orange-400) 0%, rgba(0,0,0,0) 65%), linear-gradient(180deg, var(--griver-orange-500) 0%, var(--griver-orange-400) 12%, var(--griver-navy-700) 42%, var(--griver-navy-900) 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+    /* brillo suave arriba a la derecha */
+    .page-login .login-bg::after {
+        content: "";
+        position: absolute;
+        inset: -10% -20% auto auto;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(closest-side, rgba(255,255,255,.18), rgba(255,255,255,0));
+        filter: blur(6px);
+        pointer-events: none;
+    }
+
+/* ---- Card “glass” ------------------------------------------------------- */
+.page-login .auth-card {
+    width: 100%;
+    max-width: 520px;
+    border-radius: 20px;
+    background: var(--griver-card);
+    backdrop-filter: saturate(160%) blur(16px);
+    -webkit-backdrop-filter: saturate(160%) blur(16px);
+    box-shadow: var(--griver-shadow);
+}
+
+/* ---- Marca/Logotipo con “bisel” ---------------------------------------- */
+.page-login .brand {
+    width: 92px;
+    height: 92px;
+    display: grid;
+    place-items: center;
+    margin: -68px auto 18px;
+    background: linear-gradient(145deg,#cfe8ff,#ffffff);
+    border-radius: 22px;
+    border: 8px solid #fff;
+    box-shadow: 0 18px 50px rgba(11,36,71,.35), inset 0 1px 0 rgba(255,255,255,.75);
+}
+
+    .page-login .brand img {
+        width: 64px;
+        height: auto;
+        object-fit: contain;
+    }
+
+/* ---- Tipografía de títulos --------------------------------------------- */
+.page-login .text-navy-900 {
+    color: #0b1d38;
+}
+
+.page-login .text-navy-700 {
+    color: var(--griver-navy-700);
+}
+
+/* ---- Input groups “neumorfismo suave” ---------------------------------- */
+.page-login .grp .input-group-text {
+    background: #f4f7fb;
+    border: 1px solid #e5e9f2;
+    border-right: none;
+    color: #6b7a90;
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+}
+
+.page-login .grp .form-control {
+    border: 1px solid #e5e9f2;
+    border-left: none;
+    background: #ffffff;
+    padding: .85rem 1rem;
+    border-top-right-radius: 12px;
+    border-bottom-right-radius: 12px;
+    transition: box-shadow .2s, border-color .2s;
+}
+
+    .page-login .grp .form-control:focus {
+        border-color: var(--griver-sky-500);
+        box-shadow: 0 0 0 .25rem rgba(43,119,173,.15);
+    }
+
+/* ---- Botón principal (azul intenso) ------------------------------------ */
+.page-login .btn-login {
+    --start: #1565c0;
+    --end: #0e4e9c;
+    background: linear-gradient(180deg,var(--start),var(--end));
+    border: none;
+    color: #fff;
+    border-radius: 12px;
+    padding: .9rem 1.25rem;
+    font-weight: 600;
+    letter-spacing: .2px;
+    box-shadow: 0 12px 28px rgba(14,78,156,.28);
+    transition: transform .06s ease, filter .2s ease;
+}
+
+    .page-login .btn-login:hover {
+        filter: brightness(1.05);
+    }
+
+    .page-login .btn-login:active {
+        transform: translateY(1px);
+    }
+
+/* ---- Links secundarios -------------------------------------------------- */
+.page-login a {
+    color: var(--griver-sky-500);
+}
+
+    .page-login a:hover {
+        color: #205e86;
+    }
+
+/* ---- Ajustes de responsivo --------------------------------------------- */
+@media (max-width: 576px) {
+    .page-login .auth-card {
+        margin-inline: .75rem;
+    }
+
+    .page-login .brand {
+        width: 84px;
+        height: 84px;
+        margin: -58px auto 14px;
+    }
+}
+
+/* ==========================================================================
+   A PARTIR DE AQUÍ: TEMA GLOBAL PARA DASHBOARDS (ADMIN, RH, EMPLEADO)
+   ========================================================================== */
+
 :root {
     /* Griver Corporate Palette */
     --griver-primary: #1a365d;
@@ -204,3 +356,595 @@ body {
         border-color: var(--griver-secondary);
         box-shadow: 0 0 0 3px rgba(43, 119, 173, 0.1);
     }
+
+/* ==========================================================================
+   1. TARJETAS KPI Y COMPONENTES COMPARTIDOS (Admin + RH + Empleado)
+   ========================================================================== */
+
+/* Grid responsivo de KPIs */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
+}
+
+/* Tarjeta principal de KPI */
+.kpi-card {
+    background-color: var(--griver-bg-surface);
+    border-radius: var(--griver-radius-md);
+    padding: 1rem 1.25rem;
+    box-shadow: var(--griver-shadow-subtle);
+    border: 1px solid var(--griver-border-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+}
+
+.kpi-label {
+    font-size: .8rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--griver-text-muted);
+}
+
+.kpi-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.kpi-trend {
+    font-size: .8rem;
+}
+
+    .kpi-trend.up {
+        color: #16a34a;
+    }
+
+    .kpi-trend.down {
+        color: #dc2626;
+    }
+
+/* Tarjeta genérica de superficie (para tablas, gráficos, paneles) ------- */
+.surface-card {
+    background-color: var(--griver-bg-surface);
+    border-radius: var(--griver-radius-lg);
+    padding: 1.5rem 1.75rem;
+    box-shadow: var(--griver-shadow-soft);
+    border: 1px solid rgba(148,163,184,.25);
+    margin-bottom: 1.5rem;
+}
+
+.surface-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.surface-card-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.surface-card-subtitle {
+    font-size: .9rem;
+    color: var(--griver-text-muted);
+}
+
+/* Gráfico placeholder (Chart.js) ---------------------------------------- */
+.chart-placeholder {
+    width: 100%;
+    height: 280px;
+    border-radius: var(--griver-radius-md);
+    background: radial-gradient(circle at top left, rgba(37,99,235,.08), transparent 55%), linear-gradient(135deg,#f9fafb,#eef2ff);
+    border: 1px dashed rgba(148,163,184,.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: .9rem;
+}
+
+/* Botones de accesos rápidos -------------------------------------------- */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1rem;
+}
+
+.quick-action {
+    border-radius: var(--griver-radius-md);
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--griver-border-subtle);
+    background: linear-gradient(135deg,#f9fafb,#ffffff);
+    display: flex;
+    align-items: center;
+    gap: .85rem;
+    cursor: pointer;
+    transition: transform .08s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.quick-action-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    background: #e0edff;
+    color: #1d4ed8;
+    font-size: 1.1rem;
+}
+
+.quick-action:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 24px rgba(15,23,42,.08);
+    border-color: rgba(59,130,246,.35);
+}
+
+/* Tablas resumen compactas ---------------------------------------------- */
+.table-dashboard {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .9rem;
+}
+
+    .table-dashboard thead {
+        background-color: #f9fafb;
+    }
+
+    .table-dashboard th,
+    .table-dashboard td {
+        padding: .65rem .75rem;
+        border-bottom: 1px solid #e5e7eb;
+        text-align: left;
+    }
+
+    .table-dashboard th {
+        font-weight: 600;
+        color: #4b5563;
+        font-size: .8rem;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+    .table-dashboard tbody tr:hover {
+        background-color: #f3f4ff;
+    }
+
+/* Barra de progreso delgada (para cursos, cumplimiento, etc.) ----------- */
+.progress-track {
+    height: 6px;
+    border-radius: 999px;
+    background-color: #e5e7eb;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg,#22c55e,#16a34a);
+}
+
+/* Chips para estados/etiquetas ------------------------------------------ */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    padding: .15rem .6rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    border: 1px solid rgba(148,163,184,.6);
+    color: #4b5563;
+    background-color: #f9fafb;
+}
+
+/* ==========================================================================
+   2. DASHBOARD ADMINISTRADOR (AdminDashboard.cshtml)
+   ========================================================================== */
+
+.admin-dashboard {
+    /* Wrapper principal del contenido admin */
+}
+
+/* Panel de actividad reciente (timeline) */
+.admin-activity-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.admin-activity-item {
+    display: flex;
+    gap: .75rem;
+    padding: .5rem 0;
+    border-bottom: 1px dashed rgba(148,163,184,.4);
+}
+
+.admin-activity-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    font-size: .8rem;
+    background-color: #eff6ff;
+    color: #1d4ed8;
+}
+
+.admin-activity-content {
+    flex: 1;
+    font-size: .85rem;
+    color: #111827;
+}
+
+.admin-activity-meta {
+    font-size: .75rem;
+    color: var(--griver-text-muted);
+}
+
+/* Dropdown de perfil del admin (como en captura) */
+.admin-user-menu {
+    min-width: 260px;
+    background-color: #ffffff;
+    border-radius: 1rem;
+    padding: .75rem .85rem;
+    box-shadow: var(--griver-shadow-soft);
+    border: 1px solid rgba(148,163,184,.3);
+}
+
+.admin-user-menu-header {
+    padding: .5rem .25rem .75rem;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: .5rem;
+}
+
+    .admin-user-menu-header strong {
+        display: block;
+        font-size: .95rem;
+    }
+
+    .admin-user-menu-header span {
+        font-size: .8rem;
+        color: var(--griver-text-muted);
+    }
+
+.admin-user-menu a {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .4rem .25rem;
+    border-radius: .5rem;
+    font-size: .85rem;
+    text-decoration: none;
+    color: #111827;
+}
+
+    .admin-user-menu a:hover {
+        background-color: #f3f4ff;
+    }
+
+/* ==========================================================================
+   3. DASHBOARD RECURSOS HUMANOS (RHDashboard.cshtml)
+   ========================================================================== */
+
+.rh-dashboard {
+    /* Wrapper principal de RH */
+}
+
+/* Métricas de cumplimiento por departamento ------------------------------ */
+.rh-compliance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.rh-department-card {
+    background-color: var(--griver-bg-surface);
+    border-radius: var(--griver-radius-md);
+    padding: 1.1rem 1.25rem;
+    border: 1px solid var(--griver-border-subtle);
+    box-shadow: var(--griver-shadow-subtle);
+    display: flex;
+    flex-direction: column;
+    gap: .35rem;
+}
+
+.rh-department-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .25rem;
+}
+
+.rh-department-name {
+    font-weight: 600;
+}
+
+.rh-compliance-value {
+    font-weight: 700;
+    color: #047857;
+}
+
+/* Alertas de gestión (cursos vencidos, etc.) ----------------------------- */
+.rh-alert-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.rh-alert-item {
+    padding: .5rem .65rem;
+    border-radius: .75rem;
+    background-color: #fef2f2;
+    border: 1px solid #fecaca;
+    font-size: .85rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .4rem;
+}
+
+    .rh-alert-item span {
+        color: #991b1b;
+    }
+
+/* Buscador de empleado --------------------------------------------------- */
+.rh-search-bar {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .75rem .9rem;
+    border-radius: var(--griver-radius-md);
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+}
+
+    .rh-search-bar input {
+        border: none;
+        background: transparent;
+        flex: 1;
+        outline: none;
+        font-size: .9rem;
+    }
+
+    .rh-search-bar i {
+        color: #6b7280;
+    }
+
+/* ==========================================================================
+   4. DASHBOARD EMPLEADO / TRAINEE (EmployeeDashboard.cshtml)
+   ========================================================================== */
+
+.employee-dashboard {
+    /* wrapper principal del portal de aprendizaje */
+}
+
+/* --- Hero “Mi Panel de Aprendizaje” (banner azul degradado) ------------- */
+.learning-hero {
+    border-radius: 24px;
+    padding: 1.75rem 2rem;
+    background: linear-gradient(135deg,#0b2447,#0f4c75 55%,#1b6ca8 100%);
+    color: #f9fafb;
+    display: grid;
+    grid-template-columns: 1.7fr auto;
+    gap: 1.5rem;
+    align-items: center;
+    margin-bottom: 1.75rem;
+    box-shadow: var(--griver-shadow-soft);
+}
+
+.learning-hero-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: .35rem;
+}
+
+    .learning-hero-title span {
+        color: #facc15;
+    }
+
+.learning-hero-subtext {
+    font-size: .95rem;
+    opacity: .9;
+}
+
+.learning-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .7rem;
+    margin-top: 1rem;
+}
+
+.btn-hero-primary,
+.btn-hero-ghost {
+    border-radius: 999px;
+    padding: .55rem 1.3rem;
+    font-size: .9rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.btn-hero-primary {
+    background-color: #f97316;
+    color: #111827;
+    box-shadow: 0 12px 25px rgba(248,113,113,.35);
+}
+
+    .btn-hero-primary:hover {
+        filter: brightness(1.05);
+    }
+
+.btn-hero-ghost {
+    background-color: rgba(15,23,42,.35);
+    color: #e5e7eb;
+    border-color: rgba(148,163,184,.4);
+}
+
+    .btn-hero-ghost:hover {
+        background-color: rgba(15,23,42,.55);
+    }
+
+/* Versión móvil del hero */
+@media (max-width: 768px) {
+    .learning-hero {
+        grid-template-columns: 1fr;
+        padding: 1.5rem 1.25rem;
+    }
+}
+
+/* --- Grid de cursos asignados ------------------------------------------- */
+.course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.course-card {
+    background-color: var(--griver-bg-surface);
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 24px rgba(15,23,42,.04);
+    display: flex;
+    flex-direction: column;
+    transition: transform .08s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+    .course-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 18px 40px rgba(15,23,42,.12);
+        border-color: rgba(59,130,246,.5);
+    }
+
+.course-thumb {
+    position: relative;
+    height: 160px;
+    overflow: hidden;
+}
+
+    .course-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+.course-status-pill {
+    position: absolute;
+    top: .75rem;
+    left: .75rem;
+    background-color: rgba(22,163,74,.95);
+    color: white;
+    padding: .2rem .6rem;
+    border-radius: 999px;
+    font-size: .75rem;
+    font-weight: 600;
+}
+
+.course-body {
+    padding: .9rem 1rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+}
+
+.course-title {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #111827;
+}
+
+.course-meta {
+    font-size: .82rem;
+    color: var(--griver-text-muted);
+}
+
+.course-footer {
+    margin-top: .6rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    font-size: .8rem;
+}
+
+/* Progreso + botón "Iniciar/Reanudar" */
+.course-progress-label {
+    font-size: .78rem;
+    color: var(--griver-text-muted);
+    margin-bottom: .2rem;
+}
+
+.btn-course-primary {
+    padding: .45rem .9rem;
+    border-radius: 999px;
+    border: none;
+    background-color: #0f172a;
+    color: #f9fafb;
+    font-size: .8rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* --- Panel lateral de logros / certificados ----------------------------- */
+.achievements-panel {
+    background-color: var(--griver-bg-surface);
+    border-radius: var(--griver-radius-lg);
+    padding: 1.1rem 1.25rem;
+    border: 1px solid #e5e7eb;
+    box-shadow: var(--griver-shadow-subtle);
+}
+
+.achievements-title {
+    font-size: .95rem;
+    font-weight: 600;
+    margin-bottom: .5rem;
+}
+
+.achievement-item {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .35rem 0;
+    font-size: .82rem;
+}
+
+.achievement-medal {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 25% 20%,#fef9c3,#facc15 40%,#eab308 70%);
+    display: grid;
+    place-items: center;
+    font-size: .9rem;
+}
+
+.achievement-text span {
+    display: block;
+}
+
+.achievement-text small {
+    color: var(--griver-text-muted);
+}
+
+/* --- Layout de dos columnas en escritorio para el empleado -------------- */
+.employee-layout-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(260px, 1.2fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 992px) {
+    .employee-layout-grid {
+        grid-template-columns: 1fr;
+    }
+}
