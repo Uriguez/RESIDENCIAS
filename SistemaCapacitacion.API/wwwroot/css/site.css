@@ -1,14 +1,14 @@
 /* ==========================================================================
-   LOGIN THEME ñ GRIVER Educational
-   Reproduce la estÈtica azul marino + naranja con una card ìglassî.
-   Est· namespaced con .page-login para no afectar otras pantallas.
+   LOGIN THEME ‚Äì GRIVER Educational
+   Reproduce la est√©tica azul marino + naranja con una card ‚Äúglass‚Äù.
+   Est√° namespaced con .page-login para no afectar otras pantallas.
    ========================================================================== */
 
 /* ---- Paleta base (puedes afinar tonos si lo deseas) --------------------- */
 :root {
-    --griver-navy-900: #0B2447; /* azul profundo de fondo */
+    --griver-navy-900: #eef4ff;  /* fondo claro como el de la imagen */
     --griver-navy-800: #0E2A47;
-    --griver-navy-700: #153a63; /* tÌtulos y acentos */
+    --griver-navy-700: #153a63; /* t√≠tulos y acentos */
     --griver-sky-500: #2B77AD; /* foco/links */
     --griver-orange-500: #E95C2B; /* naranja corporativo */
     --griver-orange-400: #F27649;
@@ -37,7 +37,7 @@
         pointer-events: none;
     }
 
-/* ---- Card ìglassî ------------------------------------------------------- */
+/* ---- Card ‚Äúglass‚Äù ------------------------------------------------------- */
 .page-login .auth-card {
     width: 100%;
     max-width: 520px;
@@ -48,7 +48,7 @@
     box-shadow: var(--griver-shadow);
 }
 
-/* ---- Marca/Logotipo con ìbiselî ---------------------------------------- */
+/* ---- Marca/Logotipo con ‚Äúbisel‚Äù ---------------------------------------- */
 .page-login .brand {
     width: 92px;
     height: 92px;
@@ -67,7 +67,7 @@
         object-fit: contain;
     }
 
-/* ---- TipografÌa de tÌtulos --------------------------------------------- */
+/* ---- Tipograf√≠a de t√≠tulos --------------------------------------------- */
 .page-login .text-navy-900 {
     color: #0b1d38;
 }
@@ -76,7 +76,7 @@
     color: var(--griver-navy-700);
 }
 
-/* ---- Input groups ìneumorfismo suaveî ---------------------------------- */
+/* ---- Input groups ‚Äúneumorfismo suave‚Äù ---------------------------------- */
 .page-login .grp .input-group-text {
     background: #f4f7fb;
     border: 1px solid #e5e9f2;
@@ -101,7 +101,7 @@
         box-shadow: 0 0 0 .25rem rgba(43,119,173,.15);
     }
 
-/* ---- BotÛn principal (azul intenso) ------------------------------------ */
+/* ---- Bot√≥n principal (azul intenso) ------------------------------------ */
 .page-login .btn-login {
     --start: #1565c0;
     --end: #0e4e9c;
@@ -147,7 +147,7 @@
 }
 
 /* ==========================================================================
-   A PARTIR DE AQUÕ: TEMA GLOBAL PARA DASHBOARDS (ADMIN, RH, EMPLEADO)
+   A PARTIR DE AQU√ç: TEMA GLOBAL PARA DASHBOARDS (ADMIN, RH, EMPLEADO)
    ========================================================================== */
 
 :root {
@@ -406,7 +406,7 @@ body {
         color: #dc2626;
     }
 
-/* Tarjeta genÈrica de superficie (para tablas, gr·ficos, paneles) ------- */
+/* Tarjeta gen√©rica de superficie (para tablas, gr√°ficos, paneles) ------- */
 .surface-card {
     background-color: var(--griver-bg-surface);
     border-radius: var(--griver-radius-lg);
@@ -434,7 +434,7 @@ body {
     color: var(--griver-text-muted);
 }
 
-/* Gr·fico placeholder (Chart.js) ---------------------------------------- */
+/* Gr√°fico placeholder (Chart.js) ---------------------------------------- */
 .chart-placeholder {
     width: 100%;
     height: 280px;
@@ -448,7 +448,7 @@ body {
     font-size: .9rem;
 }
 
-/* Botones de accesos r·pidos -------------------------------------------- */
+/* Botones de accesos r√°pidos -------------------------------------------- */
 .quick-actions-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -633,7 +633,7 @@ body {
     /* Wrapper principal de RH */
 }
 
-/* MÈtricas de cumplimiento por departamento ------------------------------ */
+/* M√©tricas de cumplimiento por departamento ------------------------------ */
 .rh-compliance-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -668,7 +668,7 @@ body {
     color: #047857;
 }
 
-/* Alertas de gestiÛn (cursos vencidos, etc.) ----------------------------- */
+/* Alertas de gesti√≥n (cursos vencidos, etc.) ----------------------------- */
 .rh-alert-list {
     list-style: none;
     padding: 0;
@@ -722,7 +722,7 @@ body {
     /* wrapper principal del portal de aprendizaje */
 }
 
-/* --- Hero ìMi Panel de Aprendizajeî (banner azul degradado) ------------- */
+/* --- Hero ‚ÄúMi Panel de Aprendizaje‚Äù (banner azul degradado) ------------- */
 .learning-hero {
     border-radius: 24px;
     padding: 1.75rem 2rem;
@@ -793,7 +793,7 @@ body {
         background-color: rgba(15,23,42,.55);
     }
 
-/* VersiÛn mÛvil del hero */
+/* Versi√≥n m√≥vil del hero */
 @media (max-width: 768px) {
     .learning-hero {
         grid-template-columns: 1fr;
@@ -877,7 +877,7 @@ body {
     font-size: .8rem;
 }
 
-/* Progreso + botÛn "Iniciar/Reanudar" */
+/* Progreso + bot√≥n "Iniciar/Reanudar" */
 .course-progress-label {
     font-size: .78rem;
     color: var(--griver-text-muted);
