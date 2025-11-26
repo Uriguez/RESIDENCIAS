@@ -1,0 +1,1190 @@
+/* ==========================================================================
+   ADMIN THEME – Panel Administrativo Griver
+   Layout general + componentes reutilizables para TODAS las vistas admin.
+   No afecta al login porque todo va bajo .page-admin
+   ========================================================================== */
+
+:root {
+    /* Paleta heredada / complementaria */
+    --griver-navy-900: #0B2447;
+    --griver-navy-700: #153a63;
+    --griver-navy-600: #1d3557;
+    --griver-sky-500: #2B77AD;
+    --griver-sky-400: #3b82f6;
+    --griver-green-500: #22c55e;
+    --griver-orange-500: #E95C2B;
+    --griver-red-500: #ef4444;
+    --admin-bg: #f5f7fb;
+    --admin-surface: #ffffff;
+    --admin-border-subtle: #e5e7eb;
+    --admin-border-soft: #d1d5db;
+    --admin-text-main: #111827;
+    --admin-text-muted: #6b7280;
+    --admin-text-soft: #9ca3af;
+    --admin-radius-lg: 18px;
+    --admin-radius-md: 14px;
+    --admin-radius-pill: 999px;
+    --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.06);
+    --shadow-card: 0 18px 45px rgba(15, 23, 42, 0.08);
+}
+
+/* ==========================================================================
+   RESETEO BÁSICO PARA EL PANEL ADMIN
+   ========================================================================== */
+
+.page-admin {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    /* Fondo con leve gradiente + color base */
+    background: radial-gradient(circle at top left, #e0f2ff 0, #f9fafb 36%, #edf2ff 100%);
+    background-color: var(--admin-bg);
+    color: var(--admin-text-main);
+    margin: 0;
+    min-height: 100vh;
+}
+
+    .page-admin * {
+        box-sizing: border-box;
+    }
+
+    .page-admin body {
+        margin: 0;
+    }
+
+/* ==========================================================================
+   LAYOUT PRINCIPAL: SIDEBAR + TOPBAR + MAIN
+   ========================================================================== */
+
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ---- SIDEBAR ------------------------------------------------------------ */
+
+.admin-sidebar {
+    width: 260px;
+    background-color: #ffffff;
+    border-right: 1px solid var(--admin-border-subtle);
+    display: flex;
+    flex-direction: column;
+    padding: 16px 18px 12px;
+}
+
+.admin-sidebar__brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 4px 18px;
+}
+
+.admin-sidebar__brand-logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+    .admin-sidebar__brand-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+.admin-sidebar__brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.25;
+}
+
+.admin-sidebar__brand-title {
+    font-weight: 700;
+    font-size: 1.02rem;
+}
+
+.admin-sidebar__brand-subtitle {
+    font-size: 0.75rem;
+    color: var(--admin-text-muted);
+}
+
+/* Bloque pequeño "Administrador" encima del menú */
+
+.admin-sidebar__role-chip {
+    margin: 4px 0 10px;
+    font-size: 0.72rem;
+    color: var(--admin-text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--admin-border-subtle);
+    background: #f9fafb;
+}
+
+/* Menú lateral */
+
+.admin-nav__section-label {
+    margin: 12px 4px 8px;
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--admin-text-soft);
+}
+
+.admin-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.admin-nav__item {
+    margin-bottom: 2px;
+}
+
+.admin-nav__link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    color: var(--admin-text-muted);
+    text-decoration: none;
+    transition: background-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease, transform 0.06s ease;
+}
+
+.admin-nav__icon {
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.admin-nav__link:hover {
+    background-color: #eef2ff;
+    color: var(--griver-navy-700);
+}
+
+.admin-nav__link--active {
+    background: linear-gradient(90deg, var(--griver-navy-700), #2563eb);
+    color: #ffffff;
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
+    transform: translateY(-1px);
+}
+
+    .admin-nav__link--active .admin-nav__icon {
+        color: #ffffff;
+    }
+
+/* Separador inferior del sidebar */
+
+.admin-sidebar__footer {
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--admin-border-subtle);
+    font-size: 0.74rem;
+    color: var(--admin-text-soft);
+}
+
+.admin-sidebar__footer-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 4px;
+    color: var(--admin-text-muted);
+    text-decoration: none;
+    border-radius: 999px;
+}
+
+    .admin-sidebar__footer-link:hover {
+        background-color: #f3f4ff;
+        color: var(--griver-navy-700);
+    }
+
+/* ---- CONTENEDOR DERECHO: TOPBAR + MAIN ---------------------------------- */
+
+.admin-shell {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* TOPBAR */
+
+.admin-topbar {
+    height: 60px;
+    background-color: #ffffff;
+    border-bottom: 1px solid var(--admin-border-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 22px;
+    gap: 18px;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+
+.admin-topbar__clock {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.86rem;
+    color: var(--admin-text-muted);
+}
+
+.admin-topbar__clock-icon {
+    font-size: 1rem;
+}
+
+.admin-topbar__icon-btn {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: none;
+    background: #f3f4ff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.16s ease, transform 0.06s ease;
+}
+
+    .admin-topbar__icon-btn:hover {
+        background-color: #e0e7ff;
+        transform: translateY(-1px);
+    }
+
+.admin-topbar__icon-btn--bell::after {
+    content: attr(data-badge);
+    position: absolute;
+    top: -3px;
+    right: -2px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background-color: var(--griver-red-500);
+    color: #ffffff;
+    font-size: 0.68rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Perfil administrador (foto + menú) */
+
+.admin-topbar__profile {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.admin-topbar__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 2px solid #e5e7eb;
+}
+
+    .admin-topbar__avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+/* Menú desplegable perfil */
+
+.profile-menu {
+    position: absolute;
+    top: 115%;
+    right: 0;
+    width: 260px;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    padding: 10px 0 8px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 60;
+}
+
+.profile-menu--open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.profile-menu__header {
+    padding: 6px 16px 10px;
+    border-bottom: 1px solid var(--admin-border-subtle);
+    font-size: 0.8rem;
+}
+
+.profile-menu__name {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.profile-menu__email {
+    color: var(--admin-text-muted);
+}
+
+.profile-menu__role {
+    margin-top: 4px;
+    font-size: 0.75rem;
+    color: var(--admin-text-soft);
+}
+
+.profile-menu__list {
+    list-style: none;
+    padding: 4px 0 0;
+    margin: 0;
+}
+
+.profile-menu__item {
+    font-size: 0.88rem;
+}
+
+.profile-menu__link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    color: var(--admin-text-muted);
+    text-decoration: none;
+}
+
+    .profile-menu__link:hover {
+        background-color: #f3f4ff;
+        color: var(--griver-navy-700);
+    }
+
+.profile-menu__link--danger {
+    color: var(--griver-red-500);
+}
+
+/* ---- MAIN CONTENT ------------------------------------------------------- */
+
+.admin-main {
+    padding: 18px 24px 32px;
+    max-width: 1320px;
+    margin: 0 auto;
+}
+
+/* Contenedor específico del dashboard */
+.admin-main-section {
+    /* Si quieres un poco más de separación vertical, ajusta aquí */
+    padding-top: 4px;
+}
+
+.admin-header {
+    margin-bottom: 6px;
+}
+
+/* ==========================================================================
+   TIPOGRAFÍA BÁSICA Y UTILIDADES
+   ========================================================================== */
+
+.admin-page-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.admin-page-subtitle {
+    font-size: 0.9rem;
+    color: var(--admin-text-muted);
+    margin-bottom: 20px;
+}
+
+.admin-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.admin-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.admin-section-caption {
+    font-size: 0.85rem;
+    color: var(--admin-text-muted);
+}
+
+/* ==========================================================================
+   CARDS GENERALES
+   ========================================================================== */
+
+.card {
+    background-color: var(--admin-surface);
+    border-radius: var(--admin-radius-lg);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+/* ---- Cards de métricas grandes (fila superior dashboard) ---------------- */
+
+.metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.metric-card {
+    padding: 16px 18px 14px;
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card__label {
+    font-size: 0.86rem;
+    color: var(--admin-text-muted);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.metric-card__icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background-color: #eef2ff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.metric-card__value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.metric-card__delta {
+    font-size: 0.78rem;
+    color: var(--admin-text-soft);
+}
+
+.metric-card__delta--up {
+    color: #16a34a;
+}
+
+.metric-card__delta--down {
+    color: #dc2626;
+}
+
+/* ---- Cards sección “Actividad Reciente” -------------------------------- */
+
+.activity-card {
+    padding: 16px 18px;
+}
+
+.activity-list {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0;
+}
+
+.activity-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--admin-border-subtle);
+    font-size: 0.88rem;
+}
+
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+
+.activity-item__left {
+    display: flex;
+    gap: 10px;
+}
+
+.activity-item__badge {
+    min-width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: #eef2ff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--griver-navy-700);
+}
+
+.activity-item__title {
+    font-weight: 500;
+}
+
+.activity-item__meta {
+    font-size: 0.8rem;
+    color: var(--admin-text-soft);
+}
+
+.activity-item__time {
+    font-size: 0.78rem;
+    color: var(--admin-text-soft);
+}
+
+/* ---- Cards “Acciones rápidas” ------------------------------------------ */
+
+.quick-actions-card {
+    padding: 16px 18px 14px;
+}
+
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.quick-action {
+    padding: 10px 12px;
+    border-radius: var(--admin-radius-md);
+    border: 1px solid var(--admin-border-subtle);
+    background: #f9fafb;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, transform 0.06s ease;
+}
+
+    .quick-action:hover {
+        background: #eef2ff;
+        border-color: #c7d2fe;
+        box-shadow: var(--shadow-soft);
+        transform: translateY(-1px);
+    }
+
+.quick-action__title {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.quick-action__caption {
+    font-size: 0.78rem;
+    color: var(--admin-text-soft);
+}
+
+/* ---- Cards “Métricas avanzadas” en dashboard --------------------------- */
+
+.simple-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.simple-metric {
+    padding: 10px 12px;
+    border-radius: var(--admin-radius-md);
+    background-color: #f9fafb;
+    border: 1px solid var(--admin-border-subtle);
+    font-size: 0.82rem;
+}
+
+.simple-metric__label {
+    color: var(--admin-text-soft);
+    margin-bottom: 4px;
+}
+
+.simple-metric__value {
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   PANELES DE CONFIGURACIÓN (TABS)
+   ========================================================================== */
+
+.tabs {
+    display: inline-flex;
+    background-color: #edf2ff;
+    border-radius: 999px;
+    padding: 3px;
+    gap: 2px;
+    margin-bottom: 18px;
+}
+
+.tabs__button {
+    border: none;
+    background: transparent;
+    border-radius: 999px;
+    padding: 6px 16px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    color: var(--admin-text-muted);
+}
+
+.tabs__button--active {
+    background: #ffffff;
+    color: var(--griver-navy-700);
+    box-shadow: 0 4px 12px rgba(148, 163, 184, 0.35);
+}
+
+/* Panel contenedor de bloques de config */
+
+.settings-section {
+    padding: 16px 18px 18px;
+    margin-bottom: 16px;
+}
+
+.settings-block {
+    margin-bottom: 18px;
+}
+
+.settings-block__title {
+    font-weight: 600;
+    font-size: 0.92rem;
+    margin-bottom: 4px;
+}
+
+.settings-block__caption {
+    font-size: 0.82rem;
+    color: var(--admin-text-muted);
+    margin-bottom: 10px;
+}
+
+/* Campos tipo formulario dentro de config */
+
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 18px;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.86rem;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    border-radius: 10px;
+    border: 1px solid var(--admin-border-soft);
+    padding: 7px 10px;
+    font-size: 0.86rem;
+    background-color: #f9fafb;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+        border-color: #6366f1;
+        background-color: #ffffff;
+        box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.4);
+    }
+
+.form-textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+/* Switch tipo iOS */
+
+.switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.86rem;
+}
+
+.switch__input {
+    display: none;
+}
+
+.switch__track {
+    width: 38px;
+    height: 20px;
+    border-radius: 999px;
+    background-color: #e5e7eb;
+    position: relative;
+    transition: background-color 0.18s ease;
+}
+
+.switch__thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background-color: #ffffff;
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    transition: transform 0.18s ease;
+}
+
+.switch__input:checked + .switch__track {
+    background: linear-gradient(90deg, #0f766e, #22c55e);
+}
+
+    .switch__input:checked + .switch__track .switch__thumb {
+        transform: translateX(18px);
+    }
+
+/* Zona de peligro */
+
+.danger-zone {
+    padding: 16px 18px;
+    border-radius: var(--admin-radius-lg);
+    border: 1px solid rgba(239, 68, 68, 0.35);
+    background-color: #fef2f2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 10px;
+}
+
+.danger-zone__title {
+    font-weight: 600;
+    color: #b91c1c;
+    margin-bottom: 3px;
+}
+
+.danger-zone__caption {
+    font-size: 0.82rem;
+    color: #991b1b;
+}
+
+/* ==========================================================================
+   TABLAS / LISTAS PARA GESTIÓN DE CURSOS, USUARIOS, AUDITORÍA
+   ========================================================================== */
+
+.table-card {
+    padding: 14px 18px 12px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+}
+
+    .table thead {
+        background-color: #f9fafb;
+    }
+
+    .table th,
+    .table td {
+        padding: 8px 10px;
+        text-align: left;
+        border-bottom: 1px solid var(--admin-border-subtle);
+    }
+
+    .table th {
+        font-weight: 600;
+        color: var(--admin-text-muted);
+        font-size: 0.8rem;
+    }
+
+    .table tr:last-child td {
+        border-bottom: none;
+    }
+
+/* ==========================================================================
+   BADGES / LABELS DE ESTADO
+   ========================================================================== */
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+.badge--green {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.badge--blue {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+}
+
+.badge--orange {
+    background-color: #ffedd5;
+    color: #c2410c;
+}
+
+.badge--red {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
+.badge--gray {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+/* ==========================================================================
+   BARRAS DE PROGRESO (cursos, usuarios, analíticas)
+   ========================================================================== */
+
+.progress-bar {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 6px;
+    border-radius: 999px;
+    background-color: #e5e7eb;
+    overflow: hidden;
+}
+
+.progress-bar__fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+/* ==========================================================================
+   MODALES GENERALES (Agregar Usuario, Crear Curso, Perfil, Notificaciones)
+   ========================================================================== */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 80;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+}
+
+.modal--open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal__dialog {
+    background-color: #ffffff;
+    border-radius: 18px;
+    max-width: 640px;
+    width: 100%;
+    max-height: calc(100vh - 80px);
+    overflow: hidden auto;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(148, 163, 184, 0.5);
+}
+
+.modal__header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--admin-border-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal__title {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.modal__body {
+    padding: 14px 18px 16px;
+}
+
+.modal__footer {
+    padding: 10px 18px 14px;
+    border-top: 1px solid var(--admin-border-subtle);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+/* Notificaciones “panel lateral” */
+
+.notifications-panel {
+    position: fixed;
+    top: 60px;
+    right: 16px;
+    width: 360px;
+    max-height: calc(100vh - 80px);
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 24px 70px rgba(15, 23, 42, 0.45);
+    border: 1px solid rgba(148, 163, 184, 0.5);
+    overflow: hidden auto;
+    z-index: 70;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-4px);
+    transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+.notifications-panel--open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.notifications-panel__header {
+    padding: 10px 16px 6px;
+    border-bottom: 1px solid var(--admin-border-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.86rem;
+}
+
+.notifications-panel__item {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--admin-border-subtle);
+    font-size: 0.86rem;
+}
+
+    .notifications-panel__item:last-child {
+        border-bottom: none;
+    }
+
+.notifications-panel__title {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.notifications-panel__type {
+    font-size: 0.78rem;
+    color: var(--admin-text-soft);
+    margin-bottom: 4px;
+}
+
+.notifications-panel__time {
+    font-size: 0.78rem;
+    color: var(--admin-text-soft);
+}
+
+/* ==========================================================================
+   BOTONES
+   ========================================================================== */
+
+.btn {
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-size: 0.86rem;
+    padding: 7px 16px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.06s ease;
+}
+
+.btn--primary {
+    background: linear-gradient(90deg, #1d4ed8, #1e40af);
+    color: #ffffff;
+    box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+}
+
+    .btn--primary:hover {
+        filter: brightness(1.05);
+        transform: translateY(-1px);
+    }
+
+.btn--secondary {
+    background-color: #ffffff;
+    border-color: var(--admin-border-soft);
+    color: var(--admin-text-muted);
+}
+
+    .btn--secondary:hover {
+        background-color: #f9fafb;
+    }
+
+.btn--ghost {
+    background: transparent;
+    border-color: transparent;
+    color: var(--admin-text-muted);
+}
+
+.btn--danger {
+    background-color: var(--griver-red-500);
+    color: #ffffff;
+}
+
+    .btn--danger:hover {
+        filter: brightness(1.05);
+    }
+
+/* ==========================================================================
+   FILTROS / CHIPS / TABS (Gestión de cursos, usuarios, progreso)
+   ========================================================================== */
+
+.filters-bar {
+    margin: 12px 0 14px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-chip {
+    border-radius: 999px;
+    border: 1px solid var(--admin-border-soft);
+    padding: 4px 12px;
+    font-size: 0.82rem;
+    background-color: #ffffff;
+    cursor: pointer;
+    color: var(--admin-text-muted);
+}
+
+.filter-chip--active {
+    background-color: #1d4ed8;
+    color: #ffffff;
+    border-color: #1d4ed8;
+}
+
+/* ==========================================================================
+   TARJETAS DE CURSO, USUARIO, PROGRESO, GRÁFICAS
+   ========================================================================== */
+
+.course-card,
+.user-card,
+.progress-card {
+    padding: 14px 16px;
+    border-radius: var(--admin-radius-lg);
+    background-color: var(--admin-surface);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    box-shadow: var(--shadow-soft);
+    font-size: 0.86rem;
+}
+
+.course-card__header,
+.user-card__header,
+.progress-card__header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+}
+
+.course-card__title,
+.user-card__title,
+.progress-card__title {
+    font-weight: 600;
+}
+
+.course-card__meta,
+.user-card__meta,
+.progress-card__meta {
+    font-size: 0.78rem;
+    color: var(--admin-text-soft);
+}
+
+/* Contenedores de gráficas Analíticas Avanzadas */
+
+.analytics-grid-2 {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.analytics-chart-card {
+    padding: 14px 16px;
+    border-radius: var(--admin-radius-lg);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    background-color: #ffffff;
+    box-shadow: var(--shadow-soft);
+    font-size: 0.86rem;
+}
+
+/* Placeholder para canvas/gráficas */
+
+.chart-placeholder {
+    margin-top: 12px;
+    height: 260px;
+    border-radius: 12px;
+    background: repeating-linear-gradient( -45deg, #f3f4f6, #f3f4f6 4px, #e5e7eb 4px, #e5e7eb 8px );
+}
+
+/* ==========================================================================
+   RESPONSIVE BÁSICO
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+    .admin-sidebar {
+        width: 230px;
+    }
+
+    .metric-grid,
+    .simple-metrics-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .analytics-grid-2 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .admin-layout {
+        flex-direction: column;
+    }
+
+    .admin-sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--admin-border-subtle);
+    }
+
+    .admin-shell {
+        flex: none;
+    }
+
+    .metric-grid,
+    .simple-metrics-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .quick-actions-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .form-grid-2 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

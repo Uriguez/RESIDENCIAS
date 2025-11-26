@@ -1,0 +1,162 @@
+﻿@{
+    ViewData["Title"] = "Gestión de Usuarios";
+    ViewBag.ActiveNav = "users";
+}
+
+<section>
+    <h1 class="admin-page-title">Gestión de Usuarios</h1>
+    <p class="admin-page-subtitle">
+        Administra empleados y becarios del sistema Griver.
+    </p>
+
+    <!-- Resumen de usuarios -->
+    <div class="metric-grid">
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">👥</span>
+                <span>Total Usuarios</span>
+            </div>
+            <div class="metric-card__value">@Model.TotalUsers</div>
+            <div class="metric-card__delta">Empleados y becarios</div>
+        </article>
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">👨‍💼</span>
+                <span>Empleados</span>
+            </div>
+            <div class="metric-card__value">@Model.TotalEmployees</div>
+            <div class="metric-card__delta">
+                @Model.EmployeesPercent% del total
+            </div>
+        </article>
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">🎓</span>
+                <span>Becarios</span>
+            </div>
+            <div class="metric-card__value">@Model.TotalTrainees</div>
+            <div class="metric-card__delta">
+                @Model.TraineesPercent% del total
+            </div>
+        </article>
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">✅</span>
+                <span>Usuarios Activos</span>
+            </div>
+            <div class="metric-card__value">@Model.ActiveUsers</div>
+            <div class="metric-card__delta">
+                @Model.ActiveUsersPercent% del total
+            </div>
+        </article>
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">📈</span>
+                <span>Progreso Promedio</span>
+            </div>
+            <div class="metric-card__value">@Model.AvgProgress%</div>
+            <div class="metric-card__delta">
+                Completion rate
+            </div>
+        </article>
+    </div>
+
+    <!-- Filtros y botones -->
+    <div class="admin-section-header" style="margin-top:16px;">
+        <div style="flex:1; max-width:420px;">
+            <input class="form-input"
+                   placeholder="Buscar usuarios..."
+                   name="BuscarUsuarios" />
+        </div>
+        <div style="display:flex; gap:8px;">
+            <button class="btn btn--secondary" type="button" id="btnExportUsers">
+                ⬇ Exportar Usuarios
+            </button>
+            <button class="btn btn--primary" type="button" data-open-modal="modalNuevoUsuario">
+                ＋ Nuevo Usuario
+            </button>
+        </div>
+    </div>
+
+    <!-- Filtros de Rol y Estado -->
+    <div class="filters-bar">
+        <span style="font-size:.8rem; color:#6b7280;">Rol:</span>
+        <button class="filter-chip filter-chip--active" type="button">Todos</button>
+        <button class="filter-chip" type="button">Admins</button>
+        <button class="filter-chip" type="button">RH</button>
+        <button class="filter-chip" type="button">Empleados</button>
+        <button class="filter-chip" type="button">Becarios</button>
+
+        <span style="font-size:.8rem; color:#6b7280; margin-left:12px;">Estado:</span>
+        <button class="filter-chip filter-chip--active" type="button">Todos</button>
+        <button class="filter-chip" type="button">Activos</button>
+        <button class="filter-chip" type="button">Inactivos</button>
+    </div>
+
+    <!-- Cards de usuarios -->
+    <h2 class="admin-section-title" style="margin-top:10px;">
+        Usuarios (@Model.Users.Count)
+    </h2>
+
+    <div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:8px;">
+        @foreach (var u in Model.Users)
+        {
+            <article class="user-card">
+                <div class="user-card__header">
+                    <div style="display:flex; gap:10px;">
+                        <div class="activity-item__badge">
+                            @u.Initials
+                        </div>
+                        <div>
+                            <div class="user-card__title">@u.FullName</div>
+                            <div style="margin-top:3px; display:flex; gap:6px; flex-wrap:wrap;">
+                                <span class="badge badge--green">@u.RoleLabel</span>
+                                @if (u.IsActive)
+                                {
+                                    <span class="badge badge--green">Activo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge--gray">Inactivo</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div style="font-size:.8rem; color:#6b7280;">
+                        @u.Department
+                    </div>
+                </div>
+
+                <div style="font-size:.8rem; color:#6b7280; margin-bottom:6px;">
+                    📧 @u.Email<br />
+                    📞 @u.Phone
+                </div>
+
+                <div style="margin:6px 0;">
+                    <div style="display:flex; justify-content:space-between; font-size:.8rem; color:#6b7280;">
+                        <span>Progreso general</span>
+                        <span>@u.ProgressPercent%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-bar__fill"
+                             style="width:@u.ProgressPercent%"></div>
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; font-size:.78rem; color:#6b7280; margin-top:6px;">
+                    <span>Inscritos: @u.EnrolledCourses cursos</span>
+                    <span>Completados: @u.CompletedCourses cursos</span>
+                </div>
+
+                <div style="font-size:.78rem; color:#6b7280; margin-top:4px;">
+                    Última actividad: @u.LastActivity.ToShortDateString()
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
+                    <a href="/Admin/Users/View/@u.Id" class="btn btn--secondary" style="padding:4px 10px;">Ver</a>
+                    <a href="/Admin/Users/Edit/@u.Id" class="btn btn--secondary" style="padding:4px 10px;">Editar</a>
+                </div>
+            </article>
+        }
+    </div>
+</section>

@@ -86,7 +86,7 @@ public class AccountController : Controller
 
         return role switch
         {
-            "Admin" => RedirectToAction("Inicio", "Admin"),
+            "Admin" => RedirectToAction("Dashboard", "Admin"),
             "RH" => RedirectToAction("Inicio", "Admin"),     // o tu panel de RH si es distinto
             _ => RedirectToAction("Inicio", "Empleado")
         };

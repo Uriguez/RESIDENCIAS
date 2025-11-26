@@ -7,7 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ViewModels\ActivityDto.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Abstractions\Repositories\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="ViewModels\ActivityDto.cs" />
   </ItemGroup>
 
 </Project>
