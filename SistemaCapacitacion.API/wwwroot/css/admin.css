@@ -1139,6 +1139,160 @@
     background: repeating-linear-gradient( -45deg, #f3f4f6, #f3f4f6 4px, #e5e7eb 4px, #e5e7eb 8px );
 }
 
+    /* ==========================================================================
+   DASHBOARD – MAQUETADO ESPECÍFICO (similar a Figma)
+   ========================================================================== */
+
+    .dashboard-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        margin-bottom: 18px;
+    }
+
+    .dashboard-header__caption {
+        font-size: 0.82rem;
+        color: var(--admin-text-soft);
+        margin-top: 4px;
+    }
+
+    /* Pastilla de estado "Sistema Activo" */
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        border: 1px solid transparent;
+    }
+
+    .status-pill__dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background-color: #22c55e;
+    }
+
+    .status-pill--green {
+        background-color: #ecfdf5;
+        border-color: #bbf7d0;
+        color: #15803d;
+    }
+
+    /* Filas de dashboard */
+
+    .dashboard-row {
+        margin-top: 18px;
+    }
+
+    .dashboard-row--split {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr;
+        gap: 16px;
+    }
+
+    /* --------------------------------------------------------------------------
+   Cursos más populares (columna derecha)
+   -------------------------------------------------------------------------- */
+
+    .top-courses-card {
+        padding: 16px 18px;
+        font-size: 0.86rem;
+    }
+
+    .top-courses-list {
+        list-style: none;
+        margin: 8px 0 0;
+        padding: 0;
+    }
+
+    .top-course-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 0;
+        border-bottom: 1px solid var(--admin-border-subtle);
+    }
+
+        .top-course-item:last-child {
+            border-bottom: none;
+        }
+
+    .top-course-item__left {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .top-course-item__rank {
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        background-color: #eef2ff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--griver-navy-700);
+    }
+
+    .top-course-item__info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .top-course-item__title {
+        font-weight: 500;
+    }
+
+    .top-course-item__meta {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .top-course-item__meta-text {
+        font-size: 0.78rem;
+        color: var(--admin-text-soft);
+    }
+
+    .top-course-item__right {
+        text-align: right;
+    }
+
+    .top-course-item__percent {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #16a34a;
+    }
+
+    /* Responsive ajustes específicos del dashboard */
+
+    @media (max-width: 1024px) {
+        .dashboard-row--split {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
 /* ==========================================================================
    RESPONSIVE BÁSICO
    ========================================================================== */
@@ -1186,5 +1340,97 @@
 
     .form-grid-2 {
         grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* ==========================================================================
+   DECORACIÓN EXTRA DEL DASHBOARD
+   ========================================================================== */
+
+/* Fondo suave en la zona de contenido derecho */
+.admin-main {
+    /*background: radial-gradient(circle at 0 0, rgba(129, 140, 248, 0.18), transparent 55%), radial-gradient(circle at 100% 100%, rgba(45, 212, 191, 0.18), transparent 55%), var(--admin-bg);
+}*/
+    /* Cabecera del dashboard más protagonista */
+    .admin-page-title {
+        font-size: 1.6rem;
+    }
+
+    .admin-page-subtitle {
+        position: relative;
+        padding-left: 10px;
+    }
+
+        .admin-page-subtitle::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 70%;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #4f46e5, #22c55e);
+        }
+    /* Tarjetas de métricas superiores con degradado suave */
+    .metric-card {
+        border-radius: 24px;
+        background: linear-gradient(145deg, #ffffff, #f3f4ff);
+        box-shadow: var(--shadow-card);
+    }
+    /* Bloques grandes: Actividad, Acciones rápidas, Métricas avanzadas */
+    .activity-card,
+    .quick-actions-card,
+    .analytics-card {
+        border-radius: 26px;
+        background: linear-gradient(145deg, #ffffff, #f9fafb);
+        box-shadow: var(--shadow-card);
+    }
+    /* Línea de tiempo en Actividad Reciente */
+    .activity-list {
+        margin-top: 8px;
+        padding-left: 4px;
+        position: relative;
+    }
+
+        .activity-list::before {
+            content: "";
+            position: absolute;
+            left: 26px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgba(209, 213, 219, 0.9);
+        }
+
+    .activity-item {
+        position: relative;
+        padding-left: 10px;
+    }
+
+    .activity-item__left {
+        position: relative;
+    }
+
+    .activity-item__badge {
+        border: 1px solid rgba(129, 140, 248, 0.45);
+        background: #eef2ff;
+    }
+    /* Punto brillante sobre la línea de tiempo */
+    .activity-item__left::before {
+        content: "";
+        position: absolute;
+        left: 20px;
+        top: 32px;
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #4f46e5;
+        box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.35);
+    }
+    /* Métricas avanzadas un poco más coloridas */
+    .simple-metric {
+        background: linear-gradient(145deg, #f9fafb, #eef2ff);
+        border-color: rgba(129, 140, 248, 0.25);
     }
 }

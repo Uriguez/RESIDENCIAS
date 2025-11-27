@@ -104,6 +104,9 @@ namespace SistemaCapacitacion.API.Controllers
                 RecentActivities = recent,
                 TopCourses = top
             };
+           // Simular notificaciones por ahora(o luego las sacas de la tabla Notification).
+            ViewBag.UnreadNotifications = 0;
+            ViewBag.Notifications = Array.Empty<object>();
 
             return View("Dashboard", vm);
         }

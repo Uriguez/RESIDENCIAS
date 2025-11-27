@@ -1,25 +1,37 @@
-﻿<!DOCTYPE html>
+﻿@{
+    Layout = null;
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+}
+
+<!doctype html>
 <html lang="es">
 <head>
     <meta charset="utf-8" />
-    <title>@ViewData["Title"] - Panel Administrativo Griver</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Griver</title>
 
-    <!-- CSS global login + admin -->
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <!-- Bootstrap (opcional, por si lo usas en formularios/tablas) -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
 
-    <!-- JS de interacciones admin -->
-    <script src="/js/admin.js" defer></script>
+    <!-- Estilos globales del sitio -->
+    <link rel="stylesheet" href="~/css/site.css" />
+    <!-- Estilos del panel admin que ya tienes (admin.css) -->
+    <link rel="stylesheet" href="~/css/admin.css" />
 </head>
-
 <body class="page-admin">
-    @RenderBody()
     <div class="admin-layout">
-        <!-- SIDEBAR -->
+
+        <!-- =========================================================
+             SIDEBAR IZQUIERDO
+           ========================================================= -->
         <aside class="admin-sidebar">
+            <!-- Marca lateral (logo Griver + texto) -->
             <div class="admin-sidebar__brand">
                 <div class="admin-sidebar__brand-logo">
-                    <img src="/img/logo-griver.png" alt="Griver" />
+                    <!-- Ajusta la ruta del logo a la que tengas -->
+                    <img src="~/img/griver-logo.png" alt="Griver" />
                 </div>
                 <div class="admin-sidebar__brand-text">
                     <span class="admin-sidebar__brand-title">Griver</span>
@@ -30,686 +42,234 @@
             </div>
 
             <div class="admin-sidebar__role-chip">
-                <span>Administrador</span>
+                <span class="admin-nav__icon">👤</span>
+                Administrador
             </div>
 
+            <!-- MENÚ PRINCIPAL -->
             <div class="admin-nav__section-label">Menú principal</div>
             <ul class="admin-nav">
                 <li class="admin-nav__item">
-                    <a href="/Admin/Dashboard"
-                       class="admin-nav__link @((ViewBag.ActiveNav == "dashboard") ? "admin-nav__link--active" : "")"
-                       data-nav="dashboard">
+                    <a class="admin-nav__link @(controller == "Admin" && action == "Dashboard" ? "admin-nav__link--active" : "")"
+                       asp-controller="Admin" asp-action="Dashboard">
                         <span class="admin-nav__icon">🏠</span>
-                        <span>Dashboard</span>
+                        <span>Inicio</span>
                     </a>
                 </li>
                 <li class="admin-nav__item">
-                    <a href="/Admin/Courses"
-                       class="admin-nav__link @((ViewBag.ActiveNav == "courses") ? "admin-nav__link--active" : "")"
-                       data-nav="courses">
+                    <a class="admin-nav__link @(controller == "Courses" && action == "Index" ? "admin-nav__link--active" : "")"
+                       asp-controller="Courses" asp-action="Index">
                         <span class="admin-nav__icon">📚</span>
                         <span>Gestión de Cursos</span>
                     </a>
                 </li>
                 <li class="admin-nav__item">
-                    <a href="/Admin/Users"
-                       class="admin-nav__link @((ViewBag.ActiveNav == "users") ? "admin-nav__link--active" : "")"
-                       data-nav="users">
+                    <a class="admin-nav__link @(controller == "HumanResources" || controller == "Users" ? "admin-nav__link--active" : "")"
+                       asp-controller="Users" asp-action="Index">
                         <span class="admin-nav__icon">👥</span>
                         <span>Gestión de Usuarios</span>
                     </a>
                 </li>
                 <li class="admin-nav__item">
-                    <a href="/Admin/Progress"
-                       class="admin-nav__link @((ViewBag.ActiveNav == "progress") ? "admin-nav__link--active" : "")"
-                       data-nav="progress">
-                        <span class="admin-nav__icon">📊</span>
+                    <a class="admin-nav__link @(controller == "Progress" ? "admin-nav__link--active" : "")"
+                       asp-controller="Progress" asp-action="Index">
+                        <span class="admin-nav__icon">📈</span>
                         <span>Progreso de Cursos</span>
                     </a>
                 </li>
                 <li class="admin-nav__item">
-                    <a href="/Admin/Analytics"
-                       class="admin-nav__link @((ViewBag.ActiveNav == "analytics") ? "admin-nav__link--active" : "")"
-                       data-nav="analytics">
-                        <span class="admin-nav__icon">📈</span>
+                    <a class="admin-nav__link @(controller == "Analytics" ? "admin-nav__link--active" : "")"
+                       asp-controller="Analytics" asp-action="Index">
+                        <span class="admin-nav__icon">📊</span>
                         <span>Analíticas Avanzadas</span>
+                        <span class="badge badge--blue ms-auto">Pro</span>
                     </a>
                 </li>
             </ul>
 
-            <div class="admin-nav__section-label">Sistema</div>
+            <!-- SECCIÓN CUENTA (parte inferior) -->
+            <div class="admin-nav__section-label">Cuenta</div>
             <ul class="admin-nav">
                 <li class="admin-nav__item">
-                    <a href="/Admin/Settings"
-                       class="admin-nav__link @((ViewBag.ActiveNav == "settings") ? "admin-nav__link--active" : "")"
-                       data-nav="settings">
-                        <span class="admin-nav__icon">⚙️</span>
-                        <span>Configuración</span>
+                    <a class="admin-nav__link @(controller == "Account" && action == "Profile" ? "admin-nav__link--active" : "")"
+                       asp-controller="Account" asp-action="Profile">
+                        <span class="admin-nav__icon">🧑</span>
+                        <span>Mi Perfil</span>
                     </a>
                 </li>
                 <li class="admin-nav__item">
-                    <a href="/Admin/Help"
-                       class="admin-nav__link">
-                        <span class="admin-nav__icon">❓</span>
-                        <span>Ayuda y Soporte</span>
+                    <a class="admin-nav__link @(controller == "Admin" && action == "Settings" ? "admin-nav__link--active" : "")"
+                       asp-controller="Admin" asp-action="Settings">
+                        <span class="admin-nav__icon">⚙️</span>
+                        <span>Configuración</span>
                     </a>
                 </li>
             </ul>
 
             <div class="admin-sidebar__footer">
-                <div>Griver Corporativo</div>
-                <div>v2.0.0 · 2025</div>
+                <a class="admin-sidebar__footer-link" asp-controller="Support" asp-action="Index">
+                    <span>❓</span>
+                    <span>Ayuda y Soporte</span>
+                </a>
+                <div>Griver Corporativo<br />v2.0.0 · 2025</div>
+
+                <form asp-controller="Account" asp-action="Logout" method="post" class="mt-2">
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-danger w-100">
+                        Cerrar sesión
+                    </button>
+                </form>
             </div>
         </aside>
 
-        <!-- CONTENEDOR DERECHO -->
+        <!-- =========================================================
+             CONTENEDOR DERECHO: TOPBAR + CONTENIDO
+           ========================================================= -->
         <div class="admin-shell">
-            <!-- TOPBAR -->
+
+            <!-- HEADER SUPERIOR -->
             <header class="admin-topbar">
-                <div class="admin-topbar__clock" id="adminClock">
-                    <span class="admin-topbar__clock-icon">🕒</span>
-                    <span>10:21</span>
+                <!-- Bloque de la izquierda: nombre del panel -->
+                <div class="d-none d-md-flex flex-column me-auto">
+                    <span class="admin-page-subtitle">
+                        Panel Administrativo Griver
+                    </span>
                 </div>
 
-                <button class="admin-topbar__icon-btn admin-topbar__icon-btn--bell"
+                <!-- Reloj -->
+                <div class="admin-topbar__clock">
+                    <span class="admin-topbar__clock-icon">🕒</span>
+                    <span id="adminClock">--:--</span>
+                </div>
+
+                <!-- Campana de notificaciones -->
+                <button type="button"
                         id="btnNotifications"
-                        data-badge="@Model.UnreadNotifications"
-                        aria-label="Notificaciones">
+                        class="admin-topbar__icon-btn admin-topbar__icon-btn--bell"
+                        data-badge="2">
                     🔔
                 </button>
 
+                <!-- Perfil administrador -->
                 <div class="admin-topbar__profile" id="profileToggle">
                     <div class="admin-topbar__avatar">
-                        <img src="/img/admin-avatar.jpg" alt="Administrador" />
+                        <!-- Ajusta la imagen a tu foto por defecto -->
+                        <img src="~/img/admin-avatar.png" alt="Administrador" />
                     </div>
                 </div>
 
-                <!-- Menú perfil -->
+                <!-- Menú perfil desplegable -->
                 <div class="profile-menu" id="profileMenu">
                     <div class="profile-menu__header">
-                        <div class="profile-menu__name">
-                            @Model.AdminName
-                        </div>
-                        <div class="profile-menu__email">
-                            @Model.AdminEmail
-                        </div>
-                        <div class="profile-menu__role">
-                            Administrador · @Model.AdminDepartment
-                        </div>
+                        <div class="profile-menu__name">Administrador Griver</div>
+                        <div class="profile-menu__email">admin@griver.com</div>
+                        <div class="profile-menu__role">Administrador · Administración</div>
                     </div>
                     <ul class="profile-menu__list">
                         <li class="profile-menu__item">
-                            <button class="profile-menu__link"
-                                    type="button"
-                                    data-open-modal="modalPerfil">
-                                👤 <span>Mi Perfil</span>
-                            </button>
-                        </li>
-                        <li class="profile-menu__item">
-                            <a href="/Admin/Settings" class="profile-menu__link">
-                                ⚙️ <span>Configuración</span>
+                            <a class="profile-menu__link"
+                               asp-controller="Account" asp-action="Profile">
+                                <span>👤</span>
+                                <span>Mi Perfil</span>
                             </a>
                         </li>
                         <li class="profile-menu__item">
-                            <form method="post" action="/Account/Logout">
-                                <button class="profile-menu__link profile-menu__link--danger"
-                                        type="submit">
-                                    ⏏ <span>Cerrar sesión</span>
+                            <a class="profile-menu__link"
+                               asp-controller="Admin" asp-action="Settings">
+                                <span>⚙️</span>
+                                <span>Configuración</span>
+                            </a>
+                        </li>
+                        <li class="profile-menu__item">
+                            <form asp-controller="Account" asp-action="Logout" method="post">
+                                <button type="submit"
+                                        class="profile-menu__link profile-menu__link--danger">
+                                    <span>🚪</span>
+                                    <span>Cerrar sesión</span>
                                 </button>
                             </form>
                         </li>
                     </ul>
                 </div>
-
-                <!-- Panel notificaciones -->
-                <aside class="notifications-panel" id="notificationsPanel">
-                    <div class="notifications-panel__header">
-                        <div>
-                            <strong>Notificaciones</strong><br />
-                            <span style="color:#6b7280">
-                                Tienes @Model.UnreadNotifications notificaciones sin leer
-                            </span>
-                        </div>
-                        <button class="btn btn--ghost"
-                                type="button"
-                                id="btnMarkAllRead">
-                            Marcar todas como leídas
-                        </button>
-                    </div>
-
-                    @foreach (var n in Model.Notifications)
-                    {
-                        <div class="notifications-panel__item">
-                            <div class="notifications-panel__title">@n.Title</div>
-                            <div class="notifications-panel__type">@n.Message</div>
-                            <div class="notifications-panel__time">@n.TimeAgo</div>
-                        </div>
-                    }
-                </aside>
             </header>
 
-            <!-- CONTENIDO ESPECÍFICO -->
+            <!-- PANEL DE NOTIFICACIONES (LATERAL) -->
+            <aside class="notifications-panel" id="notificationsPanel">
+                <div class="notifications-panel__header">
+                    <span>Notificaciones</span>
+                    <button type="button"
+                            class="btn btn-sm btn-link text-decoration-none"
+                            id="btnCloseNotifications">
+                        Cerrar
+                    </button>
+                </div>
+                <!-- Aquí luego llenas con notificaciones reales -->
+                <div class="notifications-panel__item">
+                    <div class="notifications-panel__title">Nuevo curso asignado</div>
+                    <div class="notifications-panel__type">
+                        Se te asignó un nuevo curso.
+                    </div>
+                    <div class="notifications-panel__time">
+                        hace 3 horas
+                    </div>
+                </div>
+            </aside>
+
+            <!-- CONTENIDO PRINCIPAL -->
             <main class="admin-main">
                 @RenderBody()
             </main>
         </div>
     </div>
 
-    <!-- ==============================================================
-         MODAL: PERFIL DEL ADMINISTRADOR
-         ============================================================== -->
-    <section class="modal" id="modalPerfil">
-        <div class="modal__dialog">
-            <header class="modal__header">
-                <h2 class="modal__title">Editar Mi Perfil</h2>
-                <button type="button" class="btn btn--ghost" data-close-modal>
-                    ✕
-                </button>
-            </header>
-            <div class="modal__body">
-                <!-- Foto de perfil -->
-                <div class="settings-block">
-                    <div class="settings-block__title">Foto de Perfil</div>
-                    <div class="settings-block__caption">
-                        Actualiza tu imagen de perfil para el sistema Griver.
-                    </div>
-                    <div style="display:flex; gap:16px; align-items:flex-start;">
-                        <div style="width:96px; height:96px; border-radius:999px; overflow:hidden; border:2px solid #e5e7eb;">
-                            <img src="/img/admin-avatar.jpg"
-                                 alt="Foto de perfil"
-                                 style="width:100%;height:100%;object-fit:cover;" />
-                        </div>
-                        <div style="flex:1;">
-                            <p style="font-size:.8rem;color:#6b7280;">
-                                Formatos admitidos: JPG, PNG, GIF, WebP<br />
-                                Tamaño máximo: 5MB<br />
-                                Resolución recomendada: 400x400 px
-                            </p>
-                            <div style="display:flex; gap:8px; margin-top:6px;">
-                                <label class="btn btn--primary">
-                                    Cambiar Foto
-                                    <input type="file"
-                                           name="ProfilePicture"
-                                           accept="image/*"
-                                           style="display:none;" />
-                                </label>
-                                <button type="button"
-                                        class="btn btn--secondary">
-                                    Eliminar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-                <!-- Información de referencia -->
-                <div class="settings-block">
-                    <div class="settings-block__title">
-                        Información de Referencia
-                    </div>
-                    <div class="settings-block__caption">
-                        Datos actuales registrados en el sistema Griver.
-                    </div>
-                    <div class="course-card" style="padding:10px 12px;">
-                        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                            <span class="badge badge--blue">Administrador</span>
-                            <span style="font-size:.8rem;color:#6b7280;">
-                                @Model.AdminDepartment
-                            </span>
-                            <span style="font-size:.8rem;color:#6b7280;">
-                                · Desde @Model.AdminSince
-                            </span>
-                            <span class="badge badge--green">Activo</span>
-                        </div>
-                    </div>
-                </div>
+    <script>
+        // Reloj en la barra superior
+        const clockEl = document.getElementById('adminClock');
+        if (clockEl) {
+            const tick = () => {
+                const now = new Date();
+                clockEl.textContent = now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+            };
+            tick();
+            setInterval(tick, 60000);
+        }
 
-                <!-- Editar información -->
-                <div class="settings-block">
-                    <div class="settings-block__title">Editar Información</div>
-                    <div class="form-grid-2">
-                        <div class="form-field">
-                            <label class="form-label">Nombre Completo</label>
-                            <input class="form-input"
-                                   name="Nombre"
-                                   value="@Model.AdminName" />
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">Correo Electrónico</label>
-                            <input class="form-input"
-                                   name="Email"
-                                   type="email"
-                                   value="@Model.AdminEmail" />
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">Departamento</label>
-                            <select class="form-select" name="Departamento">
-                                @* llenar desde BD *@
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">Rol en el sistema</label>
-                            <input class="form-input"
-                                   value="Administrador"
-                                   disabled />
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">Fecha de ingreso</label>
-                            <input class="form-input"
-                                   value="@Model.AdminSince"
-                                   disabled />
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">Estado</label>
-                            <input class="form-input" value="Activo" disabled />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <footer class="modal__footer">
-                <button type="button" class="btn btn--secondary" data-close-modal>
-                    Cancelar
-                </button>
-                <button type="submit" class="btn btn--primary">
-                    Guardar Cambios
-                </button>
-            </footer>
-        </div>
-    </section>
+        // Menú perfil
+        const profileToggle = document.getElementById('profileToggle');
+        const profileMenu   = document.getElementById('profileMenu');
 
-    <!-- ==============================================================
-         MODAL: NUEVO USUARIO (Acción Rápida)
-         ============================================================== -->
-    <section class="modal" id="modalNuevoUsuario">
-        <div class="modal__dialog">
-            <header class="modal__header">
-                <h2 class="modal__title">Agregar Nuevo Usuario</h2>
-                <button type="button" class="btn btn--ghost" data-close-modal>
-                    ✕
-                </button>
-            </header>
-            <div class="modal__body">
-                <!-- Crear nuevo usuario -->
-                <div class="settings-block">
-                    <div class="settings-block__title">Crear Nuevo Usuario</div>
-                    <div class="settings-block__caption">
-                        Completa todos los campos requeridos para configurar el acceso.
-                    </div>
-                    <div class="form-grid-2">
-                        <div class="form-field" style="grid-column:1/3;">
-                            <label class="form-label">Nombre Completo</label>
-                            <input class="form-input"
-                                   name="NuevoNombre"
-                                   placeholder="Ej: Ana García López" />
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">Email Corporativo</label>
-                            <input class="form-input"
-                                   name="NuevoEmail"
-                                   type="email"
-                                   placeholder="usuario@griver.com" />
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">Teléfono (opcional)</label>
-                            <input class="form-input"
-                                   name="NuevoTelefono"
-                                   placeholder="+34 612 345 678" />
-                        </div>
-                    </div>
-                </div>
+        if (profileToggle && profileMenu) {
+            profileToggle.addEventListener('click', () => {
+                profileMenu.classList.toggle('profile-menu--open');
+            });
 
-                <!-- Información organizacional -->
-                <div class="settings-block">
-                    <div class="settings-block__title">
-                        Información Organizacional
-                    </div>
-                    <div class="settings-block__caption">
-                        Define el rol del usuario y el departamento al que pertenece.
-                    </div>
-                    <div class="form-grid-2">
-                        <div class="form-field">
-                            <label class="form-label">Rol en el Sistema</label>
-                            <select class="form-select" name="NuevoRol">
-                                <option>Empleado</option>
-                                <option>Administrador</option>
-                                <option>RH</option>
-                                <option>Becario</option>
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">Acceso</label>
-                            <select class="form-select" name="NuevoAcceso">
-                                <option>Acceso a cursos asignados</option>
-                                <option>Acceso a todos los cursos</option>
-                            </select>
-                        </div>
-                        <div class="form-field" style="grid-column:1/3;">
-                            <label class="form-label">Departamento</label>
-                            <select class="form-select" name="NuevoDepto">
-                                @* lista desde tabla Departamentos *@
-                            </select>
-                        </div>
-                    </div>
-                </div>
+            document.addEventListener('click', (e) => {
+                if (!profileMenu.contains(e.target) && !profileToggle.contains(e.target)) {
+                    profileMenu.classList.remove('profile-menu--open');
+                }
+            });
+        }
 
-                <!-- Configuración de acceso -->
-                <div class="settings-block">
-                    <div class="settings-block__title">
-                        Configuración de Acceso
-                    </div>
-                    <div class="form-grid-2">
-                        <label class="switch">
-                            <input type="checkbox"
-                                   class="switch__input"
-                                   name="GenerarPassword"
-                                   checked />
-                            <span class="switch__track">
-                                <span class="switch__thumb"></span>
-                            </span>
-                            <span>Generar Contraseña Temporal</span>
-                        </label>
-                        <label class="switch">
-                            <input type="checkbox"
-                                   class="switch__input"
-                                   name="EnviarBienvenida"
-                                   checked />
-                            <span class="switch__track">
-                                <span class="switch__thumb"></span>
-                            </span>
-                            <span>Enviar Email de Bienvenida</span>
-                        </label>
-                        <label class="switch">
-                            <input type="checkbox"
-                                   class="switch__input"
-                                   name="RequerirCambio"
-                                   checked />
-                            <span class="switch__track">
-                                <span class="switch__thumb"></span>
-                            </span>
-                            <span>Requerir Cambio de Contraseña</span>
-                        </label>
-                    </div>
-                </div>
+        // Panel de notificaciones
+        const btnNotifications      = document.getElementById('btnNotifications');
+        const btnCloseNotifications = document.getElementById('btnCloseNotifications');
+        const notificationsPanel    = document.getElementById('notificationsPanel');
 
-                <!-- Configuración adicional -->
-                <div class="settings-block">
-                    <div class="settings-block__title">
-                        Configuración Adicional
-                    </div>
-                    <div class="form-grid-2">
-                        <label class="switch">
-                            <input type="checkbox"
-                                   class="switch__input"
-                                   name="UsuarioActivo"
-                                   checked />
-                            <span class="switch__track">
-                                <span class="switch__thumb"></span>
-                            </span>
-                            <span>Usuario Activo</span>
-                        </label>
-                    </div>
-                    <div class="form-field" style="margin-top:10px;">
-                        <label class="form-label">
-                            Notas Adicionales (opcional)
-                        </label>
-                        <textarea class="form-textarea"
-                                  name="NotasUsuario"
-                                  placeholder="Información interna solo visible para administradores."></textarea>
-                    </div>
-                </div>
-            </div>
-            <footer class="modal__footer">
-                <button type="button" class="btn btn--secondary" data-close-modal>
-                    Cancelar
-                </button>
-                <button type="submit" class="btn btn--primary">
-                    Crear Usuario
-                </button>
-            </footer>
-        </div>
-    </section>
+        if (btnNotifications && notificationsPanel) {
+            btnNotifications.addEventListener('click', () => {
+                notificationsPanel.classList.toggle('notifications-panel--open');
+            });
+        }
 
-    <!-- ==============================================================
-         MODAL: NUEVO CURSO (Acción Rápida)
-         ============================================================== -->
-    <section class="modal" id="modalNuevoCurso">
-        <div class="modal__dialog">
-            <header class="modal__header">
-                <h2 class="modal__title">Crear Nuevo Curso</h2>
-                <button type="button" class="btn btn--ghost" data-close-modal>
-                    ✕
-                </button>
-            </header>
-            <div class="modal__body">
-                <!-- Crear nuevo curso -->
-                <div class="settings-block">
-                    <div class="settings-block__title">Crear Nuevo Curso</div>
-                    <div class="settings-block__caption">
-                        Diseña un nuevo curso de capacitación para el sistema Griver.
-                    </div>
-                    <div class="form-grid-2">
-                        <div class="form-field" style="grid-column:1/3;">
-                            <label class="form-label">Título del Curso</label>
-                            <input class="form-input"
-                                   name="CursoTitulo"
-                                   placeholder="Ej: Seguridad Laboral Básica" />
-                        </div>
-                        <div class="form-field" style="grid-column:1/3;">
-                            <label class="form-label">Descripción</label>
-                            <textarea class="form-textarea"
-                                      name="CursoDescripcion"
-                                      placeholder="Describe el contenido y objetivos del curso..."></textarea>
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">Categoría</label>
-                            <select class="form-select" name="CursoCategoria">
-                                @* categorías desde BD *@
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">Dificultad</label>
-                            <select class="form-select" name="CursoDificultad">
-                                <option>Principiante</option>
-                                <option>Intermedio</option>
-                                <option>Avanzado</option>
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">
-                                Tiempo Estimado (minutos)
-                            </label>
-                            <input class="form-input"
-                                   type="number"
-                                   name="CursoDuracion"
-                                   value="60" />
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">
-                                Máximo de Participantes (opcional)
-                            </label>
-                            <input class="form-input"
-                                   type="number"
-                                   name="CursoMaxParticipantes"
-                                   placeholder="Sin límite" />
-                        </div>
-                        <div class="form-field" style="grid-column:1/3;">
-                            <label class="form-label">
-                                Imagen del Curso (URL)
-                            </label>
-                            <input class="form-input"
-                                   name="CursoImagenUrl"
-                                   placeholder="https://ejemplo.com/imagen.jpg" />
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">Fecha de Inicio</label>
-                            <input class="form-input"
-                                   type="date"
-                                   name="CursoFechaInicio" />
-                        </div>
-                        <div class="form-field">
-                            <label class="form-label">Fecha de Finalización</label>
-                            <input class="form-input"
-                                   type="date"
-                                   name="CursoFechaFin" />
-                        </div>
-                        <div class="form-field" style="grid-column:1/3;">
-                            <label class="form-label">
-                                Prerrequisitos (opcional)
-                            </label>
-                            <textarea class="form-textarea"
-                                      name="CursoPrerequisitos"
-                                      placeholder="Describe los conocimientos o cursos previos necesarios..."></textarea>
-                        </div>
-                    </div>
-                </div>
+        if (btnCloseNotifications && notificationsPanel) {
+            btnCloseNotifications.addEventListener('click', () => {
+                notificationsPanel.classList.remove('notifications-panel--open');
+            });
+        }
+    </script>
 
-                <!-- Departamentos objetivo -->
-                <div class="settings-block">
-                    <div class="settings-block__title">
-                        Departamentos Objetivo
-                    </div>
-                    <div class="settings-block__caption">
-                        Selecciona los departamentos que serán objetivo de este curso.
-                    </div>
-                    <div class="form-field">
-                        <input class="form-input"
-                               placeholder="Buscar departamentos..."
-                               name="BuscarDeptos" />
-                    </div>
-                    <div style="margin-top:10px; max-height:200px; overflow:auto;">
-                        @* Lista de departamentos con check *@
-                        <label style="display:flex;justify-content:space-between;align-items:center;font-size:.86rem;padding:4px 0;">
-                            <span>
-                                <input type="checkbox" /> Ventas
-                                <span style="color:#6b7280;font-size:.78rem;">
-                                    · Equipo comercial y ventas
-                                </span>
-                            </span>
-                            <span class="badge badge--gray">28</span>
-                        </label>
-                        <!-- Repite para RH, Finanzas, Operaciones, Becarios, etc. -->
-                    </div>
-                </div>
-
-                <!-- Configuración del curso -->
-                <div class="settings-block">
-                    <div class="settings-block__title">
-                        Configuración del Curso
-                    </div>
-                    <div class="settings-block__caption">
-                        Define las políticas de inscripción y visibilidad del curso.
-                    </div>
-                    <div class="form-grid-2">
-                        <label class="switch">
-                            <input type="checkbox"
-                                   class="switch__input"
-                                   name="CursoActivo"
-                                   checked />
-                            <span class="switch__track">
-                                <span class="switch__thumb"></span>
-                            </span>
-                            <span>Curso Activo</span>
-                        </label>
-
-                        <label class="switch">
-                            <input type="checkbox"
-                                   class="switch__input"
-                                   name="CursoObligatorio" />
-                            <span class="switch__track">
-                                <span class="switch__thumb"></span>
-                            </span>
-                            <span>Curso Obligatorio</span>
-                        </label>
-
-                        <label class="switch">
-                            <input type="checkbox"
-                                   class="switch__input"
-                                   name="InscripcionAuto"
-                                   checked />
-                            <span class="switch__track">
-                                <span class="switch__thumb"></span>
-                            </span>
-                            <span>Inscripción Automática</span>
-                        </label>
-
-                        <label class="switch">
-                            <input type="checkbox"
-                                   class="switch__input"
-                                   name="EnviarNotificaciones"
-                                   checked />
-                            <span class="switch__track">
-                                <span class="switch__thumb"></span>
-                            </span>
-                            <span>Enviar Notificaciones</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Contenido del curso -->
-                <div class="settings-block">
-                    <div class="settings-block__title">
-                        Contenido del Curso
-                    </div>
-                    <div class="settings-block__caption">
-                        Agrega lecciones, videos, documentos y cuestionarios.
-                    </div>
-                    <div style="margin-bottom:8px;">
-                        <button type="button"
-                                class="btn btn--secondary"
-                                id="btnAgregarContenido">
-                            + Agregar Contenido
-                        </button>
-                    </div>
-                    <!-- Un item de contenido de ejemplo -->
-                    <div id="contenidosCurso">
-                        <div class="course-card" style="margin-bottom:8px;">
-                            <div class="form-grid-2">
-                                <div class="form-field">
-                                    <label class="form-label">
-                                        Título del contenido
-                                    </label>
-                                    <input class="form-input"
-                                           name="ContenidoTitulo[]"
-                                           placeholder="Introducción al curso" />
-                                </div>
-                                <div class="form-field">
-                                    <label class="form-label">Tipo</label>
-                                    <select class="form-select"
-                                            name="ContenidoTipo[]">
-                                        <option>Video</option>
-                                        <option>Documento</option>
-                                        <option>Cuestionario</option>
-                                        <option>Interactivo</option>
-                                    </select>
-                                </div>
-                                <div class="form-field">
-                                    <label class="form-label">Duración (min)</label>
-                                    <input class="form-input"
-                                           type="number"
-                                           name="ContenidoDuracion[]"
-                                           value="10" />
-                                </div>
-                                <div class="form-field">
-                                    <label class="form-label">Orden</label>
-                                    <input class="form-input"
-                                           type="number"
-                                           name="ContenidoOrden[]"
-                                           value="1" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <footer class="modal__footer">
-                <button type="button" class="btn btn--secondary" data-close-modal>
-                    Cancelar
-                </button>
-                <button type="submit" class="btn btn--primary">
-                    Crear Curso
-                </button>
-            </footer>
-        </div>
-    </section>
+    @RenderSection("Scripts", required: false)
 </body>
 </html>
