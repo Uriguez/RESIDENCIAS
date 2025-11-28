@@ -8,6 +8,7 @@
     <PublishAot>false</PublishAot>
 	  <PublishTrimmed>false</PublishTrimmed>
 	  <Platforms>AnyCPU;x86</Platforms>
+	  <UserSecretsId>40888af9-8c55-4ce0-a62a-95242c7397f4</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

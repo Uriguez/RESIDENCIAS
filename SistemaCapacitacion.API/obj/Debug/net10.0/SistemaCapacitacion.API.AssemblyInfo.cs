@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SistemaCapacitacion.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+33a3f7bd23e51401b29cd7a6c5509c0c882bac99")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+741412fd22848de15223d43ebf681bd1363a0e88")]
 [assembly: System.Reflection.AssemblyProductAttribute("SistemaCapacitacion.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SistemaCapacitacion.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
