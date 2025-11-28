@@ -24,11 +24,14 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x' # Usa la versión de .NET que estás usando (ej. 8.0.x)
-
+        # [AGREGADO] Paso de Debug para verificar el path
+      - name: Debug - Listar Contenido de la Carpeta
+        # El comando 'dir' funciona en el runner de windows-latest
+        run: dir .\SistemaCapacitacion\
       # [MODIFICADO] Reemplazar 'nuget restore' por 'dotnet restore' (más moderno y robusto para Core)
       - name: Restore dependencies
         # Asumimos que la solución es 'SistemaCapacitacion.sln' en la raíz
-        run: dotnet restore SistemaCapacitacion/SistemaCapacitacion.sln 
+        run: dotnet restore SistemaCapacitacion/SistemaCapacitacion.slnx
 
       # [MODIFICADO] Reemplazar el MSBuild complejo por 'dotnet publish'
       - name: Publish to folder (dotnet publish)
@@ -65,4 +68,5 @@ jobs:
           slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4EF8D9E51B15414A8280E8B8D7CF932F }}
+
 
