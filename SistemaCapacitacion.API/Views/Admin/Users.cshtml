@@ -1,162 +1,257 @@
-﻿    @{
-    ViewData["Title"] = "Gestión de Usuarios";
-    ViewBag.ActiveNav = "users";
+﻿@model SistemaCapacitacion.Core.ViewModels.UsersAdminViewModel
+@{
+    Layout = "~/Views/_LayoutAdmin.cshtml";
 }
 
-<section>
-    <h1 class="admin-page-title">Gestión de Usuarios</h1>
-    <p class="admin-page-subtitle">
-        Administra empleados y becarios del sistema Griver.
-    </p>
-
-    <!-- Resumen de usuarios -->
-    <div class="metric-grid">
-        <article class="card metric-card">
-            <div class="metric-card__label">
-                <span class="metric-card__icon">👥</span>
-                <span>Total Usuarios</span>
-            </div>
-            <div class="metric-card__value">@Model.TotalUsers</div>
-            <div class="metric-card__delta">Empleados y becarios</div>
-        </article>
-        <article class="card metric-card">
-            <div class="metric-card__label">
-                <span class="metric-card__icon">👨‍💼</span>
-                <span>Empleados</span>
-            </div>
-            <div class="metric-card__value">@Model.TotalEmployees</div>
-            <div class="metric-card__delta">
-                @Model.EmployeesPercent% del total
-            </div>
-        </article>
-        <article class="card metric-card">
-            <div class="metric-card__label">
-                <span class="metric-card__icon">🎓</span>
-                <span>Becarios</span>
-            </div>
-            <div class="metric-card__value">@Model.TotalTrainees</div>
-            <div class="metric-card__delta">
-                @Model.TraineesPercent% del total
-            </div>
-        </article>
-        <article class="card metric-card">
-            <div class="metric-card__label">
-                <span class="metric-card__icon">✅</span>
-                <span>Usuarios Activos</span>
-            </div>
-            <div class="metric-card__value">@Model.ActiveUsers</div>
-            <div class="metric-card__delta">
-                @Model.ActiveUsersPercent% del total
-            </div>
-        </article>
-        <article class="card metric-card">
-            <div class="metric-card__label">
-                <span class="metric-card__icon">📈</span>
-                <span>Progreso Promedio</span>
-            </div>
-            <div class="metric-card__value">@Model.AvgProgress%</div>
-            <div class="metric-card__delta">
-                Completion rate
-            </div>
-        </article>
-    </div>
-
-    <!-- Filtros y botones -->
-    <div class="admin-section-header" style="margin-top:16px;">
-        <div style="flex:1; max-width:420px;">
-            <input class="form-input"
-                   placeholder="Buscar usuarios..."
-                   name="BuscarUsuarios" />
+<section class="admin-main-section">
+    <!-- Encabezado principal -->
+    <header class="admin-header">
+        <div>
+            <h1 class="admin-page-title">Gestión de Usuarios</h1>
+            <p class="admin-page-subtitle">
+                Administra empleados y becarios del sistema Griver.
+            </p>
         </div>
-        <div style="display:flex; gap:8px;">
-            <button class="btn btn--secondary" type="button" id="btnExportUsers">
-                ⬇ Exportar Usuarios
+
+        <div class="admin-section-actions">
+            <button class="btn btn--secondary">
+                <span>⬇</span>
+                <span>Exportar usuarios</span>
             </button>
-            <button class="btn btn--primary" type="button" data-open-modal="modalNuevoUsuario">
-                ＋ Nuevo Usuario
+            <button class="btn btn--primary">
+                <span>＋</span>
+                <span>Nuevo usuario</span>
             </button>
         </div>
-    </div>
+    </header>
 
-    <!-- Filtros de Rol y Estado -->
-    <div class="filters-bar">
-        <span style="font-size:.8rem; color:#6b7280;">Rol:</span>
-        <button class="filter-chip filter-chip--active" type="button">Todos</button>
-        <button class="filter-chip" type="button">Admins</button>
-        <button class="filter-chip" type="button">RH</button>
-        <button class="filter-chip" type="button">Empleados</button>
-        <button class="filter-chip" type="button">Becarios</button>
-
-        <span style="font-size:.8rem; color:#6b7280; margin-left:12px;">Estado:</span>
-        <button class="filter-chip filter-chip--active" type="button">Todos</button>
-        <button class="filter-chip" type="button">Activos</button>
-        <button class="filter-chip" type="button">Inactivos</button>
-    </div>
-
-    <!-- Cards de usuarios -->
-    <h2 class="admin-section-title" style="margin-top:10px;">
-        Usuarios (@Model.Users.Count)
-    </h2>
-
-    <div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:8px;">
-        @foreach (var u in Model.Users)
-        {
-            <article class="user-card">
-                <div class="user-card__header">
-                    <div style="display:flex; gap:10px;">
-                        <div class="activity-item__badge">
-                            @u.Initials
-                        </div>
-                        <div>
-                            <div class="user-card__title">@u.FullName</div>
-                            <div style="margin-top:3px; display:flex; gap:6px; flex-wrap:wrap;">
-                                <span class="badge badge--green">@u.RoleLabel</span>
-                                @if (u.IsActive)
-                                {
-                                    <span class="badge badge--green">Activo</span>
-                                }
-                                else
-                                {
-                                    <span class="badge badge--gray">Inactivo</span>
-                                }
-                            </div>
-                        </div>
-                    </div>
-                    <div style="font-size:.8rem; color:#6b7280;">
-                        @u.Department
-                    </div>
+    <!-- Tarjetas de métricas superiores -->
+    <section class="dashboard-row">
+        <div class="metric-grid">
+            <article class="card metric-card">
+                <div class="metric-card__label">
+                    <span class="metric-card__icon">👥</span>
+                    <span>Total usuarios</span>
                 </div>
+                <div class="metric-card__value">@Model.TotalUsers</div>
+                <div class="metric-card__delta">Empleados y becarios</div>
+            </article>
 
-                <div style="font-size:.8rem; color:#6b7280; margin-bottom:6px;">
-                    📧 @u.Email<br />
-                    📞 @u.Phone
+            <article class="card metric-card">
+                <div class="metric-card__label">
+                    <span class="metric-card__icon">💼</span>
+                    <span>Empleados</span>
                 </div>
+                <div class="metric-card__value">@Model.EmployeesCount</div>
+                <div class="metric-card__delta">@((Model.TotalUsers > 0 ? (Model.EmployeesCount * 100 / Model.TotalUsers) : 0))% del total</div>
+            </article>
 
-                <div style="margin:6px 0;">
-                    <div style="display:flex; justify-content:space-between; font-size:.8rem; color:#6b7280;">
-                        <span>Progreso general</span>
-                        <span>@u.ProgressPercent%</span>
-                    </div>
-                    <div class="progress-bar">
-                        <div class="progress-bar__fill"
-                             style="width:@u.ProgressPercent%"></div>
-                    </div>
+            <article class="card metric-card">
+                <div class="metric-card__label">
+                    <span class="metric-card__icon">🎓</span>
+                    <span>Becarios</span>
                 </div>
+                <div class="metric-card__value">@Model.InternsCount</div>
+                <div class="metric-card__delta">@((Model.TotalUsers > 0 ? (Model.InternsCount * 100 / Model.TotalUsers) : 0))% del total</div>
+            </article>
 
-                <div style="display:flex; justify-content:space-between; font-size:.78rem; color:#6b7280; margin-top:6px;">
-                    <span>Inscritos: @u.EnrolledCourses cursos</span>
-                    <span>Completados: @u.CompletedCourses cursos</span>
+            <article class="card metric-card">
+                <div class="metric-card__label">
+                    <span class="metric-card__icon">✅</span>
+                    <span>Usuarios activos</span>
                 </div>
-
-                <div style="font-size:.78rem; color:#6b7280; margin-top:4px;">
-                    Última actividad: @u.LastActivity.ToShortDateString()
-                </div>
-
-                <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:8px;">
-                    <a href="/Admin/Users/View/@u.Id" class="btn btn--secondary" style="padding:4px 10px;">Ver</a>
-                    <a href="/Admin/Users/Edit/@u.Id" class="btn btn--secondary" style="padding:4px 10px;">Editar</a>
+                <div class="metric-card__value">@Model.ActiveUsersCount</div>
+                <div class="metric-card__delta">
+                    @((Model.TotalUsers > 0 ? (Model.ActiveUsersCount * 100 / Model.TotalUsers) : 0))% del total
                 </div>
             </article>
-        }
-    </div>
+
+            <article class="card metric-card">
+                <div class="metric-card__label">
+                    <span class="metric-card__icon">📊</span>
+                    <span>Progreso promedio</span>
+                </div>
+                <div class="metric-card__value">@Model.AverageProgress.ToString("0")%</div>
+                <div class="metric-card__delta">Completion rate promedio</div>
+            </article>
+        </div>
+    </section>
+
+    <!-- Filtros -->
+    <section class="dashboard-row">
+        <article class="card table-card">
+            <div class="admin-section-header">
+                <div class="admin-section-title">Filtros</div>
+            </div>
+
+            <form method="get">
+                <div class="filters-bar">
+                    <!-- Buscador -->
+                    <div style="flex: 1; min-width: 220px; display: flex; align-items: center; gap: 8px;">
+                        <span>🔍</span>
+                        <input type="text"
+                               name="search"
+                               value="@Model.Search"
+                               class="form-input"
+                               placeholder="Buscar usuarios..." />
+                    </div>
+
+                    <!-- Rol -->
+                    <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                        <span style="font-size:0.82rem;">Rol:</span>
+                        <button type="submit"
+                                name="role"
+                                value="all"
+                                class="filter-chip @(string.IsNullOrEmpty(Model.RoleFilter) || Model.RoleFilter == "all" ? "filter-chip--active" : "")">
+                            Todos
+                        </button>
+                        <button type="submit"
+                                name="role"
+                                value="admins"
+                                class="filter-chip @(Model.RoleFilter == "admins" ? "filter-chip--active" : "")">
+                            Admins
+                        </button>
+                        <button type="submit"
+                                name="role"
+                                value="rh"
+                                class="filter-chip @(Model.RoleFilter == "rh" ? "filter-chip--active" : "")">
+                            RH
+                        </button>
+                        <button type="submit"
+                                name="role"
+                                value="employees"
+                                class="filter-chip @(Model.RoleFilter == "employees" ? "filter-chip--active" : "")">
+                            Empleados
+                        </button>
+                        <button type="submit"
+                                name="role"
+                                value="interns"
+                                class="filter-chip @(Model.RoleFilter == "interns" ? "filter-chip--active" : "")">
+                            Becarios
+                        </button>
+                    </div>
+
+                    <!-- Estado -->
+                    <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                        <span style="font-size:0.82rem;">Estado:</span>
+                        <button type="submit"
+                                name="status"
+                                value="all"
+                                class="filter-chip @(string.IsNullOrEmpty(Model.StatusFilter) || Model.StatusFilter == "all" ? "filter-chip--active" : "")">
+                            Todos
+                        </button>
+                        <button type="submit"
+                                name="status"
+                                value="active"
+                                class="filter-chip @(Model.StatusFilter == "active" ? "filter-chip--active" : "")">
+                            Activos
+                        </button>
+                        <button type="submit"
+                                name="status"
+                                value="inactive"
+                                class="filter-chip @(Model.StatusFilter == "inactive" ? "filter-chip--active" : "")">
+                            Inactivos
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </article>
+    </section>
+
+    <!-- Listado de usuarios -->
+    <section class="dashboard-row">
+        <div class="admin-section-header">
+            <div class="admin-section-title">
+                Usuarios (@Model.Users.Count)
+            </div>
+        </div>
+
+        <div class="user-grid">
+            @if (!Model.Users.Any())
+            {
+                <article class="card user-card">
+                    <div class="user-card__header">
+                        <div class="user-card__title">No hay usuarios registrados todavía.</div>
+                    </div>
+                    <p class="user-card__meta">
+                        Cuando se agreguen empleados o becarios, aparecerán aquí.
+                    </p>
+                </article>
+            }
+            else
+            {
+                foreach (var u in Model.Users)
+                {
+                    <article class="user-card">
+                        <header class="user-card__header">
+                            <div style="display:flex; gap:12px; align-items:center;">
+                                <div class="user-card__avatar">
+                                    <span>@u.Initials</span>
+                                </div>
+                                <div>
+                                    <div class="user-card__title">@u.FullName</div>
+                                    <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:4px;">
+                                        <span class="badge badge--gray">@u.DisplayRole</span>
+                                        <span class="badge badge--blue">
+                                            @(string.IsNullOrWhiteSpace(u.Department) ? "Sin departamento" : u.Department)
+                                        </span>
+                                        <span class="badge @(u.IsActive ? "badge--green" : "badge--red")">
+                                            @(u.IsActive ? "Activo" : "Inactivo")
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>⋯</div>
+                        </header>
+
+                        <div class="user-card__meta">
+                            <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
+                                <span>📧</span>
+                                <span>@u.Email</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px; margin-bottom:2px;">
+                                <span>💼</span>
+                                <span>@u.Position</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:8px;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.78rem; color:#6b7280; margin-bottom:4px;">
+                                <span>Progreso general</span>
+                                <span>@u.CompletionPercent.ToString("0")%</span>
+                            </div>
+                            <span class="progress-bar">
+                                <span class="progress-bar__fill" style="width:@u.CompletionPercent.ToString("0")%;"></span>
+                            </span>
+
+                            <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:0.8rem;">
+                                <div>
+                                    <div class="user-card__meta">Inscritos:</div>
+                                    <strong>@u.AssignedCourses cursos</strong>
+                                </div>
+                                <div>
+                                    <div class="user-card__meta">Completados:</div>
+                                    <strong>@u.CompletedCourses cursos</strong>
+                                </div>
+                            </div>
+
+                            <hr style="border:none; border-top:1px solid #e5e7eb; margin:10px 0 6px;" />
+
+                            <div style="font-size:0.8rem; color:#6b7280;">
+                                <span>Última actividad: </span>
+                                <strong>
+                                    @(u.LastActivity.HasValue
+                                                                ? u.LastActivity.Value.ToLocalTime().ToString("dd/MM/yyyy")
+                                                                : "Sin actividad")
+                                </strong>
+                            </div>
+                        </div>
+
+                        <!-- IMPORTANTE: no se incluyen los botones Ver / Editar,
+                             tal como pediste que lo haga RH en otro flujo -->
+                    </article>
+                }
+            }
+        </div>
+    </section>
 </section>

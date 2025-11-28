@@ -1433,4 +1433,44 @@
         background: linear-gradient(145deg, #f9fafb, #eef2ff);
         border-color: rgba(129, 140, 248, 0.25);
     }
+    /* ==========================================================================
+   TARJETAS DE CURSO, USUARIO, PROGRESO, GRÁFICAS
+   ========================================================================== */
+    .course-card,
+    .user-card,
+    .progress-card {
+        ...
+    }
+    /* Grid de tarjetas de usuarios en Gestión de Usuarios */
+    .user-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 16px;
+    }
+    /* Ajustes responsive del grid de usuarios */
+    @media (max-width: 1024px) {
+        .user-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .user-grid {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+    /* Avatar redondo con iniciales (se reaprovecha en varias vistas) */
+    .user-card__avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 999px;
+        background-color: #e5edff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: #1d4ed8;
+    }
 }

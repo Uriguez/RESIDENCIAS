@@ -64,8 +64,8 @@
                     </a>
                 </li>
                 <li class="admin-nav__item">
-                    <a class="admin-nav__link @(controller == "HumanResources" || controller == "Users" ? "admin-nav__link--active" : "")"
-                       asp-controller="Users" asp-action="Index">
+                    <a class="admin-nav__link @(controller == "Admin" & action == "Users" ? "admin-nav__link--active" : "")"
+                       asp-controller="Admin" asp-action="Users">
                         <span class="admin-nav__icon">👥</span>
                         <span>Gestión de Usuarios</span>
                     </a>
