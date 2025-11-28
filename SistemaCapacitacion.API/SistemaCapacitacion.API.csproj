@@ -1,13 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <InvariantGlobalization>false</InvariantGlobalization>
     <PublishAot>false</PublishAot>
 	  <PublishTrimmed>false</PublishTrimmed>
 	  <Platforms>AnyCPU;x86</Platforms>
+	  <UserSecretsId>40888af9-8c55-4ce0-a62a-95242c7397f4</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

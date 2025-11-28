@@ -1,0 +1,219 @@
+﻿@model SistemaCapacitacion.Core.ViewModels.CoursesAdminViewModel
+
+@{
+    Layout = "~/Views/_LayoutAdmin.cshtml";   // RUTA COMPLETA
+}
+
+<section>
+    <!-- HEADER PRINCIPAL -->
+    <header class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+            <h1 class="admin-page-title">Gestión de Cursos</h1>
+            <p class="admin-page-subtitle">
+                Administra el catálogo de cursos de capacitación de Griver.
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn--secondary">
+                <span class="me-1">⬇</span> Exportar Reportes
+            </button>
+            <a asp-controller="Courses"
+               asp-action="Create"
+               class="btn btn--primary">
+                <span class="me-1">＋</span> Nuevo Curso
+            </a>
+        </div>
+    </header>
+
+    <!-- FILTROS + BUSCADOR -->
+    <article class="card p-3 mb-3">
+        <div class="mb-2">
+            <div class="admin-section-title">Filtros</div>
+            <div class="admin-section-caption">
+                Busca y filtra los cursos según su estado.
+            </div>
+        </div>
+
+        <form method="get" class="mb-3">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text">🔍</span>
+                        <input type="text"
+                               name="search"
+                               value="@Model.SearchTerm"
+                               class="form-control"
+                               placeholder="Buscar cursos..." />
+                    </div>
+                </div>
+
+                <div class="col-md-7">
+                    <div class="filters-bar">
+                        @{
+                            string state = Model.StateFilter?.ToLowerInvariant() ?? "all";
+                            string chipClass(string value) =>
+                            "filter-chip" + (state == value ? " filter-chip--active" : "");
+                        }
+
+                        <button type="submit"
+                                name="state"
+                                value="all"
+                                class="@chipClass("all")">
+                            Todos
+                        </button>
+                        <button type="submit"
+                                name="state"
+                                value="active"
+                                class="@chipClass("active")">
+                            Activos
+                        </button>
+                        <button type="submit"
+                                name="state"
+                                value="inactive"
+                                class="@chipClass("inactive")">
+                            Borradores
+                        </button>
+                        <button type="submit"
+                                name="state"
+                                value="inactive"
+                                class="@chipClass("archived")">
+                            Archivados
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <!-- MÉTRICAS SUPERIORES (Total, Activos, Estudiantes, Tasa promedio) -->
+        <div class="metric-grid">
+            <article class="metric-card">
+                <div class="metric-card__label">
+                    <span class="metric-card__icon">📦</span>
+                    <span>Total Cursos</span>
+                </div>
+                <div class="metric-card__value">@Model.TotalCourses</div>
+                <div class="metric-card__delta">
+                    +X desde el mes pasado
+                </div>
+            </article>
+
+            <article class="metric-card">
+                <div class="metric-card__label">
+                    <span class="metric-card__icon">✅</span>
+                    <span>Cursos Activos</span>
+                </div>
+                <div class="metric-card__value">@Model.ActiveCourses</div>
+                <div class="metric-card__delta">
+                    @((Model.TotalCourses == 0
+                                        ? 0
+                                        : Math.Round(100.0 * Model.ActiveCourses / Model.TotalCourses, 1)))% del total
+                </div>
+            </article>
+
+            <article class="metric-card">
+                <div class="metric-card__label">
+                    <span class="metric-card__icon">👥</span>
+                    <span>Empleados Totales</span>
+                </div>
+                <div class="metric-card__value">@Model.TotalStudents</div>
+                <div class="metric-card__delta">
+                    Across all courses
+                </div>
+            </article>
+
+            <article class="metric-card">
+                <div class="metric-card__label">
+                    <span class="metric-card__icon">📈</span>
+                    <span>Tasa Promedio</span>
+                </div>
+                <div class="metric-card__value">
+                    @Model.AverageCompletion.ToString("0.0")%
+                </div>
+                <div class="metric-card__delta">
+                    Completion rate
+                </div>
+            </article>
+        </div>
+    </article>
+
+    <!-- LISTADO DE CURSOS -->
+    <section>
+        <header class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="admin-section-title">
+                Cursos (@Model.Courses.Count)
+            </h2>
+        </header>
+
+        @if (!Model.Courses.Any())
+        {
+            <div class="alert alert-light border">
+                No hay cursos registrados con los filtros actuales.
+            </div>
+        }
+        else
+        {
+            <div class="courses-grid">
+                @foreach (var c in Model.Courses)
+                {
+                    <article class="course-card">
+                        <div class="course-card__header">
+                            <div>
+                                <div class="course-card__title">@c.Title</div>
+                                <div class="course-card__meta">
+                                    @c.Category
+                                </div>
+                            </div>
+
+                            <div class="d-flex flex-column align-items-end gap-1">
+                                <span class="badge @(c.IsActive ? "badge--green" : "badge--gray")">
+                                    @(c.IsActive ? "Activo" : "Inactivo")
+                                </span>
+                            </div>
+                        </div>
+
+                        <p class="mb-2">
+                            @c.Description
+                        </p>
+
+                        <div class="d-flex flex-wrap gap-3 mb-2 small text-muted">
+                            <span>⏱ @c.DurationMinutes min</span>
+                            <span>👥 @c.StudentsCount estudiantes</span>
+                            <span>@c.CompletionPercent.ToString("0.0")% completado</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center small text-muted mb-2">
+                            <span>Creado: @c.CreatedAt.ToString("dd/MM/yyyy")</span>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <a asp-controller="Courses"
+                               asp-action="Details"
+                               asp-route-id="@c.IdCourse"
+                               class="btn btn-sm btn--secondary">
+                                Ver
+                            </a>
+                            <a asp-controller="Courses"
+                               asp-action="Edit"
+                               asp-route-id="@c.IdCourse"
+                               class="btn btn-sm btn--secondary">
+                                Editar
+                            </a>
+                            <form asp-controller="Courses"
+                                  asp-action="Delete"
+                                  asp-route-id="@c.IdCourse"
+                                  method="post"
+                                  class="d-inline">
+                                <button type="submit"
+                                        class="btn btn-sm btn--danger"
+                                        onclick="return confirm('¿Eliminar este curso?');">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+</section>

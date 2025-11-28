@@ -1,0 +1,312 @@
+﻿@model SistemaCapacitacion.Core.ViewModels.DashboardAdminViewModel
+@{
+    Layout = "~/Views/_LayoutAdmin.cshtml";   // RUTA COMPLETA
+}
+
+<section class="dashboard-shell">
+    <header class="dashboard-hero">
+        <div>
+            <h1 class="dashboard-hero__title">Dashboard Griver</h1>
+            <p class="dashboard-hero__subtitle">
+                Bienvenido, Administrador Griver · Administrador
+            </p>
+            <div class="dashboard-hero__meta">
+                <span>Resumen general del sistema de capacitación empresarial</span>
+
+                <span class="status-chip">
+                    <span class="status-chip__dot"></span>
+                    Sistema Activo
+                </span>
+
+                <span class="dashboard-hero__time">
+                    Última actualización: @Model.LastUpdated.ToString("HH:mm:ss")
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- FILA 1: MÉTRICAS PRINCIPALES (4 TARJETAS) -->
+    <div class="metric-grid">
+        <!-- Usuarios totales -->
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">👥</span>
+                <span>Usuarios Totales</span>
+            </div>
+            <div class="metric-card__value">
+                @Model.TotalUsers
+            </div>
+            <div class="metric-card__delta metric-card__delta--up">
+                ↑ @Model.UsersDelta% este mes
+            </div>
+        </article>
+
+        <!-- Cursos activos -->
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">📚</span>
+                <span>Cursos Activos</span>
+            </div>
+            <div class="metric-card__value">
+                @Model.ActiveCourses
+            </div>
+            <div class="metric-card__delta metric-card__delta--up">
+                ↑ @Model.CoursesDelta% este trimestre
+            </div>
+        </article>
+
+        <!-- Tasa de finalización -->
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">🎯</span>
+                <span>Tasa de Finalización</span>
+            </div>
+            <div class="metric-card__value">
+                @Model.CompletionRate%
+            </div>
+            <div class="metric-card__delta">
+                @Model.CompletionDeltaText
+            </div>
+        </article>
+
+        <!-- Certificados emitidos -->
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">🎓</span>
+                <span>Certificados Emitidos</span>
+            </div>
+            <div class="metric-card__value">
+                @Model.CertificatesIssued
+            </div>
+            <div class="metric-card__delta metric-card__delta--up">
+                ↑ @Model.CertificatesDelta% este mes
+            </div>
+        </article>
+    </div>
+
+    <!-- FILA 2: ACTIVIDAD RECIENTE + CURSOS MÁS POPULARES -->
+    <div class="dashboard-row dashboard-row--split">
+        <!-- Actividad reciente -->
+        <article class="card activity-card">
+            <header class="card__header">
+                <h2 class="card__title">Actividad Reciente</h2>
+                <p class="card__subtitle">Últimas acciones en el sistema de capacitación Griver.</p>
+            </header>
+
+            <ul class="activity-list">
+                @if (Model.RecentActivities != null && Model.RecentActivities.Any())
+                {
+                    foreach (var item in Model.RecentActivities)
+                    {
+                        <li class="activity-item">
+                            <div class="activity-item__left">
+                                <span class="activity-item__badge">@item.Initials</span>
+                            </div>
+
+                            <div class="activity-item__content">
+                                <div class="activity-item__title">@item.Title</div>
+                                <div class="activity-item__meta">@item.Description</div>
+                                <div class="activity-item__time">@item.TimeAgo</div>
+                            </div>
+                        </li>
+                    }
+                }
+                else
+                {
+                    <li class="activity-item">
+                        <div class="activity-item__content">
+                            <div class="activity-item__title">
+                                No hay registros recientes de actividad.
+                            </div>
+                            <div class="activity-item__meta">
+                                Cuando existan acciones en el sistema aparecerán aquí.
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </article>
+
+        <!-- Cursos más populares -->
+        <article class="card top-courses-card">
+            <header class="card__header">
+                <h2 class="card__title">Cursos Más Populares</h2>
+                <p class="card__subtitle">
+                    Ranking por finalizaciones y engagement.
+                </p>
+            </header>
+
+            <ol class="top-courses-list">
+                @if (Model.TopCourses != null && Model.TopCourses.Any())
+                {
+                    var rank = 1;
+                    foreach (var course in Model.TopCourses)
+                    {
+                        var percent = course.Enrolled == 0
+                        ? 0
+                        : Math.Round((double)course.Completed / course.Enrolled * 100);
+
+                        <li class="top-course-item">
+                            <div class="top-course-item__left">
+                                <div class="top-course-item__rank">@rank</div>
+                                <div class="top-course-item__info">
+                                    <div class="top-course-item__title">
+                                        @course.Title
+                                    </div>
+                                    <div class="top-course-item__meta">
+                                        <span class="badge badge--blue">@course.Category</span>
+                                        <span class="top-course-item__meta-text">
+                                            @course.Completed/@course.Enrolled completados
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="top-course-item__right">
+                                <div class="top-course-item__percent">@percent%</div>
+                            </div>
+                        </li>
+
+                        rank++;
+                    }
+                }
+                else
+                {
+                    <li class="top-course-item">
+                        <div class="top-course-item__info">
+                            <div class="top-course-item__title">
+                                Aún no hay cursos con suficientes datos.
+                            </div>
+                            <div class="top-course-item__meta-text">
+                                Cuando existan inscripciones y finalizaciones se mostrará el ranking aquí.
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ol>
+        </article>
+    </div>
+
+    <!-- FILA 3: ACCIONES RÁPIDAS (TARJETA COMPLETA) -->
+    <article class="card quick-actions-card dashboard-row">
+        <div class="admin-section-header">
+            <div>
+                <div class="admin-section-title">
+                    Acciones Rápidas
+                </div>
+                <div class="admin-section-caption">
+                    Tareas frecuentes para la gestión del sistema Griver.
+                </div>
+            </div>
+        </div>
+        <div class="quick-actions-grid">
+            <button class="quick-action"
+                    type="button"
+                    data-open-modal="modalNuevoUsuario">
+                <div class="quick-action__title">Agregar Usuario</div>
+                <div class="quick-action__caption">
+                    Crear nuevo empleado o trainee.
+                </div>
+            </button>
+
+            <button class="quick-action"
+                    type="button"
+                    id="btnExportReports">
+                <div class="quick-action__title">
+                    Exportar Reportes
+                </div>
+                <div class="quick-action__caption">
+                    Descargar métricas y analíticas.
+                </div>
+            </button>
+
+            <button class="quick-action"
+                    type="button"
+                    data-open-modal="modalNuevoCurso">
+                <div class="quick-action__title">Crear Curso</div>
+                <div class="quick-action__caption">
+                    Diseñar nuevo curso de capacitación.
+                </div>
+            </button>
+
+            <a class="quick-action"
+               href="/Admin/Settings">
+                <div class="quick-action__title">
+                    Configuración Sistema
+                </div>
+                <div class="quick-action__caption">
+                    Ajustar parámetros globales.
+                </div>
+            </a>
+        </div>
+    </article>
+
+    <!-- FILA 4: MÉTRICAS AVANZADAS -->
+    <!-- MÉTRICAS AVANZADAS (resumen) -->
+    <article class="card analytics-card" style="padding: 14px 18px;">
+
+        <div class="admin-section-header">
+            <div>
+                <div class="admin-section-title">
+                    Métricas Avanzadas
+                </div>
+                <div class="admin-section-caption">
+                    Indicadores clave de rendimiento del sistema de capacitación.
+                </div>
+            </div>
+        </div>
+
+        <div class="simple-metrics-grid">
+            <div class="simple-metric">
+                <div class="simple-metric__label">
+                    Engagement Score
+                </div>
+                <div class="simple-metric__value">
+                    @Model.EngagementScore
+                </div>
+                <div class="progress-bar" style="margin-top: 6px;">
+                    <div class="progress-bar__fill"
+                         style="width:@Model.EngagementScore%"></div>
+                </div>
+            </div>
+
+            <div class="simple-metric">
+                <div class="simple-metric__label">
+                    Features/Sprint (Cursos nuevos)
+                </div>
+                <div class="simple-metric__value">
+                    @Model.CoursesPerSprint
+                </div>
+                <div class="progress-bar" style="margin-top: 6px;">
+                    <div class="progress-bar__fill"
+                         style="width:@Model.CoursesPerSprintPercent%"></div>
+                </div>
+            </div>
+
+            <div class="simple-metric">
+                <div class="simple-metric__label">
+                    Flow Efficiency
+                </div>
+                <div class="simple-metric__value">
+                    @Model.FlowEfficiency%
+                </div>
+                <div class="progress-bar" style="margin-top: 6px;">
+                    <div class="progress-bar__fill"
+                         style="width:@Model.FlowEfficiency%"></div>
+                </div>
+            </div>
+
+            <div class="simple-metric">
+                <div class="simple-metric__label">
+                    Promedio de Progreso
+                </div>
+                <div class="simple-metric__value">
+                    @Model.GlobalProgress%
+                </div>
+                <div class="progress-bar" style="margin-top: 6px;">
+                    <div class="progress-bar__fill"
+                         style="width:@Model.GlobalProgress%"></div>
+                </div>
+            </div>
+        </div>
+    </article>
+</section>

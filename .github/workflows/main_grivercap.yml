@@ -11,30 +11,43 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    # Usar windows-latest es correcto, ya que el código usa MSBuild/Windows/IIS Express
+    runs-on: windows-latest 
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read 
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4 # Clona el repositorio
+      
+      # [AGREGADO] Configurar el SDK de .NET, necesario para 'dotnet restore' y 'dotnet publish'
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x' # Usa la versión de .NET que estás usando (ej. 8.0.x)
+        # [AGREGADO] Paso de Debug para verificar el path
+      - name: Debug - Listar Contenido de la Carpeta
+        # El comando 'dir' funciona en el runner de windows-latest
+        run: dir .\SistemaCapacitacion\
+      # [MODIFICADO] Reemplazar 'nuget restore' por 'dotnet restore' (más moderno y robusto para Core)
+      - name: Restore dependencies
+        # Asumimos que la solución es 'SistemaCapacitacion.sln' en la raíz
+        run: dotnet restore SistemaCapacitacion/SistemaCapacitacion.slnx
 
-      - name: Setup MSBuild path
-        uses: microsoft/setup-msbuild@v1.0.2
+      # [MODIFICADO] Reemplazar el MSBuild complejo por 'dotnet publish'
+      - name: Publish to folder (dotnet publish)
+        # Definimos una variable de entorno para el path de publicación final
+        env:
+          AZURE_PACKAGE_PATH: ${{ github.workspace }}/published_artifact
+        run: dotnet publish SistemaCapacitacion.API/SistemaCapacitacion.API.csproj -c Release -o ${{ env.AZURE_PACKAGE_PATH }}
+        # Explicación: Publica el proyecto ejecutable (.WebAPI) en modo Release 
+        # en la ruta definida por AZURE_PACKAGE_PATH (que se usará en el Artifact)
 
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v1.0.5
-
-      - name: Restore NuGet packages
-        run: nuget restore
-
-      - name: Publish to folder
-        run: msbuild /nologo /verbosity:m /t:Build /t:pipelinePreDeployCopyAllFilesToOneFolder /p:_PackageTempDir="\published\"
-
+      # [MODIFICADO] Usar la nueva variable de entorno para el path de publicación
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: ASP-app
-          path: '/published/**'
+          path: ${{ github.workspace }}/published_artifact/**
 
   deploy:
     runs-on: windows-latest
@@ -45,7 +58,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ASP-app
-      
+          path: .
+          
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
@@ -54,3 +68,6 @@ jobs:
           slot-name: 'Production'
           package: .
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4EF8D9E51B15414A8280E8B8D7CF932F }}
+
+
+

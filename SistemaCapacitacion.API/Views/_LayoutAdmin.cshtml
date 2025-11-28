@@ -1,0 +1,275 @@
+﻿@{
+    Layout = null;
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+}
+
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Griver</title>
+
+    <!-- Bootstrap (opcional, por si lo usas en formularios/tablas) -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+
+    <!-- Estilos globales del sitio -->
+    <link rel="stylesheet" href="~/css/site.css" />
+    <!-- Estilos del panel admin que ya tienes (admin.css) -->
+    <link rel="stylesheet" href="~/css/admin.css" />
+</head>
+<body class="page-admin">
+    <div class="admin-layout">
+
+        <!-- =========================================================
+             SIDEBAR IZQUIERDO
+           ========================================================= -->
+        <aside class="admin-sidebar">
+            <!-- Marca lateral (logo Griver + texto) -->
+            <div class="admin-sidebar__brand">
+                <div class="admin-sidebar__brand-logo">
+                    <!-- Ajusta la ruta del logo a la que tengas -->
+                    <img src="~/img/griver-logo.png" alt="Griver" />
+                </div>
+                <div class="admin-sidebar__brand-text">
+                    <span class="admin-sidebar__brand-title">Griver</span>
+                    <span class="admin-sidebar__brand-subtitle">
+                        Sistema de Capacitación
+                    </span>
+                </div>
+            </div>
+
+            <div class="admin-sidebar__role-chip">
+                <span class="admin-nav__icon">👤</span>
+                Administrador
+            </div>
+
+            <!-- MENÚ PRINCIPAL -->
+            <div class="admin-nav__section-label">Menú principal</div>
+            <ul class="admin-nav">
+                <li class="admin-nav__item">
+                    <a class="admin-nav__link @(controller == "Admin" && action == "Dashboard" ? "admin-nav__link--active" : "")"
+                       asp-controller="Admin" asp-action="Dashboard">
+                        <span class="admin-nav__icon">🏠</span>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li class="admin-nav__item">
+                    <a class="admin-nav__link @(controller == "Courses" && action == "Index" ? "admin-nav__link--active" : "")"
+                       asp-controller="Courses" asp-action="Index">
+                        <span class="admin-nav__icon">📚</span>
+                        <span>Gestión de Cursos</span>
+                    </a>
+                </li>
+                <li class="admin-nav__item">
+                    <a class="admin-nav__link @(controller == "Admin" & action == "Users" ? "admin-nav__link--active" : "")"
+                       asp-controller="Admin" asp-action="Users">
+                        <span class="admin-nav__icon">👥</span>
+                        <span>Gestión de Usuarios</span>
+                    </a>
+                </li>
+                <li class="admin-nav__item">
+                    <a class="admin-nav__link @(controller == "Progress" ? "admin-nav__link--active" : "")"
+                       asp-controller="Progress" asp-action="Index">
+                        <span class="admin-nav__icon">📈</span>
+                        <span>Progreso de Cursos</span>
+                    </a>
+                </li>
+                <li class="admin-nav__item">
+                    <a class="admin-nav__link @(controller == "Analytics" ? "admin-nav__link--active" : "")"
+                       asp-controller="Analytics" asp-action="Index">
+                        <span class="admin-nav__icon">📊</span>
+                        <span>Analíticas Avanzadas</span>
+                        <span class="badge badge--blue ms-auto">Pro</span>
+                    </a>
+                </li>
+            </ul>
+
+            <!-- SECCIÓN CUENTA (parte inferior) -->
+            <div class="admin-nav__section-label">Cuenta</div>
+            <ul class="admin-nav">
+                <li class="admin-nav__item">
+                    <a class="admin-nav__link @(controller == "Account" && action == "Profile" ? "admin-nav__link--active" : "")"
+                       asp-controller="Account" asp-action="Profile">
+                        <span class="admin-nav__icon">🧑</span>
+                        <span>Mi Perfil</span>
+                    </a>
+                </li>
+                <li class="admin-nav__item">
+                    <a class="admin-nav__link @(controller == "Admin" && action == "Settings" ? "admin-nav__link--active" : "")"
+                       asp-controller="Admin" asp-action="Settings">
+                        <span class="admin-nav__icon">⚙️</span>
+                        <span>Configuración</span>
+                    </a>
+                </li>
+            </ul>
+
+            <div class="admin-sidebar__footer">
+                <a class="admin-sidebar__footer-link" asp-controller="Support" asp-action="Index">
+                    <span>❓</span>
+                    <span>Ayuda y Soporte</span>
+                </a>
+                <div>Griver Corporativo<br />v2.0.0 · 2025</div>
+
+                <form asp-controller="Account" asp-action="Logout" method="post" class="mt-2">
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-danger w-100">
+                        Cerrar sesión
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- =========================================================
+             CONTENEDOR DERECHO: TOPBAR + CONTENIDO
+           ========================================================= -->
+        <div class="admin-shell">
+
+            <!-- HEADER SUPERIOR -->
+            <header class="admin-topbar">
+                <!-- Bloque de la izquierda: nombre del panel -->
+                <div class="d-none d-md-flex flex-column me-auto">
+                    <span class="admin-page-subtitle">
+                        Panel Administrativo Griver
+                    </span>
+                </div>
+
+                <!-- Reloj -->
+                <div class="admin-topbar__clock">
+                    <span class="admin-topbar__clock-icon">🕒</span>
+                    <span id="adminClock">--:--</span>
+                </div>
+
+                <!-- Campana de notificaciones -->
+                <button type="button"
+                        id="btnNotifications"
+                        class="admin-topbar__icon-btn admin-topbar__icon-btn--bell"
+                        data-badge="2">
+                    🔔
+                </button>
+
+                <!-- Perfil administrador -->
+                <div class="admin-topbar__profile" id="profileToggle">
+                    <div class="admin-topbar__avatar">
+                        <!-- Ajusta la imagen a tu foto por defecto -->
+                        <img src="~/img/admin-avatar.png" alt="Administrador" />
+                    </div>
+                </div>
+
+                <!-- Menú perfil desplegable -->
+                <div class="profile-menu" id="profileMenu">
+                    <div class="profile-menu__header">
+                        <div class="profile-menu__name">Administrador Griver</div>
+                        <div class="profile-menu__email">admin@griver.com</div>
+                        <div class="profile-menu__role">Administrador · Administración</div>
+                    </div>
+                    <ul class="profile-menu__list">
+                        <li class="profile-menu__item">
+                            <a class="profile-menu__link"
+                               asp-controller="Account" asp-action="Profile">
+                                <span>👤</span>
+                                <span>Mi Perfil</span>
+                            </a>
+                        </li>
+                        <li class="profile-menu__item">
+                            <a class="profile-menu__link"
+                               asp-controller="Admin" asp-action="Settings">
+                                <span>⚙️</span>
+                                <span>Configuración</span>
+                            </a>
+                        </li>
+                        <li class="profile-menu__item">
+                            <form asp-controller="Account" asp-action="Logout" method="post">
+                                <button type="submit"
+                                        class="profile-menu__link profile-menu__link--danger">
+                                    <span>🚪</span>
+                                    <span>Cerrar sesión</span>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </header>
+
+            <!-- PANEL DE NOTIFICACIONES (LATERAL) -->
+            <aside class="notifications-panel" id="notificationsPanel">
+                <div class="notifications-panel__header">
+                    <span>Notificaciones</span>
+                    <button type="button"
+                            class="btn btn-sm btn-link text-decoration-none"
+                            id="btnCloseNotifications">
+                        Cerrar
+                    </button>
+                </div>
+                <!-- Aquí luego llenas con notificaciones reales -->
+                <div class="notifications-panel__item">
+                    <div class="notifications-panel__title">Nuevo curso asignado</div>
+                    <div class="notifications-panel__type">
+                        Se te asignó un nuevo curso.
+                    </div>
+                    <div class="notifications-panel__time">
+                        hace 3 horas
+                    </div>
+                </div>
+            </aside>
+
+            <!-- CONTENIDO PRINCIPAL -->
+            <main class="admin-main">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Reloj en la barra superior
+        const clockEl = document.getElementById('adminClock');
+        if (clockEl) {
+            const tick = () => {
+                const now = new Date();
+                clockEl.textContent = now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+            };
+            tick();
+            setInterval(tick, 60000);
+        }
+
+        // Menú perfil
+        const profileToggle = document.getElementById('profileToggle');
+        const profileMenu   = document.getElementById('profileMenu');
+
+        if (profileToggle && profileMenu) {
+            profileToggle.addEventListener('click', () => {
+                profileMenu.classList.toggle('profile-menu--open');
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!profileMenu.contains(e.target) && !profileToggle.contains(e.target)) {
+                    profileMenu.classList.remove('profile-menu--open');
+                }
+            });
+        }
+
+        // Panel de notificaciones
+        const btnNotifications      = document.getElementById('btnNotifications');
+        const btnCloseNotifications = document.getElementById('btnCloseNotifications');
+        const notificationsPanel    = document.getElementById('notificationsPanel');
+
+        if (btnNotifications && notificationsPanel) {
+            btnNotifications.addEventListener('click', () => {
+                notificationsPanel.classList.toggle('notifications-panel--open');
+            });
+        }
+
+        if (btnCloseNotifications && notificationsPanel) {
+            btnCloseNotifications.addEventListener('click', () => {
+                notificationsPanel.classList.remove('notifications-panel--open');
+            });
+        }
+    </script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

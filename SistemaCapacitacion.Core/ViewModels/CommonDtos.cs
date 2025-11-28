@@ -9,6 +9,7 @@ namespace SistemaCapacitacion.Core.ViewModels
     public readonly record struct ActivityDto(
         string Actor,
         string Action,
+        //string Title,
         string Target,
         DateTime At
     );

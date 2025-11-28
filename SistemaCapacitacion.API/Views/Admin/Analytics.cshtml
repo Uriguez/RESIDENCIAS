@@ -1,0 +1,209 @@
+﻿@{
+    ViewData["Title"] = "Analíticas Avanzadas";
+    ViewBag.ActiveNav = "analytics";
+}
+
+<section>
+    <h1 class="admin-page-title">Analíticas Avanzadas</h1>
+    <p class="admin-page-subtitle">
+        Análisis profundo del rendimiento del sistema de capacitación Griver.
+    </p>
+
+    <!-- Métricas superiores -->
+    <div class="metric-grid">
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">👥</span>
+                <span>Usuarios Activos</span>
+            </div>
+            <div class="metric-card__value">@Model.ActiveUsers</div>
+            <div class="metric-card__delta metric-card__delta--up">
+                ↑ @Model.ActiveUsersDelta% vs mes anterior
+            </div>
+        </article>
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">✅</span>
+                <span>Tasa de Finalización</span>
+            </div>
+            <div class="metric-card__value">@Model.CompletionRate%</div>
+            <div class="metric-card__delta metric-card__delta--down">
+                @Model.CompletionDeltaText
+            </div>
+        </article>
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">⭐</span>
+                <span>Satisfacción Promedio</span>
+            </div>
+            <div class="metric-card__value">@Model.AvgRating/5</div>
+            <div class="metric-card__delta">
+                @Model.RatingDeltaText
+            </div>
+        </article>
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">⏱</span>
+                <span>Horas de Aprendizaje</span>
+            </div>
+            <div class="metric-card__value">@Model.LearningHours h</div>
+            <div class="metric-card__delta metric-card__delta--up">
+                @Model.LearningDeltaText
+            </div>
+        </article>
+    </div>
+
+    <!-- Filtros temporales -->
+    <div class="admin-section-header">
+        <div>
+            <div class="tabs">
+                <button class="tabs__button tabs__button--active" type="button">
+                    Resumen General
+                </button>
+                <button class="tabs__button" type="button">
+                    Análisis por Curso
+                </button>
+                <button class="tabs__button" type="button">
+                    Por Departamento
+                </button>
+                <button class="tabs__button" type="button">
+                    Progreso Temporal
+                </button>
+            </div>
+        </div>
+        <div style="display:flex; gap:8px;">
+            <button class="btn btn--secondary" type="button">
+                Últimos 6 meses
+            </button>
+            <button class="btn btn--secondary" type="button">
+                ⬇ Exportar
+            </button>
+        </div>
+    </div>
+
+    <!-- CONTENIDO DE LAS PESTAÑAS (puedes controlar visibilidad con JS) -->
+    <!-- TAB: Resumen General -->
+    <section id="tabResumenGeneral">
+        <div class="analytics-grid-2">
+            <article class="analytics-chart-card">
+                <div class="admin-section-title">
+                    Inscripciones vs Finalizaciones
+                </div>
+                <div class="admin-section-caption">
+                    Comparación mensual de inscripciones y cursos completados.
+                </div>
+                <div class="chart-placeholder">
+                    <!-- Aquí irá tu gráfico real (Chart.js / Highcharts) -->
+                </div>
+            </article>
+            <article class="analytics-chart-card">
+                <div class="admin-section-title">
+                    Crecimiento de Usuarios
+                </div>
+                <div class="admin-section-caption">
+                    Evolución del número de usuarios activos.
+                </div>
+                <div class="chart-placeholder"></div>
+            </article>
+        </div>
+    </section>
+
+    <!-- TAB: Análisis por Curso -->
+    <section id="tabAnalisisCurso" style="margin-top:18px;">
+        <div class="analytics-grid-2">
+            <article class="analytics-chart-card">
+                <div class="admin-section-title">
+                    Rendimiento por Curso
+                </div>
+                <div class="admin-section-caption">
+                    Inscripciones y finalizaciones por curso.
+                </div>
+                <div class="chart-placeholder"></div>
+            </article>
+            <article class="analytics-chart-card">
+                <div class="admin-section-title">
+                    Satisfacción por Curso
+                </div>
+                <div class="admin-section-caption">
+                    Rating promedio de cada curso.
+                </div>
+                <div class="chart-placeholder"></div>
+            </article>
+        </div>
+    </section>
+
+    <!-- TAB: Por Departamento -->
+    <section id="tabPorDepartamento" style="margin-top:18px;">
+        <div class="analytics-grid-2">
+            <article class="analytics-chart-card">
+                <div class="admin-section-title">
+                    Participación por Departamento
+                </div>
+                <div class="admin-section-caption">
+                    Distribución de usuarios por departamento.
+                </div>
+                <div class="chart-placeholder"></div>
+            </article>
+            <article class="analytics-chart-card">
+                <div class="admin-section-title">
+                    Estadísticas por Departamento
+                </div>
+                <div class="admin-section-caption">
+                    Detalle de participación y rendimiento.
+                </div>
+                <ul style="margin-top:10px; font-size:.86rem;">
+                    @foreach (var d in Model.DepartmentsStats)
+                    {
+                        <li style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #e5e7eb;">
+                            <span>@d.Name (@d.Users usuarios)</span>
+                            <span>@d.ParticipationPercent% participación</span>
+                        </li>
+                    }
+                </ul>
+            </article>
+        </div>
+    </section>
+
+    <!-- TAB: Progreso Temporal -->
+    <section id="tabProgresoTemporal" style="margin-top:18px;">
+        <article class="analytics-chart-card">
+            <div class="admin-section-title">
+                Progreso Promedio Semanal
+            </div>
+            <div class="admin-section-caption">
+                Evolución del progreso promedio de todos los usuarios.
+            </div>
+            <div class="chart-placeholder" style="margin-bottom:16px;"></div>
+
+            <div class="simple-metrics-grid">
+                <div class="simple-metric">
+                    <div class="simple-metric__label">Esta Semana</div>
+                    <div class="simple-metric__value">
+                        @Model.ThisWeekProgress%
+                    </div>
+                    <div class="metric-card__delta metric-card__delta--up">
+                        +@Model.ThisWeekDelta% vs semana anterior
+                    </div>
+                </div>
+                <div class="simple-metric">
+                    <div class="simple-metric__label">Mejor Semana</div>
+                    <div class="simple-metric__value">
+                        @Model.BestWeekProgress%
+                    </div>
+                    <div class="metric-card__delta">
+                        @Model.BestWeekLabel
+                    </div>
+                </div>
+                <div class="simple-metric">
+                    <div class="simple-metric__label">Tendencia</div>
+                    <div class="simple-metric__value">
+                        +@Model.TrendPercent%
+                    </div>
+                    <div class="metric-card__delta metric-card__delta--up">
+                        Tendencia positiva
+                    </div>
+                </div>
+            </div>
+        </article>
+    </section>
+</section>

@@ -1,0 +1,654 @@
+﻿@{
+    ViewData["Title"] = "Configuración del Sistema";
+    ViewBag.ActiveNav = "settings";
+}
+
+<section>
+    <h1 class="admin-page-title">Configuración del Sistema</h1>
+    <p class="admin-page-subtitle">
+        Gestiona la configuración global del Sistema Griver.
+    </p>
+
+    <!-- Aviso de cambios sin guardar + botones -->
+    <article class="card" style="padding:10px 18px; margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div style="font-size:.86rem; color:#6b7280;">
+                Tienes cambios sin guardar. Recuerda guardar la configuración antes de salir.
+            </div>
+            <div style="display:flex; gap:8px;">
+                <button class="btn btn--secondary" type="button">⬇ Exportar</button>
+                <button class="btn btn--secondary" type="button">⬆ Importar</button>
+                <button class="btn btn--primary" type="button">💾 Guardar Cambios</button>
+            </div>
+        </div>
+    </article>
+
+    <!-- Tabs de configuración -->
+    <div class="tabs">
+        <button class="tabs__button tabs__button--active" type="button">General</button>
+        <button class="tabs__button" type="button">Estadísticas</button>
+        <button class="tabs__button" type="button">Notificaciones</button>
+        <button class="tabs__button" type="button">Seguridad</button>
+        <button class="tabs__button" type="button">Apariencia</button>
+        <button class="tabs__button" type="button">Respaldos</button>
+        <button class="tabs__button" type="button">Auditoría</button>
+    </div>
+
+    <!-- ====== GENERAL ====== -->
+    <section id="cfgGeneral">
+        <article class="card settings-section">
+            <div class="settings-block">
+                <div class="settings-block__title">Configuración General</div>
+                <div class="settings-block__caption">
+                    Configuración básica del sistema Griver.
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-field">
+                        <label class="form-label">Nombre del Sistema</label>
+                        <input class="form-input"
+                               name="SystemName"
+                               value="@Model.SystemName" />
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Email de Soporte</label>
+                        <input class="form-input"
+                               type="email"
+                               name="SupportEmail"
+                               value="@Model.SupportEmail" />
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">
+                            Tamaño Máximo de Subida (MB)
+                        </label>
+                        <input class="form-input"
+                               type="number"
+                               name="MaxUploadMb"
+                               value="@Model.MaxUploadMb" />
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">
+                            Tiempo de Sesión (minutos)
+                        </label>
+                        <input class="form-input"
+                               type="number"
+                               name="SessionMinutes"
+                               value="@Model.SessionMinutes" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-block">
+                <div class="settings-block__title">Sesiones y Mantenimiento</div>
+                <div class="form-grid-2">
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="AutoLogout"
+                               @(Model.AutoLogout ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Cierre Automático de Sesión</span>
+                    </label>
+
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="MaintenanceMode"
+                               @(Model.MaintenanceMode ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Modo Mantenimiento</span>
+                    </label>
+
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="DebugMode"
+                               @(Model.DebugMode ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Modo Debug</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Zona de peligro -->
+            <div class="danger-zone">
+                <div>
+                    <div class="danger-zone__title">Zona de Peligro</div>
+                    <div class="danger-zone__caption">
+                        Acciones irreversibles que afectan a todo el sistema.
+                    </div>
+                </div>
+                <button class="btn btn--danger" type="button">
+                    Restaurar Configuración
+                </button>
+            </div>
+        </article>
+    </section>
+
+    <!-- ====== ESTADÍSTICAS ====== -->
+    <section id="cfgEstadisticas" style="margin-top:16px;">
+        <article class="card settings-section">
+            <div class="settings-block">
+                <div class="settings-block__title">Estadísticas del Sistema</div>
+                <div class="settings-block__caption">
+                    Monitor en tiempo real del estado del sistema Griver.
+                </div>
+
+                <!-- Tiles -->
+                <div class="metric-grid" style="margin-top:8px;">
+                    <article class="metric-card">
+                        <div class="metric-card__label">
+                            <span class="metric-card__icon">👥</span>
+                            <span>Usuarios Totales</span>
+                        </div>
+                        <div class="metric-card__value">@Model.Stats.TotalUsers</div>
+                    </article>
+                    <article class="metric-card">
+                        <div class="metric-card__label">
+                            <span class="metric-card__icon">✅</span>
+                            <span>Usuarios Activos</span>
+                        </div>
+                        <div class="metric-card__value">@Model.Stats.ActiveUsers</div>
+                    </article>
+                    <article class="metric-card">
+                        <div class="metric-card__label">
+                            <span class="metric-card__icon">📚</span>
+                            <span>Cursos Totales</span>
+                        </div>
+                        <div class="metric-card__value">@Model.Stats.TotalCourses</div>
+                    </article>
+                    <article class="metric-card">
+                        <div class="metric-card__label">
+                            <span class="metric-card__icon">🎓</span>
+                            <span>Completados</span>
+                        </div>
+                        <div class="metric-card__value">@Model.Stats.TotalCompleted</div>
+                    </article>
+                </div>
+            </div>
+
+            <!-- Rendimiento e información del sistema -->
+            <div style="display:grid; grid-template-columns:1.4fr 1fr; gap:16px; margin-top:16px;">
+                <div class="course-card">
+                    <div class="settings-block__title">
+                        Rendimiento del Sistema
+                    </div>
+                    <div class="form-field" style="margin-top:8px;">
+                        <label class="form-label">Uso de CPU</label>
+                        <div class="progress-bar">
+                            <div class="progress-bar__fill"
+                                 style="width:@Model.Stats.CpuUsage%"></div>
+                        </div>
+                    </div>
+                    <div class="form-field" style="margin-top:8px;">
+                        <label class="form-label">Uso de Memoria</label>
+                        <div class="progress-bar">
+                            <div class="progress-bar__fill"
+                                 style="width:@Model.Stats.MemoryUsage%"></div>
+                        </div>
+                    </div>
+                    <div class="form-field" style="margin-top:8px;">
+                        <label class="form-label">Uso de Disco</label>
+                        <div class="progress-bar">
+                            <div class="progress-bar__fill"
+                                 style="width:@Model.Stats.DiskUsage%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-card">
+                    <div class="settings-block__title">
+                        Información del Sistema
+                    </div>
+                    <ul style="font-size:.86rem; margin-top:8px;">
+                        <li>Tiempo Activo: @Model.Stats.Uptime</li>
+                        <li>Tamaño BD: @Model.Stats.DbSize</li>
+                        <li>Estado Red: <span class="badge badge--green">Online</span></li>
+                        <li>Último Respaldo: @Model.Stats.LastBackup</li>
+                        <li>APIs Hoy: @Model.Stats.ApiCallsToday</li>
+                        <li>Tasa de Error: @Model.Stats.ErrorRate%</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="danger-zone">
+                <div>
+                    <div class="danger-zone__title">Zona de Peligro</div>
+                    <div class="danger-zone__caption">
+                        Restaurar todas las estadísticas a valores por defecto.
+                    </div>
+                </div>
+                <button class="btn btn--danger" type="button">
+                    Restaurar Configuración
+                </button>
+            </div>
+        </article>
+    </section>
+
+    <!-- ====== NOTIFICACIONES ====== -->
+    <section id="cfgNotificaciones" style="margin-top:16px;">
+        <article class="card settings-section">
+            <div class="settings-block">
+                <div class="settings-block__title">
+                    Configuración de Notificaciones
+                </div>
+                <div class="settings-block__caption">
+                    Gestiona cómo y cuándo se envían las notificaciones.
+                </div>
+                <div class="form-grid-2">
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="NotifEmail"
+                               @(Model.Notifications.Email ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Notificaciones por Email</span>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="NotifPush"
+                               @(Model.Notifications.Push ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Notificaciones Push</span>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="NotifReminders"
+                               @(Model.Notifications.CourseReminders ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Recordatorios de Cursos</span>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="NotifCertificates"
+                               @(Model.Notifications.Certificates ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Certificados de Completación</span>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="NotifWeeklyReports"
+                               @(Model.Notifications.WeeklyReports ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Reportes Semanales</span>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="NotifSystemAlerts"
+                               @(Model.Notifications.SystemAlerts ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Alertas del Sistema</span>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="NotifAuditReports"
+                               @(Model.Notifications.AuditReports ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Reportes de Auditoría</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="danger-zone">
+                <div>
+                    <div class="danger-zone__title">Zona de Peligro</div>
+                    <div class="danger-zone__caption">
+                        Restaurar preferencias de notificación a valores por defecto.
+                    </div>
+                </div>
+                <button class="btn btn--danger" type="button">
+                    Restaurar Configuración
+                </button>
+            </div>
+        </article>
+    </section>
+
+    <!-- ====== SEGURIDAD ====== -->
+    <section id="cfgSeguridad" style="margin-top:16px;">
+        <article class="card settings-section">
+            <div class="settings-block">
+                <div class="settings-block__title">
+                    Configuración de Seguridad
+                </div>
+                <div class="settings-block__caption">
+                    Políticas de seguridad y autenticación.
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-field">
+                        <label class="form-label">
+                            Longitud Mínima de Contraseña
+                        </label>
+                        <input class="form-input"
+                               type="number"
+                               name="MinPasswordLength"
+                               value="@Model.Security.MinPasswordLength" />
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">
+                            Máximo Intentos de Login
+                        </label>
+                        <input class="form-input"
+                               type="number"
+                               name="MaxLoginAttempts"
+                               value="@Model.Security.MaxLoginAttempts" />
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">
+                            Tiempo de Bloqueo (minutos)
+                        </label>
+                        <input class="form-input"
+                               type="number"
+                               name="LockoutMinutes"
+                               value="@Model.Security.LockoutMinutes" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-block">
+                <div class="settings-block__title">Requisitos de Contraseña</div>
+                <div class="form-grid-2">
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="RequireUpper"
+                               @(Model.Security.RequireUppercase ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Requerir Mayúsculas</span>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="RequireNumbers"
+                               @(Model.Security.RequireNumbers ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Requerir Números</span>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="RequireSymbols"
+                               @(Model.Security.RequireSymbols ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Requerir Caracteres Especiales</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-block">
+                <div class="settings-block__title">Seguridad Avanzada</div>
+                <div class="form-grid-2">
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="TwoFactor"
+                               @(Model.Security.TwoFactorAuth ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Autenticación de Dos Factores</span>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="IpWhitelist"
+                               @(Model.Security.IpWhitelist ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Lista Blanca de IPs</span>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="SessionEncryption"
+                               @(Model.Security.SessionEncryption ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Encriptación de Sesiones</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="danger-zone">
+                <div>
+                    <div class="danger-zone__title">Zona de Peligro</div>
+                    <div class="danger-zone__caption">
+                        Restaurar políticas de seguridad a valores iniciales.
+                    </div>
+                </div>
+                <button class="btn btn--danger" type="button">
+                    Restaurar Configuración
+                </button>
+            </div>
+        </article>
+    </section>
+
+    <!-- ====== APARIENCIA ====== -->
+    <section id="cfgApariencia" style="margin-top:16px;">
+        <article class="card settings-section">
+            <div class="settings-block">
+                <div class="settings-block__title">
+                    Configuración de Apariencia
+                </div>
+                <div class="settings-block__caption">
+                    Personaliza la apariencia del sistema.
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-field">
+                        <label class="form-label">Idioma</label>
+                        <select class="form-select" name="Idioma">
+                            <option selected>Español</option>
+                            <option>Inglés</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">Zona Horaria</label>
+                        <select class="form-select" name="TimeZone">
+                            <option>CDMX (UTC-6)</option>
+                            <option>Madrid (UTC+1)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-grid-2" style="margin-top:10px;">
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="DarkMode"
+                               @(Model.Appearance.DarkMode ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Modo Oscuro</span>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="CompactMode"
+                               @(Model.Appearance.CompactMode ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Modo Compacto</span>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="CustomLogo"
+                               @(Model.Appearance.CustomLogo ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Logo Personalizado</span>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="BrandColors"
+                               @(Model.Appearance.BrandColors ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Colores de Marca</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="danger-zone">
+                <div>
+                    <div class="danger-zone__title">Zona de Peligro</div>
+                    <div class="danger-zone__caption">
+                        Restaurar apariencia a la configuración por defecto.
+                    </div>
+                </div>
+                <button class="btn btn--danger" type="button">
+                    Restaurar Configuración
+                </button>
+            </div>
+        </article>
+    </section>
+
+    <!-- ====== RESPALDOS ====== -->
+    <section id="cfgRespaldos" style="margin-top:16px;">
+        <article class="card settings-section">
+            <div class="settings-block">
+                <div class="settings-block__title">
+                    Configuración de Respaldos
+                </div>
+                <div class="settings-block__caption">
+                    Gestiona las copias de seguridad del sistema.
+                </div>
+                <div class="form-grid-2">
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="AutoBackup"
+                               @(Model.Backup.AutoBackup ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Respaldo Automático</span>
+                    </label>
+                    <div></div>
+
+                    <div class="form-field">
+                        <label class="form-label">Frecuencia de Respaldo</label>
+                        <select class="form-select" name="BackupFrequency">
+                            <option>Diario</option>
+                            <option>Semanal</option>
+                            <option>Mensual</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label class="form-label">
+                            Período de Retención (días)
+                        </label>
+                        <input class="form-input"
+                               type="number"
+                               name="RetentionDays"
+                               value="@Model.Backup.RetentionDays" />
+                    </div>
+                </div>
+
+                <div class="form-grid-2" style="margin-top:10px;">
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="CloudBackup"
+                               @(Model.Backup.CloudBackup ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Respaldo en la Nube</span>
+                    </label>
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="switch__input"
+                               name="EncryptBackups"
+                               @(Model.Backup.EncryptBackups ? "checked" : "") />
+                        <span class="switch__track"><span class="switch__thumb"></span></span>
+                        <span>Encriptar Respaldos</span>
+                    </label>
+                </div>
+
+                <p style="font-size:.8rem; color:#6b7280; margin-top:10px;">
+                    Los respaldos se crean automáticamente según la frecuencia
+                    configurada y se mantendrán durante el período de retención.
+                </p>
+            </div>
+
+            <div class="settings-block">
+                <div class="settings-block__title">Acciones de Respaldo</div>
+                <div style="display:flex; gap:8px; margin-top:6px;">
+                    <button class="btn btn--secondary" type="button">
+                        ⬆ Crear Respaldo Manual
+                    </button>
+                    <button class="btn btn--secondary" type="button">
+                        ⬇ Restaurar desde Respaldo
+                    </button>
+                </div>
+            </div>
+
+            <div class="danger-zone">
+                <div>
+                    <div class="danger-zone__title">Zona de Peligro</div>
+                    <div class="danger-zone__caption">
+                        Eliminar todos los respaldos existentes y restaurar configuración.
+                    </div>
+                </div>
+                <button class="btn btn--danger" type="button">
+                    Restaurar Configuración
+                </button>
+            </div>
+        </article>
+    </section>
+
+    <!-- ====== AUDITORÍA ====== -->
+    <section id="cfgAuditoria" style="margin-top:16px;">
+        <article class="card settings-section">
+            <div class="settings-block">
+                <div class="settings-block__title">
+                    Registro de Auditoría
+                </div>
+                <div class="settings-block__caption">
+                    Historial de acciones y eventos del sistema Griver.
+                </div>
+
+                <div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
+                    <select class="form-select" style="max-width:180px;">
+                        <option>Todos los eventos</option>
+                        <option>HIGH</option>
+                        <option>MEDIUM</option>
+                        <option>LOW</option>
+                    </select>
+                </div>
+
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    @foreach (var log in Model.AuditLogs)
+                    {
+                        <article class="course-card">
+                            <div style="display:flex; justify-content:space-between; gap:12px;">
+                                <div>
+                                    <span class="badge @(log.Severity == "HIGH" ? "badge--red" : log.Severity == "MEDIUM" ? "badge--orange" : "badge--gray")">
+                                        @log.Severity
+                                    </span>
+                                    <span style="margin-left:6px; font-weight:600;">
+                                        @log.Title
+                                    </span>
+                                    <div style="font-size:.82rem; color:#6b7280; margin-top:2px;">
+                                        @log.Description
+                                    </div>
+                                </div>
+                                <div style="font-size:.78rem; color:#6b7280; text-align:right;">
+                                    @log.DateTime
+                                </div>
+                            </div>
+                            <div style="font-size:.78rem; color:#6b7280; margin-top:4px;">
+                                👤 @log.UserName · 📧 @log.UserEmail
+                            </div>
+                        </article>
+                    }
+                </div>
+            </div>
+
+            <div class="danger-zone">
+                <div>
+                    <div class="danger-zone__title">Zona de Peligro</div>
+                    <div class="danger-zone__caption">
+                        Borrar el historial de auditoría de forma irreversible.
+                    </div>
+                </div>
+                <button class="btn btn--danger" type="button">
+                    Limpiar Auditoría
+                </button>
+            </div>
+        </article>
+    </section>
+</section>

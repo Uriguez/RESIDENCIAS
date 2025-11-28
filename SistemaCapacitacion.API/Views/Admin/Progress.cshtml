@@ -1,0 +1,140 @@
+﻿@{
+    ViewData["Title"] = "Progreso de Cursos";
+    ViewBag.ActiveNav = "progress";
+}
+
+<section>
+    <h1 class="admin-page-title">Progreso de Cursos</h1>
+    <p class="admin-page-subtitle">
+        Seguimiento detallado del progreso de usuarios en los cursos Griver.
+    </p>
+
+    <!-- Resumen de progreso -->
+    <div class="metric-grid">
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">📝</span>
+                <span>Total Inscripciones</span>
+            </div>
+            <div class="metric-card__value">@Model.TotalEnrollments</div>
+            <div class="metric-card__delta">Todas las inscripciones</div>
+        </article>
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">✅</span>
+                <span>Completados</span>
+            </div>
+            <div class="metric-card__value">@Model.Completed</div>
+            <div class="metric-card__delta">@Model.CompletedPercent% del total</div>
+        </article>
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">⏳</span>
+                <span>En Progreso</span>
+            </div>
+            <div class="metric-card__value">@Model.InProgress</div>
+            <div class="metric-card__delta">@Model.InProgressPercent% del total</div>
+        </article>
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">⚠</span>
+                <span>Vencidos</span>
+            </div>
+            <div class="metric-card__value">@Model.Expired</div>
+            <div class="metric-card__delta">Requieren atención</div>
+        </article>
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">☐</span>
+                <span>No Iniciados</span>
+            </div>
+            <div class="metric-card__value">@Model.NotStarted</div>
+            <div class="metric-card__delta">Sin actividad</div>
+        </article>
+        <article class="card metric-card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon">📈</span>
+                <span>Progreso Promedio</span>
+            </div>
+            <div class="metric-card__value">@Model.AvgProgress%</div>
+            <div class="metric-card__delta">General del sistema</div>
+        </article>
+    </div>
+
+    <!-- Filtros -->
+    <div class="admin-section-header" style="margin-top:16px;">
+        <div style="flex:1; max-width:420px;">
+            <input class="form-input"
+                   placeholder="Buscar por curso, usuario o departamento..."
+                   name="BuscarProgreso" />
+        </div>
+    </div>
+    <div class="filters-bar">
+        <span style="font-size:.8rem; color:#6b7280;">Estado:</span>
+        <button class="filter-chip filter-chip--active" type="button">Todos</button>
+        <button class="filter-chip" type="button">Completados</button>
+        <button class="filter-chip" type="button">En Progreso</button>
+        <button class="filter-chip" type="button">Vencidos</button>
+        <button class="filter-chip" type="button">No Iniciados</button>
+    </div>
+
+    <!-- Progreso detallado -->
+    <h2 class="admin-section-title" style="margin-top:10px;">
+        Progreso Detallado (@Model.Items.Count)
+    </h2>
+
+    <div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:8px;">
+        @foreach (var p in Model.Items)
+        {
+            <article class="progress-card">
+                <div class="progress-card__header">
+                    <div>
+                        <div class="progress-card__title">@p.CourseName</div>
+                        <div style="margin-top:4px; display:flex; gap:6px; flex-wrap:wrap;">
+                            <span class="badge badge--blue">@p.UserName</span>
+                            <span style="font-size:.78rem; color:#6b7280;">
+                                @p.Department
+                            </span>
+                            @if (p.Status == "Completado")
+                            {
+                                <span class="badge badge--green">Completado</span>
+                            }
+                            else if (p.Status == "En Progreso")
+                            {
+                                <span class="badge badge--blue">En Progreso</span>
+                            }
+                            else if (p.Status == "Vencido")
+                            {
+                                <span class="badge badge--red">Vencido</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge--gray">No Iniciado</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:6px;">
+                    <div style="display:flex; justify-content:space-between; font-size:.8rem; color:#6b7280;">
+                        <span>Progreso</span>
+                        <span>@p.ProgressPercent%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-bar__fill"
+                             style="width:@p.ProgressPercent%"></div>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; font-size:.78rem; color:#6b7280; margin-top:6px;">
+                    <span>Tiempo invertido: @p.TimeSpent</span>
+                    <span>Tiempo restante: @p.TimeRemaining</span>
+                    <span>Inscrito: @p.EnrolledAt.ToShortDateString()</span>
+                    <span>Fecha límite: @p.Deadline.ToShortDateString()</span>
+                    <span>Completado: @p.CompletedAtText</span>
+                    <span>Última actividad: @p.LastActivity.ToShortDateString()</span>
+                </div>
+            </article>
+        }
+    </div>
+</section>
