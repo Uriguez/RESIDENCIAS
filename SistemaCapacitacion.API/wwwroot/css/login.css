@@ -1,0 +1,161 @@
+/* =========================================
+   PALETA OFICIAL (primer imagen)
+   ========================================= */
+:root {
+    --naranja-griver: #F15A29;
+    --azul-medio: #004C97;
+    --azul-oscuro: #003B73;
+    --azul-overlay: #0A2F5A;
+    --gris-input: #E9ECEF;
+    --texto: #2B2B2B;
+}
+
+
+/* =========================================
+   FONDO CON DEGRADADO + IMAGEN DIFUMINADA
+   ========================================= */
+.login-bg {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 10px;
+    background: linear-gradient( to bottom, #F15A29 0%, #F15A29 10%, #004C97 55%, #003B73 100% );
+    position: relative;
+    overflow: hidden;
+}
+
+    .login-bg::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('/img/FONDO.png');
+        opacity: 0.28;
+        filter: blur(6px);
+        z-index: 0;
+    }
+
+    .login-bg * {
+        position: relative;
+        z-index: 1;
+    }
+
+
+/* =========================================
+   TARJETA DEL LOGIN
+   ========================================= */
+.auth-card {
+    width: 420px;
+    background: #ffffff;
+    border-radius: 18px;
+    padding-top: 40px;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.18), 0px 0px 12px rgba(0, 0, 0, 0.10);
+}
+
+
+/* =========================================
+   LOGO EN RECUADRO — VERSIÓN IGUAL A LA IMAGEN
+   ========================================= */
+.brand {
+    width: 180px;
+    background: #ffffff;
+    padding: 22px 28px;
+    border-radius: 24px;
+    /* Sombra estilo suave y moderno */
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15), 0 2px 6px rgba(0,0,0,0.10);
+    margin: 0 auto 20px auto;
+}
+
+    .brand img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
+
+
+/* =========================================
+   TEXTOS
+   ========================================= */
+h4 strong {
+    color: var(--azul-oscuro);
+    font-weight: 700;
+}
+
+.text-muted {
+    color: #6e7885 !important;
+}
+
+
+/* =========================================
+   CAMPOS DE TEXTO
+   ========================================= */
+.input-group-text {
+    background-color: #f3f4f6;
+    border: 1px solid #d4d9e2;
+    border-right: none;
+    font-size: 1.2rem;
+    color: #667085;
+}
+
+.form-control {
+    background: #f3f4f6;
+    border: 1px solid #d4d9e2;
+    border-left: none;
+    padding: 12px 14px;
+    font-size: 15px;
+    border-radius: 0 12px 12px 0 !important;
+}
+
+    .form-control:focus {
+        border-color: var(--naranja-griver);
+        box-shadow: 0 0 6px rgba(241, 90, 41, 0.40);
+    }
+
+
+/* =========================================
+   BOTÓN PRINCIPAL
+   ========================================= */
+.btn-primary {
+    background-color: var(--azul-oscuro) !important;
+    border: none !important;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 10px !important;
+    font-weight: 600;
+    transition: all .20s ease-in-out;
+}
+
+    .btn-primary:hover {
+        background-color: var(--naranja-griver) !important;
+        transform: translateY(-1px);
+    }
+
+
+/* =========================================
+   CHECKBOX Y ENLACES
+   ========================================= */
+.form-check-input:checked {
+    background-color: var(--naranja-griver) !important;
+    border-color: var(--naranja-griver) !important;
+}
+
+a {
+    color: var(--naranja-griver);
+}
+
+    a:hover {
+        color: var(--azul-oscuro);
+    }
+
+
+/* =========================================
+   COPYRIGHT
+   ========================================= */
+.auth-card p.small {
+    color: #7d8595;
+    margin-top: 20px;
+    font-size: 12px;
+}

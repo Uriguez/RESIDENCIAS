@@ -62,10 +62,10 @@ namespace SistemaCapacitacion.API.Controllers
                     stats => stats.CourseId,
                     c => c.IdCourse,
                     (stats, c) => new CourseRankDto(
-                        Title: c.Title ?? "Curso",
-                        Category: (c.Category != null ? c.Category.Name : "General"),
-                        Completed: stats.Completed,
-                        Enrolled: stats.Enrolled
+                        c.Title ?? "Curso",                                       
+                        (c.Category != null ? c.Category.Name : "General"),       
+                        stats.Completed,                                       
+                        stats.Enrolled                                       
                     )
                 )
                 .ToListAsync();
