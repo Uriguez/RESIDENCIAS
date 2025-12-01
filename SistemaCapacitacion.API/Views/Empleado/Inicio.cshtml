@@ -9,13 +9,16 @@
         <p class="text-blue-100 text-lg">Tienes <span class="font-bold text-white">@ViewBag.PendingCourses cursos pendientes</span> por completar este mes.</p>
 
         <div class="mt-6 flex gap-4">
-            <button class="bg-white text-[#1a365d] px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition">
-                Continuar aprendiendo
-            </button>
-            <button class="bg-white/20 text-white px-6 py-2 rounded-lg font-semibold hover:bg-white/30 transition">
-                Ver catálogo
-            </button>
-        </div>
+    <a asp-controller="Courses" asp-action="MyCourses"
+       class="bg-white text-[#1a365d] px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition">
+        Continuar aprendiendo
+    </a>
+
+    <a asp-controller="Courses" asp-action="Catalog"
+       class="bg-white/20 text-white px-6 py-2 rounded-lg font-semibold hover:bg-white/30 transition">
+        Ver catálogo
+    </a>
+</div>
     </div>
 </div>
 
