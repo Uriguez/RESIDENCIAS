@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Security.Claims;
 using SistemaCapacitacion.Core.ViewModels;
 using SistemaCapacitacion.Data;
+using SistemaCapacitacion.Data.Entities;
+using System.Security.Claims;
 
 namespace SistemaCapacitacion.API.Controllers;
 
-[AllowAnonymous]
+[Authorize] // Todo el controlador requiere login salvo donde se marque AllowAnonymous
 public class AccountController : Controller
 {
     private readonly ApplicationDbContext _db;
@@ -21,6 +22,7 @@ public class AccountController : Controller
         _env = env;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {
@@ -28,6 +30,7 @@ public class AccountController : Controller
         return View(new LoginViewModel());
     }
 
+    [AllowAnonymous]
     [ValidateAntiForgeryToken]
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel vm, string? returnUrl = null)
@@ -53,14 +56,13 @@ public class AccountController : Controller
             return View(vm);
         }
 
-
-        // 3) Resolver rol por el puesto (Position) o lo que definas
+        // Resolver rol por el puesto (Position)
         string role = "Employee";
         var pos = (user.Position ?? "").ToLowerInvariant();
         if (pos.Contains("admin")) role = "Admin";
         else if (pos.Contains("recursos humanos") || pos.Contains("rh")) role = "RH";
 
-        // 4) Crear cookie de autenticación
+        // Crear cookie de autenticación
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.IdUser.ToString()),
@@ -80,14 +82,14 @@ public class AccountController : Controller
 
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, props);
 
-        // 5) Redirección por rol
+        // Redirección por rol
         if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             return Redirect(returnUrl);
 
         return role switch
         {
             "Admin" => RedirectToAction("Dashboard", "Admin"),
-            "RH" => RedirectToAction("Inicio", "Admin"),     // o tu panel de RH si es distinto
+            "RH" => RedirectToAction("Dashboard", "Admin"),
             _ => RedirectToAction("Inicio", "Empleado")
         };
     }
@@ -100,5 +102,62 @@ public class AccountController : Controller
         return RedirectToAction(nameof(Login));
     }
 
-    public IActionResult Denied() => View(); // opcional crear una vista simple
+    [AllowAnonymous]
+    public IActionResult Denied() => View();
+
+    // ================== PERFIL ==================
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+
+
+    public async Task<IActionResult> UpdateProfile(EditProfileViewModel model)
+    {
+        var idStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(idStr, out var idUser))
+            return RedirectToAction(nameof(Login));
+
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.IdUser == idUser);
+        if (user == null)
+            return RedirectToAction(nameof(Login));
+
+        // ... (Tu lógica de nombre y departamento sigue igual) ...
+
+        // ===== Foto de perfil (CORREGIDO) =====
+        // Usamos model.NewPhoto en lugar de la variable 'photo'
+        if (model.NewPhoto is not null && model.NewPhoto.Length > 0)
+        {
+            var uploadsRoot = Path.Combine(_env.WebRootPath, "uploads", "avatars");
+            if (!Directory.Exists(uploadsRoot))
+                Directory.CreateDirectory(uploadsRoot);
+
+            // Opcional: Borrar foto anterior para no llenar el servidor
+            if (!string.IsNullOrEmpty(user.PhotoUrl))
+            {
+                var oldPath = Path.Combine(_env.WebRootPath, user.PhotoUrl.TrimStart('/'));
+                if (System.IO.File.Exists(oldPath))
+                {
+                    System.IO.File.Delete(oldPath);
+                }
+            }
+
+            var ext = Path.GetExtension(model.NewPhoto.FileName);
+            // Usamos GUID para evitar problemas de caché en el navegador
+            var fileName = $"{user.IdUser}_{Guid.NewGuid()}{ext}";
+            var filePath = Path.Combine(uploadsRoot, fileName);
+
+            using (var stream = System.IO.File.Create(filePath))
+            {
+                await model.NewPhoto.CopyToAsync(stream);
+            }
+
+            user.PhotoUrl = $"/uploads/avatars/{fileName}";
+        }
+
+        await _db.SaveChangesAsync();
+
+    // Vuelves al dashboard (o a donde prefieras)
+    return RedirectToAction("Dashboard", "Admin");
+}
+
 }

@@ -78,3 +78,33 @@
         });
     });
 });
+
+// ---- Modal de perfil ----
+(function () {
+    const modal = document.getElementById('profileModal');
+    if (!modal) return;
+
+    const openBtns = document.querySelectorAll('[data-open-profile-modal]');
+    const closeBtns = modal.querySelectorAll('[data-profile-close]');
+
+    openBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.classList.add('modal--open');
+        });
+    });
+
+    closeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            modal.classList.remove('modal--open');
+        });
+    });
+
+    // cerrar haciendo clic en el fondo oscuro
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('modal--open');
+        }
+    });
+})();
+

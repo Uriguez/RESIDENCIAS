@@ -1,7 +1,65 @@
-﻿@{
+﻿@using SistemaCapacitacion.Core.ViewModels
+@using Microsoft.AspNetCore.Mvc.Rendering
+@inject SistemaCapacitacion.Data.ApplicationDbContext Db
+
+@{
     Layout = null;
     var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
     var action = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+
+    // ===== ViewModel del perfil para el modal =====
+    var profileVm = new EditProfileViewModel();
+
+    var claimId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    if (Guid.TryParse(claimId, out var idUser))
+    {
+        // Ajusta el nombre de la entidad y propiedades si difieren
+        var user = Db.Users.FirstOrDefault(u => u.IdUser == idUser);
+
+        if (user != null)
+        {
+            // Cargar departamentos activos desde dbo.Department
+            var departments = Db.Departments
+                .Where(d => d.IsActive == true)
+                .OrderBy(d => d.Name)
+                .ToList();
+
+            int? currentDeptId = null;
+            string currentDeptName = string.Empty;
+
+            // Suponiendo que tu tabla User tiene la columna IdDepartment (FK)
+            currentDeptId = user.DepartmentId;
+
+            if (currentDeptId.HasValue)
+            {
+                currentDeptName = departments
+                    .FirstOrDefault(d => d.IdDepartment == currentDeptId.Value)?.Name ?? string.Empty;
+            }
+
+            profileVm = new EditProfileViewModel
+            {
+                UserId = user.IdUser.ToString(),
+                FullName = $"{user.FirstName} {user.LastName}".Trim(),
+                Email = user.Email ?? string.Empty,
+                // Si tienes un sistema de roles más avanzado, cambia este valor
+                Role = "Administrador",
+                DepartmentId = currentDeptId,
+                Department = currentDeptName,
+                IsActive = user.Status == "Active" || user.Status == "Activo",
+                // De momento no usamos foto almacenada, así que la dejamos null
+                CurrentPhotoUrl = user.PhotoUrl   // <--- AQUI
+            };
+
+            profileVm.Departments = departments
+                .Select(d => new SelectListItem
+                {
+                    Value = d.IdDepartment.ToString(),
+                    Text = d.Name,
+                    Selected = currentDeptId.HasValue && currentDeptId.Value == d.IdDepartment
+                })
+                .ToList();
+        }
+    }
 }
 
 <!doctype html>
@@ -14,7 +72,8 @@
     <!-- Bootstrap (opcional, por si lo usas en formularios/tablas) -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
-
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined"
+          rel="stylesheet" />
     <!-- Estilos globales del sitio -->
     <link rel="stylesheet" href="~/css/site.css" />
     <!-- Estilos del panel admin que ya tienes (admin.css) -->
@@ -31,7 +90,7 @@
             <div class="admin-sidebar__brand">
                 <div class="admin-sidebar__brand-logo">
                     <!-- Ajusta la ruta del logo a la que tengas -->
-                    <img src="~/img/griver-logo.png" alt="Griver" />
+                    <img src="~/img/logo.jpg" alt="Griver" />
                 </div>
                 <div class="admin-sidebar__brand-text">
                     <span class="admin-sidebar__brand-title">Griver</span>
@@ -43,7 +102,7 @@
 
             <div class="admin-sidebar__role-chip">
                 <span class="admin-nav__icon">👤</span>
-                Administrador
+                @profileVm.Role
             </div>
 
             <!-- MENÚ PRINCIPAL -->
@@ -64,44 +123,18 @@
                     </a>
                 </li>
                 <li class="admin-nav__item">
-                    <a class="admin-nav__link @(controller == "Admin" & action == "Users" ? "admin-nav__link--active" : "")"
+                    <a class="admin-nav__link @(controller == "Admin" && action == "Users" ? "admin-nav__link--active" : "")"
                        asp-controller="Admin" asp-action="Users">
                         <span class="admin-nav__icon">👥</span>
                         <span>Gestión de Usuarios</span>
                     </a>
                 </li>
                 <li class="admin-nav__item">
-                    <a class="admin-nav__link @(controller == "Progress" ? "admin-nav__link--active" : "")"
-                       asp-controller="Progress" asp-action="Index">
+                    <a class="admin-nav__link @(controller == "Admin" && action == "Analytics" ? "admin-nav__link--active" : "")"
+                       asp-controller="Admin" asp-action="Analytics">
                         <span class="admin-nav__icon">📈</span>
-                        <span>Progreso de Cursos</span>
-                    </a>
-                </li>
-                <li class="admin-nav__item">
-                    <a class="admin-nav__link @(controller == "Analytics" ? "admin-nav__link--active" : "")"
-                       asp-controller="Analytics" asp-action="Index">
-                        <span class="admin-nav__icon">📊</span>
                         <span>Analíticas Avanzadas</span>
                         <span class="badge badge--blue ms-auto">Pro</span>
-                    </a>
-                </li>
-            </ul>
-
-            <!-- SECCIÓN CUENTA (parte inferior) -->
-            <div class="admin-nav__section-label">Cuenta</div>
-            <ul class="admin-nav">
-                <li class="admin-nav__item">
-                    <a class="admin-nav__link @(controller == "Account" && action == "Profile" ? "admin-nav__link--active" : "")"
-                       asp-controller="Account" asp-action="Profile">
-                        <span class="admin-nav__icon">🧑</span>
-                        <span>Mi Perfil</span>
-                    </a>
-                </li>
-                <li class="admin-nav__item">
-                    <a class="admin-nav__link @(controller == "Admin" && action == "Settings" ? "admin-nav__link--active" : "")"
-                       asp-controller="Admin" asp-action="Settings">
-                        <span class="admin-nav__icon">⚙️</span>
-                        <span>Configuración</span>
                     </a>
                 </li>
             </ul>
@@ -114,6 +147,7 @@
                 <div>Griver Corporativo<br />v2.0.0 · 2025</div>
 
                 <form asp-controller="Account" asp-action="Logout" method="post" class="mt-2">
+                    @Html.AntiForgeryToken()
                     <button type="submit"
                             class="btn btn-sm btn-outline-danger w-100">
                         Cerrar sesión
@@ -153,26 +187,40 @@
                 <!-- Perfil administrador -->
                 <div class="admin-topbar__profile" id="profileToggle">
                     <div class="admin-topbar__avatar">
-                        <!-- Ajusta la imagen a tu foto por defecto -->
-                        <img src="~/img/admin-avatar.png" alt="Administrador" />
+                        @if (!string.IsNullOrEmpty(profileVm.CurrentPhotoUrl))
+                        {
+                            <img src="@profileVm.CurrentPhotoUrl" alt="@profileVm.FullName" />
+                        }
+                        else
+                        {
+                            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-weight:600;color:#4b5563;">
+                                @profileVm.FullName.FirstOrDefault()
+                            </div>
+                        }
                     </div>
                 </div>
 
                 <!-- Menú perfil desplegable -->
                 <div class="profile-menu" id="profileMenu">
                     <div class="profile-menu__header">
-                        <div class="profile-menu__name">Administrador Griver</div>
-                        <div class="profile-menu__email">admin@griver.com</div>
-                        <div class="profile-menu__role">Administrador · Administración</div>
+                        <div class="profile-menu__name">@profileVm.FullName</div>
+                        <div class="profile-menu__email">@profileVm.Email</div>
+                        <div class="profile-menu__role">
+                            @profileVm.Role@if (!string.IsNullOrEmpty(profileVm.Department)) {
+                            @($" · {profileVm.Department}")
+                                                        }
+                        </div>
                     </div>
                     <ul class="profile-menu__list">
                         <li class="profile-menu__item">
-                            <a class="profile-menu__link"
-                               asp-controller="Account" asp-action="Profile">
-                                <span>👤</span>
+                            <button type="button"
+                                    class="profile-menu__link"
+                                    data-open-profile-modal>
+                                <span class="material-icons-outlined">person</span>
                                 <span>Mi Perfil</span>
-                            </a>
+                            </button>
                         </li>
+
                         <li class="profile-menu__item">
                             <a class="profile-menu__link"
                                asp-controller="Admin" asp-action="Settings">
@@ -182,6 +230,7 @@
                         </li>
                         <li class="profile-menu__item">
                             <form asp-controller="Account" asp-action="Logout" method="post">
+                                @Html.AntiForgeryToken()
                                 <button type="submit"
                                         class="profile-menu__link profile-menu__link--danger">
                                     <span>🚪</span>
@@ -222,15 +271,22 @@
         </div>
     </div>
 
+    <!-- ======== MODAL DE PERFIL (partial) ======== -->
+    @await Html.PartialAsync("_ProfileModal", profileVm)
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         // Reloj en la barra superior
         const clockEl = document.getElementById('adminClock');
+
         if (clockEl) {
             const tick = () => {
                 const now = new Date();
-                clockEl.textContent = now.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+                clockEl.textContent = now.toLocaleTimeString('es-MX', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
             };
             tick();
             setInterval(tick, 60000);
@@ -268,8 +324,60 @@
                 notificationsPanel.classList.remove('notifications-panel--open');
             });
         }
+
+        // ===== Modal de perfil (abrir/cerrar) =====
+        const profileModal        = document.getElementById('profileModal');
+        const openProfileButtons  = document.querySelectorAll('[data-open-profile-modal]');
+        const closeProfileButtons = document.querySelectorAll('[data-profile-close]');
+
+        if (profileModal) {
+            openProfileButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    profileModal.classList.add('modal--open');
+                    if (profileMenu) profileMenu.classList.remove('profile-menu--open');
+                });
+            });
+
+            closeProfileButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    profileModal.classList.remove('modal--open');
+                });
+            });
+
+            profileModal.addEventListener('click', (e) => {
+                if (e.target === profileModal) {
+                    profileModal.classList.remove('modal--open');
+                }
+            });
+        }
+
+        // ===== Previsualización de foto de perfil =====
+        const photoInput = document.getElementById('NewPhoto');          // <-- simple y directo
+        const avatarImg  = document.getElementById('profileAvatarPreview');
+        const avatarInit = document.getElementById('profileAvatarInitial');
+
+        if (photoInput && avatarImg) {
+            photoInput.addEventListener('change', function (e) {
+                const files = e.target.files;
+                if (!files || files.length === 0) return;
+
+                const file = files[0];
+                const reader = new FileReader();
+
+                reader.onload = function (ev) {
+                    avatarImg.src = ev.target.result;
+                    avatarImg.style.display = 'block';
+                    if (avatarInit) {
+                        avatarInit.style.display = 'none';
+                    }
+                };
+
+                reader.readAsDataURL(file);
+            });
+        }
     </script>
 
     @RenderSection("Scripts", required: false)
 </body>
 </html>
+

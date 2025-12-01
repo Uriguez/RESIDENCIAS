@@ -7,10 +7,10 @@
     <header class="dashboard-hero">
         <div>
             <h1 class="dashboard-hero__title">Dashboard Griver</h1>
-            <p class="dashboard-hero__subtitle">
+            <p class="admin-subtitle">
                 Bienvenido, Administrador Griver · Administrador
             </p>
-            <div class="dashboard-hero__meta">
+            <div class="admin-subtitle">
                 <span>Resumen general del sistema de capacitación empresarial</span>
 
                 <span class="status-chip">
@@ -93,10 +93,10 @@
                 <p class="card__subtitle">Últimas acciones en el sistema de capacitación Griver.</p>
             </header>
 
-            <ul class="activity-list">
-                @if (Model.RecentActivities != null && Model.RecentActivities.Any())
-                {
-                    foreach (var item in Model.RecentActivities)
+            @if (Model.RecentActivities != null && Model.RecentActivities.Any())
+            {
+                <ul class="activity-list">
+                    @foreach (var item in Model.RecentActivities)
                     {
                         <li class="activity-item">
                             <div class="activity-item__left">
@@ -110,21 +110,20 @@
                             </div>
                         </li>
                     }
-                }
-                else
-                {
-                    <li class="activity-item">
-                        <div class="activity-item__content">
-                            <div class="activity-item__title">
-                                No hay registros recientes de actividad.
-                            </div>
-                            <div class="activity-item__meta">
-                                Cuando existan acciones en el sistema aparecerán aquí.
-                            </div>
+                </ul>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <span class="empty-state__icon material-icons-outlined">timeline</span>
+                    <div>
+                        <div class="empty-state__title">No hay registros recientes de actividad.</div>
+                        <div class="empty-state__text">
+                            Cuando existan acciones en el sistema aparecerán aquí.
                         </div>
-                    </li>
-                }
-            </ul>
+                    </div>
+                </div>
+            }
         </article>
 
         <!-- Cursos más populares -->
@@ -172,12 +171,13 @@
                 else
                 {
                     <li class="top-course-item">
-                        <div class="top-course-item__info">
-                            <div class="top-course-item__title">
-                                Aún no hay cursos con suficientes datos.
-                            </div>
-                            <div class="top-course-item__meta-text">
-                                Cuando existan inscripciones y finalizaciones se mostrará el ranking aquí.
+                        <div class="empty-state">
+                            <span class="empty-state__icon material-icons-outlined">insights</span>
+                            <div>
+                                <div class="empty-state__title">Aún no hay cursos con suficientes datos.</div>
+                                <div class="empty-state__text">
+                                    Cuando existan inscripciones y finalizaciones se mostrará el ranking aquí.
+                                </div>
                             </div>
                         </div>
                     </li>

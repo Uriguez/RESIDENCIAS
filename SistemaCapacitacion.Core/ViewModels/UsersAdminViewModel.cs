@@ -30,6 +30,8 @@ namespace SistemaCapacitacion.Core.ViewModels
         // Porcentaje de progreso general del usuario
         public double ProgressPercent { get; set; }
         public DateTime? LastActivity { get; set; }               // Última actividad
+
+        public string? PhotoUrl { get; set; } // <--- AGREGA ESTO
     }
 
     public class UsersAdminViewModel

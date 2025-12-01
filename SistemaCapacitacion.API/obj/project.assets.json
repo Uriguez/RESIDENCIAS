@@ -1176,7 +1176,10 @@
         },
         "runtime": {
           "bin/placeholder/SistemaCapacitacion.Core.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       },
       "SistemaCapacitacion.Data/1.0.0": {
         "type": "project",

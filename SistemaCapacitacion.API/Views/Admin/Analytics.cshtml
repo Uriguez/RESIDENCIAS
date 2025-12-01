@@ -1,209 +1,469 @@
-﻿@{
-    ViewData["Title"] = "Analíticas Avanzadas";
-    ViewBag.ActiveNav = "analytics";
+﻿@model SistemaCapacitacion.Core.ViewModels.AdvancedAnalyticsViewModel
+@using System.Text.Json
+
+@{
+    ViewData["Title"] = "Analíticas avanzadas";
+    Layout = "~/Views/_LayoutAdmin.cshtml";
 }
 
-<section>
-    <h1 class="admin-page-title">Analíticas Avanzadas</h1>
-    <p class="admin-page-subtitle">
-        Análisis profundo del rendimiento del sistema de capacitación Griver.
-    </p>
+<div class="admin-main-section dashboard-wrapper">
 
-    <!-- Métricas superiores -->
-    <div class="metric-grid">
-        <article class="card metric-card">
-            <div class="metric-card__label">
-                <span class="metric-card__icon">👥</span>
-                <span>Usuarios Activos</span>
-            </div>
-            <div class="metric-card__value">@Model.ActiveUsers</div>
-            <div class="metric-card__delta metric-card__delta--up">
-                ↑ @Model.ActiveUsersDelta% vs mes anterior
-            </div>
-        </article>
-        <article class="card metric-card">
-            <div class="metric-card__label">
-                <span class="metric-card__icon">✅</span>
-                <span>Tasa de Finalización</span>
-            </div>
-            <div class="metric-card__value">@Model.CompletionRate%</div>
-            <div class="metric-card__delta metric-card__delta--down">
-                @Model.CompletionDeltaText
-            </div>
-        </article>
-        <article class="card metric-card">
-            <div class="metric-card__label">
-                <span class="metric-card__icon">⭐</span>
-                <span>Satisfacción Promedio</span>
-            </div>
-            <div class="metric-card__value">@Model.AvgRating/5</div>
-            <div class="metric-card__delta">
-                @Model.RatingDeltaText
-            </div>
-        </article>
-        <article class="card metric-card">
-            <div class="metric-card__label">
-                <span class="metric-card__icon">⏱</span>
-                <span>Horas de Aprendizaje</span>
-            </div>
-            <div class="metric-card__value">@Model.LearningHours h</div>
-            <div class="metric-card__delta metric-card__delta--up">
-                @Model.LearningDeltaText
-            </div>
-        </article>
-    </div>
-
-    <!-- Filtros temporales -->
-    <div class="admin-section-header">
+    <!-- Encabezado -->
+    <div class="dashboard-header">
         <div>
-            <div class="tabs">
-                <button class="tabs__button tabs__button--active" type="button">
-                    Resumen General
-                </button>
-                <button class="tabs__button" type="button">
-                    Análisis por Curso
-                </button>
-                <button class="tabs__button" type="button">
-                    Por Departamento
-                </button>
-                <button class="tabs__button" type="button">
-                    Progreso Temporal
-                </button>
-            </div>
+            <h1 class="admin-page-title">Analíticas Avanzadas</h1>
+            <p class="admin-page-subtitle">
+                Análisis profundo del rendimiento del sistema de capacitación Griver.
+            </p>
         </div>
-        <div style="display:flex; gap:8px;">
+        <div class="filters-bar">
             <button class="btn btn--secondary" type="button">
-                Últimos 6 meses
+                <span>Últimos 6 meses</span>
             </button>
-            <button class="btn btn--secondary" type="button">
-                ⬇ Exportar
+            <button class="btn btn--primary" type="button">
+                <span class="material-icons-outlined" style="font-size:18px;">download</span>
+                Exportar
             </button>
         </div>
     </div>
 
-    <!-- CONTENIDO DE LAS PESTAÑAS (puedes controlar visibilidad con JS) -->
-    <!-- TAB: Resumen General -->
-    <section id="tabResumenGeneral">
-        <div class="analytics-grid-2">
-            <article class="analytics-chart-card">
-                <div class="admin-section-title">
-                    Inscripciones vs Finalizaciones
-                </div>
-                <div class="admin-section-caption">
-                    Comparación mensual de inscripciones y cursos completados.
-                </div>
-                <div class="chart-placeholder">
-                    <!-- Aquí irá tu gráfico real (Chart.js / Highcharts) -->
-                </div>
-            </article>
-            <article class="analytics-chart-card">
-                <div class="admin-section-title">
-                    Crecimiento de Usuarios
-                </div>
-                <div class="admin-section-caption">
-                    Evolución del número de usuarios activos.
-                </div>
-                <div class="chart-placeholder"></div>
-            </article>
+    <!-- Tarjetas superiores -->
+    <div class="metric-grid">
+        <div class="metric-card card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon material-icons-outlined">people</span>
+                Usuarios Activos
+            </div>
+            <div class="metric-card__value">@Model.ActiveUsersLast30Days</div>
+            <div class="metric-card__delta">
+                @if (Model.TotalUsers > 0)
+                {
+                    <span>@Math.Round((double)Model.ActiveUsersLast30Days / Model.TotalUsers * 100, 1)% del total</span>
+                }
+                else
+                {
+                    <span>Sin usuarios registrados</span>
+                }
+                <br />
+                <span class="metric-card__delta--up">
+                    @Model.ActiveUsersDeltaPercent% (últimos 30 días vs previos)
+                </span>
+            </div>
         </div>
-    </section>
 
-    <!-- TAB: Análisis por Curso -->
-    <section id="tabAnalisisCurso" style="margin-top:18px;">
-        <div class="analytics-grid-2">
-            <article class="analytics-chart-card">
-                <div class="admin-section-title">
-                    Rendimiento por Curso
-                </div>
-                <div class="admin-section-caption">
-                    Inscripciones y finalizaciones por curso.
-                </div>
-                <div class="chart-placeholder"></div>
-            </article>
-            <article class="analytics-chart-card">
-                <div class="admin-section-title">
-                    Satisfacción por Curso
-                </div>
-                <div class="admin-section-caption">
-                    Rating promedio de cada curso.
-                </div>
-                <div class="chart-placeholder"></div>
-            </article>
+        <div class="metric-card card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon material-icons-outlined">check_circle</span>
+                Tasa de finalización
+            </div>
+            <div class="metric-card__value">@Model.GlobalCompletionRate%</div>
+            <div class="metric-card__delta">
+                <span class="metric-card__delta--up">
+                    @Model.CompletionDeltaPercent% vs período anterior
+                </span>
+            </div>
         </div>
-    </section>
 
-    <!-- TAB: Por Departamento -->
-    <section id="tabPorDepartamento" style="margin-top:18px;">
-        <div class="analytics-grid-2">
-            <article class="analytics-chart-card">
-                <div class="admin-section-title">
-                    Participación por Departamento
+        <div class="metric-card card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon material-icons-outlined">star_rate</span>
+                Satisfacción promedio
+            </div>
+            <div class="metric-card__value">
+                @Model.AverageScore.ToString("0.0")/100
+            </div>
+            <div class="metric-card__delta">
+                <span class="metric-card__delta--up">
+                    @Model.ScoreDeltaPercent% vs período anterior
+                </span>
+            </div>
+        </div>
+
+        <div class="metric-card card">
+            <div class="metric-card__label">
+                <span class="metric-card__icon material-icons-outlined">schedule</span>
+                Horas de aprendizaje
+            </div>
+            <div class="metric-card__value">
+                @Model.TotalLearningHours.ToString("0.0") h
+            </div>
+            <div class="metric-card__delta">
+                <span class="metric-card__delta--up">
+                    @Model.LearningHoursDeltaPercent% vs período anterior
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tabs__button tabs__button--active" type="button" data-tab-target="tab-resumen">
+            Resumen General
+        </button>
+        <button class="tabs__button" type="button" data-tab-target="tab-curso">
+            Análisis por Curso
+        </button>
+        <button class="tabs__button" type="button" data-tab-target="tab-departamento">
+            Por Departamento
+        </button>
+        <button class="tabs__button" type="button" data-tab-target="tab-temporal">
+            Progreso Temporal
+        </button>
+    </div>
+
+    <!-- TAB 1: Resumen general -->
+    <div id="tab-resumen" class="tab-panel tab-panel--active">
+        <div class="dashboard-row dashboard-row--split">
+            <div class="card analytics-chart-card">
+                <div class="admin-section-header">
+                    <div>
+                        <div class="admin-section-title">Inscripciones vs Finalizaciones</div>
+                        <div class="admin-section-caption">
+                            Comparación mensual de inscripciones y cursos completados
+                        </div>
+                    </div>
                 </div>
-                <div class="admin-section-caption">
-                    Distribución de usuarios por departamento.
+                <div class="chart-area">
+                    <canvas id="chartEnrollments"></canvas>
                 </div>
-                <div class="chart-placeholder"></div>
-            </article>
-            <article class="analytics-chart-card">
-                <div class="admin-section-title">
-                    Estadísticas por Departamento
+            </div>
+
+            <div class="card analytics-chart-card">
+                <div class="admin-section-header">
+                    <div>
+                        <div class="admin-section-title">Crecimiento de Usuarios</div>
+                        <div class="admin-section-caption">
+                            Evolución del número de usuarios activos
+                        </div>
+                    </div>
                 </div>
-                <div class="admin-section-caption">
-                    Detalle de participación y rendimiento.
+                <div class="chart-area">
+                    <canvas id="chartUserGrowth"></canvas>
                 </div>
-                <ul style="margin-top:10px; font-size:.86rem;">
-                    @foreach (var d in Model.DepartmentsStats)
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: Análisis por curso -->
+    <div id="tab-curso" class="tab-panel">
+        <div class="dashboard-row dashboard-row--split">
+            <div class="card analytics-chart-card">
+                <div class="admin-section-header">
+                    <div>
+                        <div class="admin-section-title">Rendimiento por Curso</div>
+                        <div class="admin-section-caption">
+                            Inscripciones y finalizaciones por curso
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-area">
+                    <canvas id="chartCoursePerformance"></canvas>
+                </div>
+            </div>
+
+            <div class="card analytics-chart-card">
+                <div class="admin-section-header">
+                    <div>
+                        <div class="admin-section-title">Satisfacción por Curso</div>
+                        <div class="admin-section-caption">
+                            Calificación promedio (Score) de cada curso
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-area">
+                    <canvas id="chartCourseScores"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: Por departamento -->
+    <div id="tab-departamento" class="tab-panel">
+        <div class="dashboard-row dashboard-row--split">
+            <div class="card analytics-chart-card">
+                <div class="admin-section-header">
+                    <div>
+                        <div class="admin-section-title">Participación por Departamento</div>
+                        <div class="admin-section-caption">
+                            Distribución de usuarios por departamento
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-area">
+                    <canvas id="chartDeptPie"></canvas>
+                </div>
+            </div>
+
+            <div class="card analytics-chart-card">
+                <div class="admin-section-header">
+                    <div class="admin-section-title">Estadísticas por Departamento</div>
+                </div>
+                <ul class="top-courses-list">
+                    @foreach (var d in Model.DepartmentParticipation)
                     {
-                        <li style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid #e5e7eb;">
-                            <span>@d.Name (@d.Users usuarios)</span>
-                            <span>@d.ParticipationPercent% participación</span>
+                        <li class="top-course-item">
+                            <div class="top-course-item__left">
+                                <div class="top-course-item__rank">@d.Percent.ToString("0.0")%</div>
+                                <div class="top-course-item__info">
+                                    <div class="top-course-item__title">@d.DepartmentName</div>
+                                    <div class="top-course-item__meta">
+                                        <span class="top-course-item__meta-text">
+                                            @d.UsersCount usuario(s)
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                    @if (!Model.DepartmentParticipation.Any())
+                    {
+                        <li class="top-course-item__meta-text">
+                            No hay departamentos con usuarios asignados.
                         </li>
                     }
                 </ul>
-            </article>
+            </div>
         </div>
-    </section>
+    </div>
 
-    <!-- TAB: Progreso Temporal -->
-    <section id="tabProgresoTemporal" style="margin-top:18px;">
-        <article class="analytics-chart-card">
-            <div class="admin-section-title">
-                Progreso Promedio Semanal
+    <!-- TAB 4: Progreso temporal -->
+    <div id="tab-temporal" class="tab-panel">
+        <div class="dashboard-row">
+            <div class="card analytics-chart-card">
+                <div class="admin-section-header">
+                    <div>
+                        <div class="admin-section-title">Progreso Promedio Semanal</div>
+                        <div class="admin-section-caption">
+                            Evolución del progreso promedio de todos los usuarios
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-area">
+                    <canvas id="chartWeeklyProgress"></canvas>
+                </div>
             </div>
-            <div class="admin-section-caption">
-                Evolución del progreso promedio de todos los usuarios.
-            </div>
-            <div class="chart-placeholder" style="margin-bottom:16px;"></div>
+        </div>
 
+        <div class="dashboard-row">
             <div class="simple-metrics-grid">
                 <div class="simple-metric">
-                    <div class="simple-metric__label">Esta Semana</div>
+                    <div class="simple-metric__label">Esta semana</div>
                     <div class="simple-metric__value">
-                        @Model.ThisWeekProgress%
+                        @Model.WeeklySummary.ThisWeekPercent.ToString("0.0")%
                     </div>
-                    <div class="metric-card__delta metric-card__delta--up">
-                        +@Model.ThisWeekDelta% vs semana anterior
+                    <div class="admin-section-caption">
+                        Progreso promedio global
                     </div>
                 </div>
                 <div class="simple-metric">
-                    <div class="simple-metric__label">Mejor Semana</div>
+                    <div class="simple-metric__label">Mejor semana</div>
                     <div class="simple-metric__value">
-                        @Model.BestWeekProgress%
+                        @Model.WeeklySummary.BestWeekPercent.ToString("0.0")%
                     </div>
-                    <div class="metric-card__delta">
-                        @Model.BestWeekLabel
+                    <div class="admin-section-caption">
+                        @Model.WeeklySummary.BestWeekLabel
                     </div>
                 </div>
                 <div class="simple-metric">
                     <div class="simple-metric__label">Tendencia</div>
                     <div class="simple-metric__value">
-                        +@Model.TrendPercent%
+                        @(Model.WeeklySummary.TrendPercent >= 0 ? "+" : "")
+                        @Model.WeeklySummary.TrendPercent.ToString("0.0")%
                     </div>
-                    <div class="metric-card__delta metric-card__delta--up">
-                        Tendencia positiva
+                    <div class="admin-section-caption">
+                        Comparada con la semana anterior
                     </div>
                 </div>
+                <div class="simple-metric">
+                    <div class="simple-metric__label">Usuarios totales</div>
+                    <div class="simple-metric__value">@Model.TotalUsers</div>
+                    <div class="admin-section-caption">En el sistema</div>
+                </div>
             </div>
-        </article>
-    </section>
-</section>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // ---- tabs ----
+        const tabButtons = document.querySelectorAll('[data-tab-target]');
+        const tabPanels = document.querySelectorAll('.tab-panel');
+
+        tabButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetId = btn.getAttribute('data-tab-target');
+
+                tabButtons.forEach(b => b.classList.remove('tabs__button--active'));
+                btn.classList.add('tabs__button--active');
+
+                tabPanels.forEach(p => {
+                    if (p.id === targetId) {
+                        p.classList.add('tab-panel--active');
+                    } else {
+                        p.classList.remove('tab-panel--active');
+                    }
+                });
+            });
+        });
+
+        // ---- datos desde el modelo (JSON real) ----
+        const monthlyEnrollLabels = @Html.Raw(JsonSerializer.Serialize(Model.MonthlyEnrollments.Select(m => m.Label)));
+        const monthlyEnrollEnrolled = @Html.Raw(JsonSerializer.Serialize(Model.MonthlyEnrollments.Select(m => m.Enrolled)));
+        const monthlyEnrollCompleted = @Html.Raw(JsonSerializer.Serialize(Model.MonthlyEnrollments.Select(m => m.Completed)));
+
+        const monthlyUserLabels = @Html.Raw(JsonSerializer.Serialize(Model.MonthlyUserGrowth.Select(m => m.Label)));
+        const monthlyUserNew = @Html.Raw(JsonSerializer.Serialize(Model.MonthlyUserGrowth.Select(m => m.NewUsers)));
+        const monthlyUserAccum = @Html.Raw(JsonSerializer.Serialize(Model.MonthlyUserGrowth.Select(m => m.AccumulatedUsers)));
+
+        const coursePerfLabels = @Html.Raw(JsonSerializer.Serialize(Model.CoursePerformance.Select(c => c.CourseTitle)));
+        const coursePerfEnrolled = @Html.Raw(JsonSerializer.Serialize(Model.CoursePerformance.Select(c => c.Enrolled)));
+        const coursePerfCompleted = @Html.Raw(JsonSerializer.Serialize(Model.CoursePerformance.Select(c => c.Completed)));
+
+        const courseScoreLabels = @Html.Raw(JsonSerializer.Serialize(Model.CourseScores.Select(c => c.CourseTitle)));
+        const courseScoreValues = @Html.Raw(JsonSerializer.Serialize(Model.CourseScores.Select(c => c.AverageScore)));
+
+        const deptLabels = @Html.Raw(JsonSerializer.Serialize(Model.DepartmentParticipation.Select(d => d.DepartmentName)));
+        const deptPercents = @Html.Raw(JsonSerializer.Serialize(Model.DepartmentParticipation.Select(d => d.Percent)));
+
+        const weeklyLabels = @Html.Raw(JsonSerializer.Serialize(Model.WeeklyProgress.Select(w => w.Label)));
+        const weeklyValues = @Html.Raw(JsonSerializer.Serialize(Model.WeeklyProgress.Select(w => w.AvgProgressPercent)));
+
+        // ---- Chart: inscripciones vs finalizaciones ----
+        if (document.getElementById('chartEnrollments')) {
+            const ctx1 = document.getElementById('chartEnrollments');
+            new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: monthlyEnrollLabels,
+                    datasets: [
+                        {
+                            label: 'Inscripciones',
+                            data: monthlyEnrollEnrolled
+                        },
+                        {
+                            label: 'Completados',
+                            data: monthlyEnrollCompleted
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // ---- Chart: crecimiento de usuarios ----
+        if (document.getElementById('chartUserGrowth')) {
+            const ctx2 = document.getElementById('chartUserGrowth');
+            new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: monthlyUserLabels,
+                    datasets: [
+                        {
+                            label: 'Usuarios nuevos',
+                            data: monthlyUserNew,
+                            tension: 0.3,
+                            fill: false
+                        },
+                        {
+                            label: 'Acumulado',
+                            data: monthlyUserAccum,
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // ---- Chart: rendimiento por curso ----
+        if (document.getElementById('chartCoursePerformance')) {
+            const ctx3 = document.getElementById('chartCoursePerformance');
+            new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: coursePerfLabels,
+                    datasets: [
+                        { label: 'Inscritos', data: coursePerfEnrolled },
+                        { label: 'Completados', data: coursePerfCompleted }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // ---- Chart: score por curso ----
+        if (document.getElementById('chartCourseScores')) {
+            const ctx4 = document.getElementById('chartCourseScores');
+            new Chart(ctx4, {
+                type: 'bar',
+                data: {
+                    labels: courseScoreLabels,
+                    datasets: [
+                        { label: 'Score promedio', data: courseScoreValues }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // ---- Chart: participación por departamento ----
+        if (document.getElementById('chartDeptPie')) {
+            const ctx5 = document.getElementById('chartDeptPie');
+            new Chart(ctx5, {
+                type: 'pie',
+                data: {
+                    labels: deptLabels,
+                    datasets: [
+                        { data: deptPercents }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+
+        // ---- Chart: progreso semanal ----
+        if (document.getElementById('chartWeeklyProgress')) {
+            const ctx6 = document.getElementById('chartWeeklyProgress');
+            new Chart(ctx6, {
+                type: 'line',
+                data: {
+                    labels: weeklyLabels,
+                    datasets: [
+                        {
+                            label: 'Progreso (%)',
+                            data: weeklyValues,
+                            tension: 0.3,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+    </script>
+}
