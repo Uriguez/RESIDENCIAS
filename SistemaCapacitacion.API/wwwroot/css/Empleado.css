@@ -1,0 +1,140 @@
+/* ============================================================
+   ESTILO PARA SECCIÓN "MIS CURSOS" – IGUAL A LA CAPTURA
+   Tarjetas grandes, sombra suave, bordes redondeados,
+   foto superior, badges de estado y barra de progreso delgada.
+   ============================================================ */
+
+/* GRID */
+.course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+/* CARD */
+.course-card {
+    background: #ffffff;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 8px 24px rgba(15,23,42,.08);
+    display: flex;
+    flex-direction: column;
+    transition: all .15s ease;
+}
+
+    .course-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 18px 42px rgba(15,23,42,.15);
+        border-color: #2b77ad55;
+    }
+
+/* IMAGEN */
+.course-thumb {
+    position: relative;
+    height: 180px;
+}
+
+    .course-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+/* ESTADOS (PILL) */
+.course-status-pill {
+    position: absolute;
+    top: .75rem;
+    right: .75rem;
+    padding: .25rem .65rem;
+    font-size: .75rem;
+    font-weight: 600;
+    border-radius: 999px;
+    color: #fff;
+}
+
+/* COLORES */
+.course-status-completed {
+    background-color: #16a34a;
+}
+
+.course-status-progress {
+    background-color: #2563eb;
+}
+
+.course-status-new {
+    background-color: #9ca3af;
+}
+
+/* BODY */
+.course-body {
+    padding: 1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: .45rem;
+}
+
+.course-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.course-meta {
+    font-size: .85rem;
+    color: #64748b;
+}
+
+/* PROGRESO */
+.course-progress-wrapper {
+    margin-top: .4rem;
+}
+
+.course-progress-label {
+    font-size: .78rem;
+    color: #6b7280;
+    margin-bottom: .25rem;
+}
+
+.progress-track {
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg,#22c55e,#16a34a);
+}
+
+/* FOOTER */
+.course-footer {
+    margin-top: .8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.course-duration {
+    font-size: .8rem;
+    color: #475569;
+}
+
+/* BOTONES */
+.btn-course-primary {
+    border: none;
+    padding: .5rem 1rem;
+    background: #0f172a;
+    color: #fff;
+    font-size: .8rem;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .15s;
+}
+
+    .btn-course-primary:hover {
+        filter: brightness(1.1);
+    }
