@@ -9,8 +9,6 @@
     --gris-input: #E9ECEF;
     --texto: #2B2B2B;
 }
-
-
 /* =========================================
    FONDO CON DEGRADADO + IMAGEN DIFUMINADA
    ========================================= */
@@ -39,6 +37,9 @@
     width: 100%;
     height: 100%;
     background: url('/img/FONDO.png') center center / cover no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     opacity: 0.28;
     filter: blur(6px);
     z-index: 0;
