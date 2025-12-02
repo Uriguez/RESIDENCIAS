@@ -1,25 +1,24 @@
 /* ============================================
-   RESET GENERAL
+   RESET
 =============================================== */
 body {
     margin: 0;
-    background: #f8f9fa;
+    background: #f4f6f9;
     font-family: "Segoe UI", sans-serif;
 }
 
 /* ============================================
-   BARRA SUPERIOR (TOPBAR)
+   TOPBAR
 =============================================== */
-
 .topbar {
     height: 58px;
-    background: #ffffff;
-    border-bottom: 1px solid #dee2e6;
+    background: #0f172a;
+    color: #fff;
+    border-bottom: 1px solid #1e293b;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0 16px;
-    z-index: 1000;
 }
 
 .topbar-left {
@@ -31,43 +30,48 @@ body {
 .menu-icon {
     font-size: 22px;
     cursor: pointer;
-    user-select: none;
 }
 
 .topbar-left .logo {
     height: 28px;
 }
 
-.topbar-user {
-    font-weight: 500;
-    cursor: pointer;
-    position: relative;
+.brand-title {
+    color: #38bdf8;
+    font-weight: 700;
 }
 
-/* Dropdown del usuario */
+.notif-btn {
+    border-color: #475569;
+    color: #fff;
+}
+
+/* Usuario */
+.topbar-user {
+    cursor: pointer;
+    position: relative;
+    font-weight: 500;
+}
+
 .user-dropdown-menu {
     display: none;
     position: absolute;
     right: 0;
     top: 48px;
-    background: #fff;
-    border: 1px solid #dee2e6;
+    background: #ffffff;
     border-radius: 6px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.08);
     min-width: 160px;
-    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0,0,0,.15);
 }
 
 .user-dropdown-menu a {
     display: block;
     padding: 10px 14px;
     color: #333;
-    text-decoration: none;
-    font-size: 14px;
 }
 
 .user-dropdown-menu a:hover {
-    background: #f1f1f1;
+    background: #e2e8f0;
 }
 
 .user-dropdown.open .user-dropdown-menu {
@@ -75,20 +79,17 @@ body {
 }
 
 /* ============================================
-   SIDEBAR DESPLEGABLE
+   SIDEBAR
 =============================================== */
-
 .sidebar {
     position: fixed;
     top: 58px;
     left: -260px;
     width: 260px;
-    height: 100vh;
-    background: #ffffff;
-    border-right: 1px solid #dee2e6;
+    height: calc(100vh - 58px);
+    background: #1e293b;
     padding: 20px;
     transition: left 0.3s ease;
-    z-index: 1000;
 }
 
 .sidebar.open {
@@ -98,80 +99,57 @@ body {
 .sidebar nav a {
     display: block;
     padding: 10px 12px;
-    color: #333;
+    margin-bottom: 6px;
+    color: #cbd5e1;
     text-decoration: none;
     border-radius: 4px;
-    font-size: 15px;
 }
 
-.sidebar nav a:hover,
-.sidebar nav a.active {
-    background: #e9ecef;
+.sidebar nav a:hover {
+    background: #334155;
 }
 
 .sidebar-footer {
     position: absolute;
     bottom: 20px;
     left: 20px;
+    color: #94a3b8;
     font-size: 12px;
-    color: #777;
 }
 
 /* ============================================
    CONTENIDO
 =============================================== */
-
 .content {
-    margin-top: 58px;
     padding: 20px;
+    margin-top: 58px;
 }
 
 /* ============================================
-   BOTONES GENERALES
+   MIS CURSOS (TU CSS ADAPTADO)
 =============================================== */
-
-.button-custom {
-    background: #0056b3;
-    color: #fff;
-    border-radius: 6px;
-    padding: 8px 14px;
-    border: none;
-}
-
-.button-custom:hover {
-    background: #003f87;
-}
-
-/* ============================================================
-   SECCIÓN "MIS CURSOS" (TU CSS ORIGINAL ADAPTADO)
-=============================================================== */
-
-/* GRID */
 .course-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 1.5rem;
 }
 
-/* CARD */
+/* Cards */
 .course-card {
     background: #ffffff;
     border-radius: 18px;
     overflow: hidden;
     border: 1px solid #e5e7eb;
     box-shadow: 0 8px 24px rgba(15,23,42,.08);
-    display: flex;
-    flex-direction: column;
-    transition: all .15s ease;
+    transition: .15s ease;
 }
 
 .course-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 18px 42px rgba(15,23,42,.15);
-    border-color: #2b77ad55;
 }
 
-/* IMAGEN */
+/* Imagen */
 .course-thumb {
     position: relative;
     height: 180px;
@@ -183,37 +161,24 @@ body {
     object-fit: cover;
 }
 
-/* ESTADOS (PILL) */
+/* PILL de estado */
 .course-status-pill {
     position: absolute;
     top: .75rem;
     right: .75rem;
     padding: .25rem .65rem;
     font-size: .75rem;
-    font-weight: 600;
     border-radius: 999px;
     color: #fff;
 }
 
-/* COLORES */
-.course-status-completed {
-    background-color: #16a34a;
-}
+.course-status-completed { background: #16a34a; }
+.course-status-progress  { background: #2563eb; }
+.course-status-new       { background: #9ca3af; }
 
-.course-status-progress {
-    background-color: #2563eb;
-}
-
-.course-status-new {
-    background-color: #9ca3af;
-}
-
-/* BODY */
+/* Body card */
 .course-body {
     padding: 1rem 1.2rem;
-    display: flex;
-    flex-direction: column;
-    gap: .45rem;
 }
 
 .course-title {
@@ -227,22 +192,11 @@ body {
     color: #64748b;
 }
 
-/* PROGRESO */
-.course-progress-wrapper {
-    margin-top: .4rem;
-}
-
-.course-progress-label {
-    font-size: .78rem;
-    color: #6b7280;
-    margin-bottom: .25rem;
-}
-
+/* Barra de progreso */
 .progress-track {
     height: 6px;
     background: #e5e7eb;
     border-radius: 999px;
-    overflow: hidden;
 }
 
 .progress-fill {
@@ -251,47 +205,25 @@ body {
     background: linear-gradient(90deg,#22c55e,#16a34a);
 }
 
-/* FOOTER */
+/* Footer */
 .course-footer {
     margin-top: .8rem;
     display: flex;
-    align-items: center;
     justify-content: space-between;
 }
 
-.course-duration {
-    font-size: .8rem;
-    color: #475569;
-}
-
-/* BOTONES */
 .btn-course-primary {
-    border: none;
-    padding: .5rem 1rem;
     background: #0f172a;
     color: #fff;
-    font-size: .8rem;
     border-radius: 999px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: .15s;
-}
-
-.btn-course-primary:hover {
-    filter: brightness(1.1);
 }
 
 /* ============================================
    RESPONSIVE
 =============================================== */
-
 @media (max-width: 768px) {
     .sidebar {
         width: 220px;
         left: -220px;
-    }
-
-    .sidebar.open {
-        left: 0;
     }
 }
