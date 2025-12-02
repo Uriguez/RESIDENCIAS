@@ -1,6 +1,32 @@
 ﻿@model SistemaCapacitacion.Core.ViewModels.UsersAdminViewModel
+@using SistemaCapacitacion.Core.ViewModels
+@using Microsoft.AspNetCore.Mvc.Rendering
+@inject SistemaCapacitacion.Data.ApplicationDbContext Db
 @{
     Layout = "~/Views/_LayoutAdmin.cshtml";
+
+    
+    // ViewModel para el modal de "Nuevo usuario"
+    var createUserVm = new CreateUserViewModel();
+
+    createUserVm.Departments = Db.Departments
+        .Where(d => d.IsActive == true)
+        .OrderBy(d => d.Name)
+        .Select(d => new SelectListItem
+        {
+            Value = d.IdDepartment.ToString(),
+            Text = d.Name
+        })
+        .ToList();
+
+    createUserVm.Roles = Db.Roles
+        .OrderBy(r => r.Name)
+        .Select(r => new SelectListItem
+        {
+            Value = r.IdRole.ToString(),
+            Text = r.Name
+        })
+        .ToList();
 }
 
 <section class="admin-main-section">
@@ -18,9 +44,10 @@
                 <span>⬇</span>
                 <span>Exportar usuarios</span>
             </button>
-            <button class="btn btn--primary">
-                <span>＋</span>
-                <span>Nuevo usuario</span>
+            <button type="button"
+                    class="btn btn--primary"
+                    data-open-create-user-modal>
+                + Nuevo usuario
             </button>
         </div>
     </header>
@@ -262,3 +289,37 @@
         </div>
     </section>
 </section>
+
+@await Html.PartialAsync("_CreateUserModal", createUserVm)
+
+@section Scripts {
+    <script>
+        // --- Abrir / cerrar modal Nuevo Usuario ---
+        const createUserModal = document.getElementById('createUserModal');
+        const openCreateUserButtons = document.querySelectorAll('[data-open-create-user-modal]');
+        const closeCreateUserButtons = document.querySelectorAll('[data-create-user-close]');
+
+        if (createUserModal) {
+            openCreateUserButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    createUserModal.classList.add('modal--open');
+                });
+            });
+
+            closeCreateUserButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    createUserModal.classList.remove('modal--open');
+                });
+            });
+
+            createUserModal.addEventListener('click', (e) => {
+                if (e.target === createUserModal) {
+                    createUserModal.classList.remove('modal--open');
+                }
+            });
+        }
+    </script>
+}
+
+
+

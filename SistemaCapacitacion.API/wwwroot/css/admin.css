@@ -1273,6 +1273,7 @@
     border-radius: 999px;
     font-size: 0.8rem;
     border: 1px solid transparent;
+    color: green;
 }
 
 .status-pill__dot {

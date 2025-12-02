@@ -2,6 +2,11 @@
 
 @{
     Layout = "~/Views/_LayoutAdmin.cshtml";   // RUTA COMPLETA
+    bool isAdmin = User.IsInRole("Admin");
+    bool isRH    = User.IsInRole("RH");   // exactamente el mismo texto que pones en el ClaimTypes.Role
+    var createCourseVm = ViewBag.CreateCourseVm as SistemaCapacitacion.Core.ViewModels.CreateCourseViewModel
+                       ?? new SistemaCapacitacion.Core.ViewModels.CreateCourseViewModel();
+
 }
 
 <section>
@@ -18,11 +23,12 @@
             <button type="button" class="btn btn--secondary">
                 <span class="me-1">⬇</span> Exportar Reportes
             </button>
-            <a asp-controller="Courses"
-               asp-action="Create"
-               class="btn btn--primary">
-                <span class="me-1">＋</span> Nuevo Curso
-            </a>
+            <button type="button"
+                    class="btn btn-primary"
+                    data-open-course-modal>
+                + Nuevo Curso
+            </button> 
+
         </div>
     </header>
 
@@ -193,23 +199,35 @@
                                class="btn btn-sm btn--secondary">
                                 Ver
                             </a>
-                            <a asp-controller="Courses"
-                               asp-action="Edit"
-                               asp-route-id="@c.IdCourse"
-                               class="btn btn-sm btn--secondary">
-                                Editar
-                            </a>
-                            <form asp-controller="Courses"
-                                  asp-action="Delete"
-                                  asp-route-id="@c.IdCourse"
-                                  method="post"
-                                  class="d-inline">
-                                <button type="submit"
-                                        class="btn btn-sm btn--danger"
-                                        onclick="return confirm('¿Eliminar este curso?');">
-                                    Eliminar
-                                </button>
-                            </form>
+                            @if (isAdmin)
+                            {
+                                <a asp-controller="Courses"
+                                asp-action="Edit"
+                                asp-route-id="@c.IdCourse"
+                                class="btn btn-sm btn--secondary">
+                                    Editar
+                                </a>
+                                <form asp-controller="Courses"
+                                asp-action="Delete"
+                                asp-route-id="@c.IdCourse"
+                                method="post"
+                                class="d-inline">
+                                    <button type="submit"
+                                    class="btn btn-sm btn--danger"
+                                    onclick="return confirm('¿Eliminar este curso?');">
+                                        Eliminar
+                                    </button>
+                                </form>
+                            }
+                            @* Solo Recursos Humanos ve el botón Asignar *@
+                            @if (isRH)
+                            {
+                                <a asp-action="AssignUsers"
+                                   asp-route-id="@c.IdCourse"
+                                   class="btn btn--primary">
+                                    Asignar
+                                </a>
+                            }
                         </div>
                     </article>
                 }
@@ -217,3 +235,34 @@
         }
     </section>
 </section>
+@await Html.PartialAsync("_CreateCourseModal", createCourseVm)
+
+@section Scripts {
+    <script>
+        // ===== Modal de NUEVO CURSO =====
+        const courseModal        = document.getElementById('courseModal');
+        const openCourseButtons  = document.querySelectorAll('[data-open-course-modal]');
+        const closeCourseButtons = document.querySelectorAll('[data-course-close]');
+
+        if (courseModal) {
+            openCourseButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    courseModal.classList.add('modal--open');
+                });
+            });
+
+            closeCourseButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    courseModal.classList.remove('modal--open');
+                });
+            });
+
+            // Cerrar al hacer clic en el fondo
+            courseModal.addEventListener('click', (e) => {
+                if (e.target === courseModal) {
+                    courseModal.classList.remove('modal--open');
+                }
+            });
+        }
+    </script>
+}

@@ -1,10 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaCapacitacion.Core.ViewModels;
 using SistemaCapacitacion.Data;
+using SistemaCapacitacion.Data.Entities;
 using System;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SistemaCapacitacion.API.Controllers
@@ -248,10 +252,104 @@ namespace SistemaCapacitacion.API.Controllers
             return createdAt.ToString("dd/MM/yyyy");
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateUser(CreateUserViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Verifica la información del formulario.";
+                return RedirectToAction("Users");
+            }
 
-// ...
+            // Validar correo único
+            var exists = await _db.Users.AnyAsync(u => u.Email == model.Email);
+            if (exists)
+            {
+                TempData["Error"] = "Ya existe un usuario con ese correo.";
+                return RedirectToAction("Users");
+            }
 
-public async Task<IActionResult> Analytics()
+            // Rol seleccionado
+            var role = await _db.Roles
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.IdRole == model.RoleId);
+
+            if (role == null)
+            {
+                TempData["Error"] = "Rol seleccionado no es válido.";
+                return RedirectToAction("Users");
+            }
+
+            // Determinar contraseña final
+            string password = (model.Password ?? string.Empty).Trim();
+            if (string.IsNullOrEmpty(password))
+            {
+                if (!model.GenerateTempPassword)
+                {
+                    TempData["Error"] = "Debes escribir una contraseña o activar 'Generar contraseña temporal'.";
+                    return RedirectToAction("Users");
+                }
+
+                password = GenerateTempPassword(10);
+            }
+
+            // Separar nombre y apellidos
+            string firstName = string.Empty;
+            string lastName = string.Empty;
+            var full = (model.FullName ?? string.Empty).Trim();
+
+            if (!string.IsNullOrEmpty(full))
+            {
+                var parts = full.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length > 0) firstName = parts[0];
+                if (parts.Length > 1) lastName = string.Join(" ", parts.Skip(1));
+            }
+
+            var now = DateTime.UtcNow;
+
+            var user = new User
+            {
+                IdUser = Guid.NewGuid(),
+                FirstName = firstName,
+                LastName = lastName,
+                Email = model.Email,
+                Position = role.Name,                // "Administrador", "Recursos Humanos", etc.
+                DepartmentId = model.DepartmentId,
+                Status = model.IsActive ? "Active" : "Inactive",
+                HireDate = now,
+                CreatedAt = now,
+                UpdatedAt = now,
+                Passwords = password                  // se guarda en dbo.User.Passwords
+            };
+
+            _db.Users.Add(user);
+            await _db.SaveChangesAsync();
+
+            // Si luego quieres usar dbo.UserRole, aquí puedes insertar relación.
+
+            TempData["Success"] = "Usuario creado correctamente.";
+            return RedirectToAction("Users");
+        }
+
+        private static string GenerateTempPassword(int length = 10)
+        {
+            const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@$%";
+            var bytes = new byte[length];
+            RandomNumberGenerator.Fill(bytes);
+
+            var sb = new StringBuilder(length);
+            for (int i = 0; i < length; i++)
+            {
+                sb.Append(chars[bytes[i] % chars.Length]);
+            }
+            return sb.ToString();
+        }
+
+        // ...
+
+        public async Task<IActionResult> Analytics()
     {
         var vm = new AdvancedAnalyticsViewModel();
 

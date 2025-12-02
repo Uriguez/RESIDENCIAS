@@ -1,10 +1,14 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaCapacitacion.Core.ViewModels;
 using SistemaCapacitacion.Data;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using SistemaCapacitacion.Data.Entities; // donde estén Course, CourseContent, CourseCategory
+using System.Security.Claims;
 
 namespace SistemaCapacitacion.API.Controllers
 {
@@ -102,7 +106,26 @@ namespace SistemaCapacitacion.API.Controllers
                     CreatedAt = c.CreatedAt
                 })
                 .ToListAsync();
+            //---------------------------------------------------------------------------------
+            // ===== datos para el modal "Nuevo curso" =====
+            var categories = await _db.CourseCategory
+                .OrderBy(c => c.Name)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.IdCourCateg.ToString(),
+                    Text = c.Name
+                })
+                .ToListAsync();
 
+            ViewBag.CreateCourseVm = new CreateCourseViewModel
+            {
+                Categories = categories,
+                ContentType = 0,   // valor por defecto
+                IsActive = true,
+                IsRequired = true
+            };
+
+            //---------------------------------------------------------------------------------
             // Compleción por curso si existe UserCourse
             if (_db.UserCourses != null && coursesList.Count > 0)
             {
@@ -146,6 +169,103 @@ namespace SistemaCapacitacion.API.Controllers
             return View("~/Views/Admin/Courses.cshtml", vm);
         }
 
+        [Authorize(Roles = "RH")]  // opcional: solo RH puede asignar
+        [Authorize(Roles = "RH")]  // opcional: solo RH puede asignar
+        public async Task<IActionResult> AssignUsers(int id)
+        {
+            var course = await _db.Courses
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.IdCourse == id);
+
+            if (course == null)
+                return NotFound();
+
+            // De momento, vista sencilla de placeholder
+            return View("AssignUsers", course);   // o View(course) si la vista se llama igual
+        }
+
         // Otras acciones (Create/Edit/Delete/Details) pueden ir aquí después.
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]   // o el rol que quieras
+        public async Task<IActionResult> CreateCourse(CreateCourseViewModel model)
+        {
+            var vm = new CreateCourseViewModel();
+
+            // Llenar combo de tipos de contenido
+            vm.ContentTypes = new List<SelectListItem>
+    {
+        new SelectListItem { Value = "1", Text = "Video" },
+        new SelectListItem { Value = "2", Text = "Documento" },
+        new SelectListItem { Value = "3", Text = "Enlace externo" }
+    };
+            if (!ModelState.IsValid)
+            {
+                // Volver al Index si algo falla (podemos volver a cargar categorías)
+                var categories = await _db.CourseCategory
+                    .OrderBy(c => c.Name)
+                    .Select(c => new SelectListItem
+                    {
+                        Value = c.IdCourCateg.ToString(),
+                        Text = c.Name
+                    })
+                    .ToListAsync();
+
+                model.Categories = categories;
+
+                // Guardamos el VM en ViewBag y devolvemos Index para que no truene
+                ViewBag.CreateCourseVm = model;
+
+                // Aquí devuelve el mismo modelo que usas en Index para la lista de cursos
+                // Puedes recargarlo o, si lo tienes en otra variable, reutilizarlo.
+                var cursos = await _db.Courses
+                    .Include(c => c.Category)
+                    .ToListAsync();  // simplificado; reemplaza por tu viewmodel real
+
+                return View("~/Views/Admin/Courses.cshtml", cursos);
+            }
+
+            // ===== 1) Crear Course =====
+            var course = new Course
+            {
+                Title = model.Title,
+                Description = model.Description,
+                CategoryId = model.CategoryId,
+                IsActive = model.IsActive,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            // si tienes CreatedById en la tabla Course
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!string.IsNullOrEmpty(userIdStr) && Guid.TryParse(userIdStr, out var userId))
+            {
+                course.CreatedById = userId;
+            }
+
+            _db.Courses.Add(course);
+            await _db.SaveChangesAsync();   // aquí ya tenemos course.IdCourse
+
+            // ===== 2) Crear CourseContent principal =====
+            var content = new CourseContent
+            {
+                CourseId = course.IdCourse,
+                Title = model.ContentTitle,
+                ContentType = model.ContentType,
+                ContentUrl = model.ContentUrl,
+                DurationMinutes = model.DurationMinutes,
+                OrderIndex = 1,               // primer contenido
+                IsRequired = model.IsRequired,
+                MinimumScore = model.MinimumScore ?? 0
+            };
+
+            _db.CourseContents.Add(content);
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
     }
 }

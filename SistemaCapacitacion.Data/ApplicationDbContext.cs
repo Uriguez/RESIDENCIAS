@@ -12,7 +12,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<Department> Departments => Set<Department>();
-    public DbSet<CourseCategory> CourseCategories => Set<CourseCategory>();
+    public DbSet<CourseCategory> CourseCategory => Set<CourseCategory>();
     public DbSet<Course> Courses => Set<Course>();
     public DbSet<CourseContent> CourseContents => Set<CourseContent>();
     public DbSet<UserCourse> UserCourses => Set<UserCourse>();
