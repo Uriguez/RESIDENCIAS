@@ -7,7 +7,6 @@ body {
     background: #f5f7fa;
     color: #333;
 }
-
 h1, h2, h3, h4 {
     font-weight: 700;
 }
@@ -50,12 +49,10 @@ a {
     background: white;
     border-bottom: 1px solid #dadada;
     padding: 0 20px;
-
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
-
 .topbar-left {
     display: flex;
     align-items: center;
@@ -63,7 +60,8 @@ a {
 }
 
 .topbar .logo2 {
-    height: 68px;
+    height: 48px;     /* Ajusté tamaño para que no esté enorme */
+    object-fit: contain;
 }
 
 .menu-icon {
@@ -83,25 +81,20 @@ a {
     cursor: pointer;
     font-weight: 600;
 }
-
 .user-dropdown-menu {
     position: absolute;
     top: 28px;
     right: 0;
     width: 160px;
-
     display: none;
     flex-direction: column;
-
     background: white;
     border: 1px solid #ccc;
     border-radius: 6px;
 }
-
 .topbar-user.open .user-dropdown-menu {
     display: flex;
 }
-
 .user-dropdown-menu a {
     padding: 10px 12px;
     color: #333;
@@ -116,15 +109,19 @@ a {
 .sidebar {
     width: 230px;
     background: #1a365d;
-    height: 100vh;
+    height: calc(100vh - 60px);
     position: fixed;
     top: 60px;
-    left: 0;
+    left: -260px;                 /* 🔥 AHORA EMPIEZA OCULTA */
     padding-top: 20px;
-
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    transition: left .3s ease;    /* Animación suave */
+}
+
+.sidebar.open {
+    left: 0;                      /* Cuando se activa */
 }
 
 .sidebar nav a {
@@ -144,14 +141,10 @@ a {
     font-size: 12px;
 }
 
-/* Sidebar responsive */
-.sidebar.open {
-    left: 0;
-}
-@media (max-width: 860px) {
+/* Desktop */
+@media (min-width: 861px) {
     .sidebar {
-        left: -260px;
-        transition: 0.3s;
+        left: 0 !important;       /* Siempre visible en PC */
     }
 }
 
@@ -162,6 +155,7 @@ a {
     margin-left: 230px;
     padding: 25px;
 }
+
 @media (max-width: 860px) {
     .content {
         margin-left: 0;
@@ -179,7 +173,6 @@ a {
     box-shadow: 0 4px 10px #0002;
 }
 
-/* Botones dentro de bienvenida */
 .welcome-actions {
     margin-top: 20px;
     display: flex;
@@ -217,20 +210,18 @@ a {
     font-weight: 600;
 }
 
-/* Contenido */
+/* Contenido Card */
 .card-body {
     padding: 20px;
     display: flex;
     flex-direction: column;
     height: 100%;
 }
-
 .card-body h4 {
     font-size: 18px;
     margin-bottom: 6px;
     font-weight: bold;
 }
-
 .card-body p {
     font-size: 14px;
     color: #666;
@@ -257,7 +248,7 @@ a {
 .progress-bar {
     height: 6px;
     border-radius: 3px;
-    background: #2ecc71; /* verde */
+    background: #2ecc71;
 }
 
 /* Botón curso */
@@ -284,4 +275,3 @@ a {
 .text-muted {
     color: #888 !important;
 }
-
