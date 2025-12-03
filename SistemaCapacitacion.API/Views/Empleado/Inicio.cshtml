@@ -9,7 +9,8 @@
 <div class="welcome-box">
     <h1>Hola, @User.Identity.Name 👋</h1>
     <p>
-        Tienes <span class="highlight">@Model.Count cursos pendientes</span>
+        Tienes 
+        <span class="highlight">@Model.Count(c => c.Progress < 100) cursos pendientes</span>
         por completar este mes.
     </p>
 
@@ -27,7 +28,6 @@
 
 <!-- GRID DE CURSOS DESDE BD -->
 <div class="course-grid">
-
     @if (!Model.Any())
     {
         <p>No tienes cursos asignados todavía.</p>
@@ -78,5 +78,4 @@
             </div>
         }
     }
-
 </div>
