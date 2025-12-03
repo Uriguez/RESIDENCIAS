@@ -10,15 +10,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+
 namespace SistemaCapacitacion.API.Controllers
 {
     public class CoursesController : Controller
     {
         private readonly ApplicationDbContext _db;
+
         public CoursesController(ApplicationDbContext db)
         {
             _db = db;
         }
+
         // =========================================================
         //  HELPER 1: construye el ViewModel principal del listado
         // =========================================================
@@ -32,12 +35,15 @@ namespace SistemaCapacitacion.API.Controllers
             var query = _db.Courses
                 .Include(c => c.Category)
                 .AsQueryable();
+
             if (!string.IsNullOrWhiteSpace(search))
             {
                 var term = search.Trim();
                 query = query.Where(c => c.Title.Contains(term));
             }
+
             state = string.IsNullOrWhiteSpace(state) ? "all" : state.ToLowerInvariant();
+
             if (state == "active")
             {
                 query = query.Where(c => c.IsActive);
@@ -46,13 +52,16 @@ namespace SistemaCapacitacion.API.Controllers
             {
                 query = query.Where(c => !c.IsActive);
             }
+
             // ----------------------------
             // 2. Métricas superiores
             // ----------------------------
             var totalCourses = await _db.Courses.CountAsync();
             var activeCourses = await _db.Courses.CountAsync(c => c.IsActive);
+
             int totalStudents = 0;
             double averageCompletion = 0;
+
             if (_db.UserCourses != null)
             {
                 // Nº de usuarios distintos con al menos un curso asignado
@@ -60,18 +69,21 @@ namespace SistemaCapacitacion.API.Controllers
                     .Select(uc => uc.UserId)
                     .Distinct()
                     .CountAsync();
+
                 // Promedio de finalización global
                 var totalAssignments = await _db.UserCourses.CountAsync();
                 if (totalAssignments > 0)
                 {
                     var completed = await _db.UserCourses
                         .CountAsync(uc => uc.Status == "Completed");
+
                     averageCompletion = Math.Round(
                         100.0 * completed / totalAssignments,
                         1
                     );
                 }
             }
+
             // ----------------------------
             // 3. Proyección a tarjetas
             // ----------------------------
@@ -94,10 +106,12 @@ namespace SistemaCapacitacion.API.Controllers
                     CreatedAt = c.CreatedAt
                 })
                 .ToListAsync();
+
             // Compleción por curso
             if (_db.UserCourses != null && coursesList.Count > 0)
             {
                 var courseIds = coursesList.Select(c => c.IdCourse).ToList();
+
                 var completionByCourse = await _db.UserCourses
                     .Where(uc => courseIds.Contains(uc.CourseId))
                     .GroupBy(uc => uc.CourseId)
@@ -108,6 +122,7 @@ namespace SistemaCapacitacion.API.Controllers
                         Completed = g.Count(uc => uc.Status == "Completed")
                     })
                     .ToListAsync();
+
                 foreach (var item in completionByCourse)
                 {
                     var vmCourse = coursesList.First(c => c.IdCourse == item.CourseId);
@@ -116,6 +131,7 @@ namespace SistemaCapacitacion.API.Controllers
                         : Math.Round(100.0 * item.Completed / item.Total, 1);
                 }
             }
+
             // ----------------------------
             // 4. Armar ViewModel
             // ----------------------------
@@ -130,8 +146,10 @@ namespace SistemaCapacitacion.API.Controllers
                 Courses = coursesList,
                 // AllUsers se llena en Index, porque depende del rol RH
             };
+
             return vm;
         }
+
         // =========================================================
         //  HELPER 2: llena combos del modal Crear Curso
         // =========================================================
@@ -145,7 +163,9 @@ namespace SistemaCapacitacion.API.Controllers
                     Text = c.Name
                 })
                 .ToListAsync();
+
             model.Categories = categories;
+
             // Tipos de contenido (se guardan como int en CourseContent.ContentType)
             model.ContentTypes = new List<SelectListItem>
             {
@@ -154,6 +174,7 @@ namespace SistemaCapacitacion.API.Controllers
                 new SelectListItem { Value = "3", Text = "Enlace externo" }
             };
         }
+
         // =========================================================
         //  INDEX (Gestión de cursos)
         // =========================================================
@@ -174,10 +195,13 @@ namespace SistemaCapacitacion.API.Controllers
                     Email = u.Email ?? string.Empty
                 })
                 .ToListAsync();
+
             // ViewModel principal (cursos, métricas, etc.)
             var vm = await BuildCoursesAdminViewModel(state, search);
+
             // Inyectar la lista de usuarios en el VM
             vm.AllUsers = allUsers;
+
             // ViewModel inicial del modal "Nuevo curso"
             var createVm = new CreateCourseViewModel
             {
@@ -185,10 +209,13 @@ namespace SistemaCapacitacion.API.Controllers
                 IsRequired = true
             };
             await FillCreateCourseLists(createVm);
+
             ViewBag.CreateCourseVm = createVm;
+
             // Vista de administración de cursos
             return View("~/Views/Admin/Courses.cshtml", vm);
         }
+
         // =========================================================
         //  Asignar usuarios (GET opcional / placeholder)
         //  Si todo lo haces vía modal, podrías incluso eliminar este GET.
@@ -200,10 +227,13 @@ namespace SistemaCapacitacion.API.Controllers
             var course = await _db.Courses
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.IdCourse == id);
+
             if (course == null)
                 return NotFound();
+
             return View("AssignUsers", course);
         }
+
         // =========================================================
         //  CREAR CURSO (POST desde el modal)
         // =========================================================
@@ -216,12 +246,16 @@ namespace SistemaCapacitacion.API.Controllers
             {
                 // Recargar combos del modal
                 await FillCreateCourseLists(model);
+
                 // Reconstruir el listado principal
                 var vm = await BuildCoursesAdminViewModel("all", null);
+
                 // Volver a mandar el VM del modal a la vista
                 ViewBag.CreateCourseVm = model;
+
                 return View("~/Views/Admin/Courses.cshtml", vm);
             }
+
             // ===== 1) Crear Course =====
             var course = new Course
             {
@@ -232,6 +266,7 @@ namespace SistemaCapacitacion.API.Controllers
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
             };
+
             // si tienes CreatedById en la tabla Course
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!string.IsNullOrEmpty(userIdStr) &&
@@ -239,8 +274,10 @@ namespace SistemaCapacitacion.API.Controllers
             {
                 course.CreatedById = userId;
             }
+
             _db.Courses.Add(course);
             await _db.SaveChangesAsync();   // ya tenemos course.IdCourse
+
             // ===== 2) Crear CourseContent principal =====
             var content = new CourseContent
             {
@@ -253,11 +290,14 @@ namespace SistemaCapacitacion.API.Controllers
                 IsRequired = model.IsRequired,
                 MinimumScore = model.MinimumScore ?? 0
             };
+
             _db.CourseContents.Add(content);
             await _db.SaveChangesAsync();
+
             // PRG: Post-Redirect-Get
             return RedirectToAction(nameof(Index));
         }
+
         // =========================================================
         //  ASIGNAR USUARIOS A UN CURSO (POST desde el modal RH)
         // =========================================================
@@ -268,17 +308,22 @@ namespace SistemaCapacitacion.API.Controllers
         {
             if (model.CourseId <= 0)
                 return BadRequest();
+
             // Normalizar lista (puede venir null)
             var selectedIds = model.SelectedUserIds ?? new List<Guid>();
+
             // Asignaciones actuales de ese curso
             var existing = await _db.UserCourses
                 .Where(uc => uc.CourseId == model.CourseId)
                 .ToListAsync();
+
             var existingUserIds = existing.Select(e => e.UserId).ToHashSet();
+
             // 1) Agregar nuevas asignaciones (evitar duplicados)
             var toAddIds = selectedIds
                 .Where(id => !existingUserIds.Contains(id))
                 .ToList();
+
             foreach (var userId in toAddIds)
             {
                 var uc = new UserCourse
@@ -289,16 +334,20 @@ namespace SistemaCapacitacion.API.Controllers
                 };
                 _db.UserCourses.Add(uc);
             }
+
             // 2) (Opcional) quitar asignaciones que se desmarcaron
             var selectedSet = selectedIds.ToHashSet();
             var toRemove = existing
                 .Where(e => !selectedSet.Contains(e.UserId))
                 .ToList();
+
             if (toRemove.Any())
             {
                 _db.UserCourses.RemoveRange(toRemove);
             }
+
             await _db.SaveChangesAsync();
+
             // Volvemos a la lista de cursos
             return RedirectToAction(nameof(Index));
         }
