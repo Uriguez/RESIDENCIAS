@@ -5,7 +5,8 @@
 @{
     Layout = "~/Views/_LayoutAdmin.cshtml";
 
-    
+    bool isAdmin = User.IsInRole("Admin");
+
     // ViewModel para el modal de "Nuevo usuario"
     var createUserVm = new CreateUserViewModel();
 
@@ -44,11 +45,13 @@
                 <span>⬇</span>
                 <span>Exportar usuarios</span>
             </button>
+            @if(isAdmin){
             <button type="button"
                     class="btn btn--primary"
                     data-open-create-user-modal>
                 + Nuevo usuario
             </button>
+            }
         </div>
     </header>
 

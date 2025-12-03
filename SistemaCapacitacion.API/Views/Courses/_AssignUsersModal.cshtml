@@ -1,0 +1,91 @@
+﻿@model SistemaCapacitacion.Core.ViewModels.AssignUsersToCourseViewModel
+
+<div class="modal assign-users-modal" id="assignModal-@Model.CourseId">
+    <div class="modal__dialog">
+        <form asp-controller="Courses"
+              asp-action="AssignUsers"
+              method="post">
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" name="CourseId" value="@Model.CourseId" />
+
+            <!-- HEADER -->
+            <div class="modal__header">
+                <div>
+                    <div class="modal__title">
+                        Asignar usuarios al curso
+                    </div>
+                    <div class="admin-section-caption">
+                        @Model.CourseTitle
+                    </div>
+                </div>
+
+                <button type="button"
+                        class="btn btn--ghost"
+                        data-assign-close>
+                    ✕
+                </button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal__body">
+                <div class="settings-section card">
+                    <div class="settings-block__title" style="margin-bottom:8px;">
+                        Selecciona los usuarios a asignar
+                    </div>
+
+                    <div class="settings-block__caption" style="margin-bottom:10px;">
+                        Los usuarios marcados quedarán vinculados a este curso.
+                    </div>
+
+                    <div style="max-height: 340px; overflow-y: auto;">
+                        @if (Model.Users == null || !Model.Users.Any())
+                        {
+                            <div class="alert alert-light border">
+                                No hay usuarios registrados en el sistema.
+                            </div>
+                        }
+                        else
+                        {
+                            <table class="table table-sm align-middle">
+                                <thead>
+                                    <tr>
+                                        <th style="width:40px;"></th>
+                                        <th>Nombre</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var u in Model.Users)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox"
+                                                       name="SelectedUserIds"
+                                                       value="@u.UserId" />
+                                            </td>
+                                            <td>@u.FullName</td>
+                                            <td class="text-muted">@u.Email</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal__footer">
+                <button type="button"
+                        class="btn btn--secondary"
+                        data-assign-close>
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn--primary">
+                    Guardar asignaciones
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
