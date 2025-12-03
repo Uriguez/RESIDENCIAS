@@ -13,11 +13,11 @@
    FONDO CON DEGRADADO + IMAGEN DIFUMINADA
    ========================================= */
 .login-bg {
-    min-height: 100vh;
+    height: 100vh;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 30px 10px;
+    align-items: center;      /* CENTRA VERTICAL */
+    justify-content: center;  /* CENTRA HORIZONTAL */
+    padding: 0;               /* QUITAR EL EMPUJE HACIA ABAJO */
     background: linear-gradient(
         to bottom,
         #F15A29 0%,
@@ -28,6 +28,7 @@
     position: relative;
     overflow: hidden;
 }
+
 
 .login-bg::before {
     content: "";
