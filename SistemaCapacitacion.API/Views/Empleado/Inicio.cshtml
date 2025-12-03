@@ -1,3 +1,5 @@
+@model List<EmployeeCourseViewModel>
+
 @{
     ViewData["Title"] = "Mi Panel de Aprendizaje";
     Layout = "~/Views/_LayoutEmployee.cshtml";
@@ -7,7 +9,7 @@
 <div class="welcome-box">
     <h1>Hola, @User.Identity.Name 👋</h1>
     <p>
-        Tienes <span class="highlight">@ViewBag.PendingCourses cursos pendientes</span>
+        Tienes <span class="highlight">@Model.Count cursos pendientes</span>
         por completar este mes.
     </p>
 
@@ -15,7 +17,6 @@
         <a asp-controller="Courses" asp-action="MyCourses" class="btn-welcome-primary">
             Continuar aprendiendo
         </a>
-
         <a asp-controller="Courses" asp-action="Catalog" class="btn-welcome-secondary">
             Ver catálogo
         </a>
@@ -24,78 +25,58 @@
 
 <h3 class="section-title">Mis Cursos Asignados</h3>
 
-<!-- GRID DE CURSOS -->
+<!-- GRID DE CURSOS DESDE BD -->
 <div class="course-grid">
 
-    <!-- Card 1 -->
-    <div class="course-card">
-        <div class="course-thumb">
-            <div class="course-status-pill course-status-progress">Obligatorio</div>
-        </div>
-
-        <div class="course-body">
-            <h4 class="course-title">Seguridad en el Trabajo: Protocolos 2025</h4>
-            <p class="course-meta">
-                Aprende los nuevos protocolos de seguridad industrial implementados en Griver para este año.
-            </p>
-
-            <div class="progress-section">
-                <span class="progress-label">Progreso: 65%</span>
-                <div class="progress-track">
-                    <div class="progress-fill" style="width:65%"></div>
+    @if (!Model.Any())
+    {
+        <p>No tienes cursos asignados todavía.</p>
+    }
+    else
+    {
+        foreach (var course in Model)
+        {
+            <div class="course-card">
+                <div class="course-thumb">
+                    @if (course.IsRequired)
+                    {
+                        <div class="course-status-pill course-status-progress">Obligatorio</div>
+                    }
+                    else
+                    {
+                        <div class="course-status-pill course-status-new">Opcional</div>
+                    }
                 </div>
 
-                <button class="btn-course-primary w-100">Reanudar Curso</button>
-            </div>
-        </div>
-    </div>
+                <div class="course-body">
+                    <h4 class="course-title">@course.Title</h4>
+                    <p class="course-meta">@course.Description</p>
 
-    <!-- Card 2 -->
-    <div class="course-card">
-        <div class="course-thumb">
-            <div class="course-status-pill course-status-new">Técnico</div>
-        </div>
+                    <div class="progress-section">
+                        <span class="progress-label">Progreso: @course.Progress%</span>
 
-        <div class="course-body">
-            <h4 class="course-title">Introducción a ASP.NET Core MVC</h4>
-            <p class="course-meta">
-                Fundamentos del desarrollo web utilizando la arquitectura MVC.
-            </p>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width:@course.Progress%"></div>
+                        </div>
 
-            <div class="progress-section">
-                <span class="progress-label">Progreso: 0%</span>
-                <div class="progress-track">
-                    <div class="progress-fill" style="width:0%"></div>
+                        @if (course.Progress == 100)
+                        {
+                            <a asp-controller="Courses" asp-action="Certificate" asp-route-id="@course.IdCourse"
+                               class="btn-course-primary w-100">
+                                Descargar Certificado
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Courses" asp-action="Start" asp-route-id="@course.IdCourse"
+                               class="btn-course-primary w-100">
+                                @(course.Progress == 0 ? "Iniciar Curso" : "Reanudar Curso")
+                            </a>
+                        }
+                    </div>
                 </div>
-
-                <button class="btn-outline w-100">Iniciar Curso</button>
             </div>
-        </div>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="course-card">
-        <div class="course-thumb">
-            <div class="course-status-pill course-status-completed">Habilidades Blandas</div>
-        </div>
-
-        <div class="course-body">
-            <h4 class="course-title">Comunicación Efectiva</h4>
-            <p class="course-meta">
-                Mejora tus habilidades de comunicación con el equipo y clientes.
-            </p>
-
-            <div class="progress-section">
-                <span class="progress-label">Progreso: 100%</span>
-                <div class="progress-track">
-                    <div class="progress-fill" style="width:100%"></div>
-                </div>
-
-                <button class="btn-course-primary w-100">
-                    Descargar Certificado
-                </button>
-            </div>
-        </div>
-    </div>
+        }
+    }
 
 </div>
