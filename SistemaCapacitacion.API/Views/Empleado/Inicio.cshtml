@@ -1,78 +1,66 @@
-@model List<EmployeeCourseViewModel>
+@using SistemaCapacitacion.Core.ViewModels
+@model DashboardEmployeeViewModel
 
 @{
     ViewData["Title"] = "Mi Panel de Aprendizaje";
     Layout = "~/Views/_LayoutEmployee.cshtml";
 }
 
-<!-- HEADER BIENVENIDA -->
 <div class="welcome-box">
-    <h1>Hola, @User.Identity.Name 👋</h1>
+    <h1>Hola, @Model.FullName 👋</h1>
     <p>
-        Tienes 
-        <span class="highlight">@Model.Count(c => c.Progress < 100) cursos pendientes</span>
+        Tienes
+        <span class="highlight">@Model.MyCourses.Count(c => c.ProgressPercent < 100) cursos pendientes</span>
         por completar este mes.
     </p>
-
-    <div class="welcome-actions">
-        <a asp-controller="Courses" asp-action="MyCourses" class="btn-welcome-primary">
-            Continuar aprendiendo
-        </a>
-        <a asp-controller="Courses" asp-action="Catalog" class="btn-welcome-secondary">
-            Ver catálogo
-        </a>
-    </div>
 </div>
 
 <h3 class="section-title">Mis Cursos Asignados</h3>
 
-<!-- GRID DE CURSOS DESDE BD -->
 <div class="course-grid">
-    @if (!Model.Any())
+    @if (!Model.MyCourses.Any())
     {
         <p>No tienes cursos asignados todavía.</p>
     }
     else
     {
-        foreach (var course in Model)
+        foreach (var course in Model.MyCourses)
         {
             <div class="course-card">
                 <div class="course-thumb">
-                    @if (course.IsRequired)
+                    @if (course.ProgressPercent == 0)
                     {
-                        <div class="course-status-pill course-status-progress">Obligatorio</div>
+                        <div class="course-status-pill course-status-new">Asignado</div>
+                    }
+                    else if (course.ProgressPercent < 100)
+                    {
+                        <div class="course-status-pill course-status-progress">En progreso</div>
                     }
                     else
                     {
-                        <div class="course-status-pill course-status-new">Opcional</div>
+                        <div class="course-status-pill course-status-completed">Completado</div>
                     }
+        </div>
+
+        <div class="course-body">
+            <h4 class="course-title">@course.Title</h4>
+            <p class="course-meta">Categoría: @course.Category</p>
+
+            <div class="progress-section">
+                <span class="progress-label">Progreso: @course.ProgressPercent%</span>
+
+                <div class="progress-track">
+                    <div class="progress-fill" style="width:@course.ProgressPercent%"></div>
                 </div>
 
-                <div class="course-body">
-                    <h4 class="course-title">@course.Title</h4>
-                    <p class="course-meta">@course.Description</p>
-
-                    <div class="progress-section">
-                        <span class="progress-label">Progreso: @course.Progress%</span>
-
-                        <div class="progress-track">
-                            <div class="progress-fill" style="width:@course.Progress%"></div>
-                        </div>
-
-                        @if (course.Progress == 100)
-                        {
-                            <a asp-controller="Courses" asp-action="Certificate" asp-route-id="@course.IdCourse"
-                               class="btn-course-primary w-100">
-                                Descargar Certificado
-                            </a>
-                        }
-                        else
-                        {
-                            <a asp-controller="Courses" asp-action="Start" asp-route-id="@course.IdCourse"
-                               class="btn-course-primary w-100">
-                                @(course.Progress == 0 ? "Iniciar Curso" : "Reanudar Curso")
-                            </a>
-                        }
+                <a asp-controller="Empleado"
+                   asp-action="VerCurso"
+                   asp-route-id="@course.CourseId"
+                   class="btn-course-primary w-100">
+                    @(course.ProgressPercent == 0 ? "Iniciar Curso" :
+                                        course.ProgressPercent < 100 ? "Reanudar Curso" :
+                                        "Ver Certificado")
+                        </a>
                     </div>
                 </div>
             </div>

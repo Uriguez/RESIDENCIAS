@@ -8,19 +8,23 @@ namespace SistemaCapacitacion.Core.ViewModels
     /// </summary>
     public sealed class DashboardEmployeeViewModel
     {
-        public DateTime LastUpdated { get; set; } = DateTime.Now;
+        public string FullName { get; set; } = string.Empty;
 
+        public DateTime LastUpdated { get; set; } = DateTime.Now;
         public int AssignedCount { get; set; }
         public int InProgressCount { get; set; }
         public int CompletedCount { get; set; }
         public int CertificatesCount { get; set; }
 
-        /// <summary>Porcentaje de avance personal (0..100).</summary>
         public double CompletionRate { get; set; }
 
-        /// <summary>Mis cursos con progreso y fechas.</summary>
-        public IReadOnlyList<MyCourseItem> MyCourses { get; set; } = Array.Empty<MyCourseItem>();
-        public IReadOnlyList<ActivityDto> RecentActivity { get; set; } = Array.Empty<ActivityDto>();
+        public IReadOnlyList<MyCourseItem> MyCourses { get; set; }
+            = Array.Empty<MyCourseItem>();
+
+        public IReadOnlyList<ActivityDto> RecentActivity { get; set; }
+            = Array.Empty<ActivityDto>();
+
+       
     }
 
     /// <summary>Ítem de curso asignado al usuario.</summary>

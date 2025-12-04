@@ -1,5 +1,5 @@
 /* =========================================
-   PALETA OFICIAL (primer imagen)
+   PALETA OFICIAL
    ========================================= */
 :root {
     --naranja-griver: #F15A29;
@@ -11,7 +11,7 @@
 }
 
 /* =========================================
-   FONDO CON DEGRADADO + IMAGEN DIFUMINADA
+   FONDO CON DEGRADADO + IMAGEN
    ========================================= */
 .login-bg {
     min-height: 100vh;
@@ -19,72 +19,59 @@
     align-items: center;
     justify-content: center;
     padding: 30px 10px;
-    background: linear-gradient(
-        to bottom,
-        #F15A29 0%,
-        #F15A29 10%,
-        #004C97 55%,
-        #003B73 100%
-    );
+    background: linear-gradient(to bottom, #F15A29 0%, #F15A29 10%, #004C97 55%, #003B73 100% );
     position: relative;
     overflow: hidden;
 }
 
-.login-bg::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: url('/img/FONDO.png') center center / cover no-repeat;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0.28;
-    filter: blur(6px);
-    z-index: 0;
-}
+    .login-bg::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: url('/img/FONDO.png') center/cover no-repeat;
+        opacity: 0.28;
+        filter: blur(6px);
+        z-index: 0;
+    }
 
-.login-bg * {
-    position: relative;
-    z-index: 1;
-}
+    .login-bg * {
+        position: relative;
+        z-index: 1;
+    }
 
 /* =========================================
    TARJETA DEL LOGIN
    ========================================= */
 .auth-card {
-    width: 420px;
-    background: #ffffff;
+    width: 100%;
+    max-width: 430px;
+    background: #fff;
     border-radius: 18px;
     padding-top: 40px;
-    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.18),
-                0px 0px 12px rgba(0, 0, 0, 0.10);
-
-    /* 🔥 Ajuste solicitado: subir la tarjeta */
     margin-top: -40px;
+    box-shadow: 0px 10px 30px rgba(0,0,0,0.18), 0px 0px 12px rgba(0,0,0,0.10);
 }
 
 /* =========================================
-   LOGO EN RECUADRO — VERSIÓN IGUAL A LA IMAGEN
+   LOGO EN RECUADRO
    ========================================= */
 .brand {
     width: 180px;
     background: #ffffff;
     padding: 22px 28px;
     border-radius: 24px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.15),
-                0 2px 6px rgba(0,0,0,0.10);
-    margin: 0 auto 20px auto;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.15), 0 2px 6px rgba(0,0,0,0.10);
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 20px;
 }
 
-.brand img {
-    width: 100%;
-    height: auto;
-    display: block;
-    object-fit: contain;
-}
+    .brand img {
+        width: 130px;
+        height: auto;
+        object-fit: contain;
+        display: block;
+    }
 
 /* =========================================
    TEXTOS
@@ -102,7 +89,7 @@ h4 strong {
    CAMPOS DE TEXTO
    ========================================= */
 .input-group-text {
-    background-color: #f3f4f6;
+    background-color: #eef1f5;
     border: 1px solid #d4d9e2;
     border-right: none;
     font-size: 1.2rem;
@@ -118,10 +105,10 @@ h4 strong {
     border-radius: 0 12px 12px 0 !important;
 }
 
-.form-control:focus {
-    border-color: var(--naranja-griver);
-    box-shadow: 0 0 6px rgba(241, 90, 41, 0.40);
-}
+    .form-control:focus {
+        border-color: var(--naranja-griver);
+        box-shadow: 0 0 6px rgba(241, 90, 41, 0.40);
+    }
 
 /* =========================================
    BOTÓN PRINCIPAL
@@ -136,10 +123,10 @@ h4 strong {
     transition: all .20s ease-in-out;
 }
 
-.btn-primary:hover {
-    background-color: var(--naranja-griver) !important;
-    transform: translateY(-1px);
-}
+    .btn-primary:hover {
+        background-color: var(--naranja-griver) !important;
+        transform: translateY(-1px);
+    }
 
 /* =========================================
    CHECKBOX Y ENLACES
@@ -153,9 +140,9 @@ a {
     color: var(--naranja-griver);
 }
 
-a:hover {
-    color: var(--azul-oscuro);
-}
+    a:hover {
+        color: var(--azul-oscuro);
+    }
 
 /* =========================================
    COPYRIGHT
@@ -164,4 +151,15 @@ a:hover {
     color: #7d8595;
     margin-top: 20px;
     font-size: 12px;
+}
+
+/* =========================================
+   ALERTAS
+   ========================================= */
+.alert {
+    font-size: 15px;
+}
+
+#alertError {
+    transition: opacity 0.8s ease-out;
 }
