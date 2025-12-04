@@ -1,6 +1,33 @@
 ﻿@model SistemaCapacitacion.Core.ViewModels.UsersAdminViewModel
+@using SistemaCapacitacion.Core.ViewModels
+@using Microsoft.AspNetCore.Mvc.Rendering
+@inject SistemaCapacitacion.Data.ApplicationDbContext Db
 @{
     Layout = "~/Views/_LayoutAdmin.cshtml";
+
+    bool isAdmin = User.IsInRole("Admin");
+
+    // ViewModel para el modal de "Nuevo usuario"
+    var createUserVm = new CreateUserViewModel();
+
+    createUserVm.Departments = Db.Departments
+        .Where(d => d.IsActive == true)
+        .OrderBy(d => d.Name)
+        .Select(d => new SelectListItem
+        {
+            Value = d.IdDepartment.ToString(),
+            Text = d.Name
+        })
+        .ToList();
+
+    createUserVm.Roles = Db.Roles
+        .OrderBy(r => r.Name)
+        .Select(r => new SelectListItem
+        {
+            Value = r.IdRole.ToString(),
+            Text = r.Name
+        })
+        .ToList();
 }
 
 <section class="admin-main-section">
@@ -18,10 +45,13 @@
                 <span>⬇</span>
                 <span>Exportar usuarios</span>
             </button>
-            <button class="btn btn--primary">
-                <span>＋</span>
-                <span>Nuevo usuario</span>
+            @if(isAdmin){
+            <button type="button"
+                    class="btn btn--primary"
+                    data-open-create-user-modal>
+                + Nuevo usuario
             </button>
+            }
         </div>
     </header>
 
@@ -185,9 +215,16 @@
                     <article class="user-card">
                         <header class="user-card__header">
                             <div style="display:flex; gap:12px; align-items:center;">
-                                <div class="user-card__avatar">
-                                    <span>@u.Initials</span>
-                                </div>
+                                <div class="user-card__avatar" style="overflow:hidden; display:flex; align-items:center; justify-content:center;">
+                                    @if (!string.IsNullOrEmpty(u.PhotoUrl))
+                                      {
+                                           <img src="@u.PhotoUrl" alt="@u.FullName" style="width:100%; height:100%; object-fit:cover;" />
+                                      }
+                                      else
+                                        {
+                                           <span>@u.Initials</span>
+                                        }
+                                    </div>
                                 <div>
                                     <div class="user-card__title">@u.FullName</div>
                                     <div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:4px;">
@@ -255,3 +292,37 @@
         </div>
     </section>
 </section>
+
+@await Html.PartialAsync("_CreateUserModal", createUserVm)
+
+@section Scripts {
+    <script>
+        // --- Abrir / cerrar modal Nuevo Usuario ---
+        const createUserModal = document.getElementById('createUserModal');
+        const openCreateUserButtons = document.querySelectorAll('[data-open-create-user-modal]');
+        const closeCreateUserButtons = document.querySelectorAll('[data-create-user-close]');
+
+        if (createUserModal) {
+            openCreateUserButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    createUserModal.classList.add('modal--open');
+                });
+            });
+
+            closeCreateUserButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    createUserModal.classList.remove('modal--open');
+                });
+            });
+
+            createUserModal.addEventListener('click', (e) => {
+                if (e.target === createUserModal) {
+                    createUserModal.classList.remove('modal--open');
+                }
+            });
+        }
+    </script>
+}
+
+
+

@@ -1,0 +1,139 @@
+﻿@model SistemaCapacitacion.Core.ViewModels.CreateCourseViewModel
+
+<div id="courseModal" class="modal">
+    <div class="modal__dialog">
+        <button type="button" class="btn btn--ghost" data-course-close>✕</button>
+        <form asp-controller="Courses"
+              asp-action="CreateCourse"
+              method="post">
+            @Html.AntiForgeryToken()
+
+            <!-- HEADER -->
+            <div class="modal__header">
+                <div>
+                    <div class="modal__title">Crear Nuevo Curso</div>
+                    <div class="admin-section-caption">
+                        Completa la información del nuevo curso de capacitación en Griver.
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn--ghost" data-course-close>
+                    <span class="material-icons-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal__body">
+                <!-- Datos básicos -->
+                <div class="settings-section card" style="margin-bottom:16px;">
+                    <div class="settings-block__title" style="margin-bottom:8px;">
+                        Datos generales del curso
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-field">
+                            <label asp-for="Title" class="form-label"></label>
+                            <input asp-for="Title" class="form-input" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="CategoryId" class="form-label">Categoría</label>
+                            <select asp-for="CategoryId"
+                                    asp-items="Model.Categories"
+                                    class="form-select">
+                                <option value="">Seleccionar categoría</option>
+                            </select>
+                            <span asp-validation-for="CategoryId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-field" style="grid-column:1 / span 2;">
+                            <label asp-for="Description" class="form-label"></label>
+                            <textarea asp-for="Description"
+                                      rows="3"
+                                      class="form-input"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuración del curso -->
+                <div class="settings-section card" style="margin-bottom:16px;">
+                    <div class="settings-block__title" style="margin-bottom:8px;">
+                        Configuración del curso
+                    </div>
+
+                    <div style="display:flex; gap:24px; flex-wrap:wrap;">
+                        <label class="toggle-switch">
+                            <input asp-for="IsActive" type="checkbox" />
+                            <span class="toggle-switch__slider"></span>
+                            <span class="toggle-switch__label">Curso activo</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Contenido principal (CourseContent) -->
+                <div class="settings-section card">
+                    <div class="settings-block__title" style="margin-bottom:8px;">
+                        Contenido principal del curso
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-field">
+                            <label asp-for="ContentTitle" class="form-label">Título del contenido</label>
+                            <input asp-for="ContentTitle" class="form-input" />
+                            <span asp-validation-for="ContentTitle" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="ContentType" class="form-label"></label>
+                            <select asp-for="ContentType"
+                                    asp-items="Model.ContentTypes"
+                                    class="form-select">
+                                <option value="">Selecciona tipo de contenido</option>
+                            </select>
+                        </div>
+
+
+                        <div class="form-field" style="grid-column:1 / span 2;">
+                            <label asp-for="ContentUrl" class="form-label">URL del contenido</label>
+                            <input asp-for="ContentUrl" class="form-input" />
+                            <span asp-validation-for="ContentUrl" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="DurationMinutes" class="form-label">Duración (minutos)</label>
+                            <input asp-for="DurationMinutes" type="number" min="0" class="form-input" />
+                            <span asp-validation-for="DurationMinutes" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="MinimumScore" class="form-label">Puntaje mínimo (opcional)</label>
+                            <input asp-for="MinimumScore" type="number" min="0" class="form-input" />
+                            <span asp-validation-for="MinimumScore" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label class="form-label">Opciones</label>
+                            <label class="toggle-switch">
+                                <input asp-for="IsRequired" type="checkbox" />
+                                <span class="toggle-switch__slider"></span>
+                                <span class="toggle-switch__label">Contenido obligatorio</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal__footer">
+                <button type="button" class="btn btn--secondary" data-course-close>
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn--primary">
+                    Crear curso
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

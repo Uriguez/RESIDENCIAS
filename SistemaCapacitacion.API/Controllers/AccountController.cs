@@ -1,15 +1,16 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using System.Security.Claims;
 using SistemaCapacitacion.Core.ViewModels;
 using SistemaCapacitacion.Data;
+using SistemaCapacitacion.Data.Entities;
+using System.Security.Claims;
 
 namespace SistemaCapacitacion.API.Controllers;
 
-[AllowAnonymous]
+[Authorize]
 public class AccountController : Controller
 {
     private readonly ApplicationDbContext _db;
@@ -21,6 +22,7 @@ public class AccountController : Controller
         _env = env;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public IActionResult Login(string? returnUrl = null)
     {
@@ -28,13 +30,15 @@ public class AccountController : Controller
         return View(new LoginViewModel());
     }
 
+    [AllowAnonymous]
     [ValidateAntiForgeryToken]
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel vm, string? returnUrl = null)
     {
         ViewData["ReturnUrl"] = returnUrl;
 
-        if (!ModelState.IsValid) return View(vm);
+        if (!ModelState.IsValid)
+            return View(vm);
 
         var user = await _db.Users
             .AsNoTracking()
@@ -42,7 +46,6 @@ public class AccountController : Controller
                 u.Email == vm.Email &&
                 (u.Status == "Active" || u.Status == "Activo"));
 
-        // Comparación directa con el campo Password de la tabla
         var ok = user is not null
                  && !string.IsNullOrEmpty(user.Passwords)
                  && user.Passwords == vm.Passwords;
@@ -53,14 +56,11 @@ public class AccountController : Controller
             return View(vm);
         }
 
-
-        // 3) Resolver rol por el puesto (Position) o lo que definas
         string role = "Employee";
         var pos = (user.Position ?? "").ToLowerInvariant();
         if (pos.Contains("admin")) role = "Admin";
         else if (pos.Contains("recursos humanos") || pos.Contains("rh")) role = "RH";
 
-        // 4) Crear cookie de autenticación
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.IdUser.ToString()),
@@ -80,14 +80,13 @@ public class AccountController : Controller
 
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, props);
 
-        // 5) Redirección por rol
         if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
             return Redirect(returnUrl);
 
         return role switch
         {
             "Admin" => RedirectToAction("Dashboard", "Admin"),
-            "RH" => RedirectToAction("Inicio", "Admin"),     // o tu panel de RH si es distinto
+            "RH" => RedirectToAction("Dashboard", "Admin"),
             _ => RedirectToAction("Inicio", "Empleado")
         };
     }
@@ -99,6 +98,4 @@ public class AccountController : Controller
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction(nameof(Login));
     }
-
-    public IActionResult Denied() => View(); // opcional crear una vista simple
 }

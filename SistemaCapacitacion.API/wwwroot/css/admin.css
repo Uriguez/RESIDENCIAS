@@ -5,7 +5,6 @@
    ========================================================================== */
 
 :root {
-    /* Paleta heredada / complementaria */
     --griver-navy-900: #0B2447;
     --griver-navy-700: #153a63;
     --griver-navy-600: #1d3557;
@@ -58,7 +57,14 @@
     display: flex;
     min-height: 100vh;
 }
-
+.admin-subtitle {
+    font-size: 0.9rem; /* Más pequeño (aprox 14px) */
+    color: #64748b; /* Gris azulado elegante (no negro puro) */
+    font-weight: 500; /* Un poco de peso, pero no negrita */
+    letter-spacing: 0.5px; /* Separación sutil entre letras */
+    margin-top: -5px; /* Lo acerca un poco al título principal */
+    margin-bottom: 20px;
+}
 /* ---- SIDEBAR ------------------------------------------------------------ */
 
 .admin-sidebar {
@@ -68,7 +74,14 @@
     display: flex;
     flex-direction: column;
     padding: 16px 18px 12px;
+    /* <-- aquí viene la magia */
+    position: fixed; /* se queda pegado a la ventana */
+    top: 0;
+    left: 0;
+    height: 100vh; /* ocupa todo el alto */
+    z-index: 50;
 }
+
 
 .admin-sidebar__brand {
     display: flex;
@@ -212,7 +225,9 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    margin-left: 260px; /* IMPORTANTÍSIMO: deja espacio para el sidebar fijo */
 }
+
 
 /* TOPBAR */
 
@@ -496,6 +511,74 @@
 
 .activity-card {
     padding: 16px 18px;
+}
+/* Tarjetas grandes de la parte baja del dashboard */
+.activity-card,
+.top-courses-card {
+    border-radius: 26px;
+    padding: 22px 24px;
+    background: radial-gradient(circle at top left, #eef2ff 0, #ffffff 40%, #f9fafb 100%);
+    border: 1px solid rgba(148, 163, 184, 0.25);
+    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+    position: relative;
+    overflow: hidden;
+}
+
+    /* “barra” de color arriba de la tarjeta */
+    .activity-card::before,
+    .top-courses-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 4px;
+        width: 100%;
+        background: linear-gradient(90deg, #4f46e5, #22c55e);
+        opacity: 0.9;
+    }
+
+    /* cabecera de cada tarjeta */
+    .activity-card .admin-section-title,
+    .top-courses-card .admin-section-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+    }
+
+    .activity-card .admin-section-caption,
+    .top-courses-card .admin-section-caption {
+        font-size: 0.9rem;
+        color: var(--admin-text-soft);
+    }
+
+    /* estado vacío (cuando no hay datos) */
+    .activity-card .empty-state,
+    .top-courses-card .empty-state {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: rgba(239, 246, 255, 0.9);
+        border: 1px dashed rgba(129, 140, 248, 0.6);
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 0.9rem;
+        color: #4b5563;
+    }
+
+.empty-state__icon {
+    font-size: 1.4rem;
+    line-height: 1;
+    opacity: 0.8;
+}
+
+.empty-state__title {
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.empty-state__text {
+    font-size: 0.85rem;
+    color: var(--admin-text-soft);
 }
 
 .activity-list {
@@ -1130,6 +1213,23 @@
     font-size: 0.86rem;
 }
 
+/* Contenedor que limita el alto de las gráficas */
+.chart-area {
+    position: relative;
+    width: 100%;
+    height: 220px;        /* ajusta: 220–320px según lo quieras */
+    margin-top: 12px;
+}
+
+/* El canvas ocupa exactamente el alto del contenedor */
+.chart-area canvas {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+
 /* Placeholder para canvas/gráficas */
 
 .chart-placeholder {
@@ -1139,159 +1239,166 @@
     background: repeating-linear-gradient( -45deg, #f3f4f6, #f3f4f6 4px, #e5e7eb 4px, #e5e7eb 8px );
 }
 
-    /* ==========================================================================
+/* ==========================================================================
    DASHBOARD – MAQUETADO ESPECÍFICO (similar a Figma)
    ========================================================================== */
 
-    .dashboard-wrapper {
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-    }
+.dashboard-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
 
-    .dashboard-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        gap: 18px;
-        margin-bottom: 18px;
-    }
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 18px;
+}
 
-    .dashboard-header__caption {
-        font-size: 0.82rem;
-        color: var(--admin-text-soft);
-        margin-top: 4px;
-    }
+.dashboard-header__caption {
+    font-size: 0.82rem;
+    color: var(--admin-text-soft);
+    margin-top: 4px;
+}
 
-    /* Pastilla de estado "Sistema Activo" */
+/* Pastilla de estado "Sistema Activo" */
 
-    .status-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        padding: 5px 12px;
-        border-radius: 999px;
-        font-size: 0.8rem;
-        border: 1px solid transparent;
-    }
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    border: 1px solid transparent;
+    color: green;
+}
 
-    .status-pill__dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 999px;
-        background-color: #22c55e;
-    }
+.status-pill__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background-color: #22c55e;
+}
 
-    .status-pill--green {
-        background-color: #ecfdf5;
-        border-color: #bbf7d0;
-        color: #15803d;
-    }
+.status-pill--green {
+    background-color: #ecfdf5;
+    border-color: #bbf7d0;
+    color: #15803d;
+}
 
-    /* Filas de dashboard */
+/* Filas de dashboard */
 
-    .dashboard-row {
-        margin-top: 18px;
-    }
+.dashboard-row {
+    margin-top: 18px;
+}
 
-    .dashboard-row--split {
-        display: grid;
-        grid-template-columns: 1.4fr 1fr;
-        gap: 16px;
-    }
+.dashboard-row--split {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 16px;
+}
 
-    /* --------------------------------------------------------------------------
+/* --------------------------------------------------------------------------
    Cursos más populares (columna derecha)
    -------------------------------------------------------------------------- */
 
-    .top-courses-card {
-        padding: 16px 18px;
-        font-size: 0.86rem;
+.top-courses-card {
+    padding: 16px 18px;
+    font-size: 0.86rem;
+}
+
+.top-courses-list {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+}
+
+.top-course-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--admin-border-subtle);
+}
+
+    .top-course-item:last-child {
+        border-bottom: none;
     }
 
-    .top-courses-list {
-        list-style: none;
-        margin: 8px 0 0;
-        padding: 0;
+.top-course-item__left {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.top-course-item__rank {
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    background-color: #eef2ff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--griver-navy-700);
+}
+
+.top-course-item__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.top-course-item__title {
+    font-weight: 500;
+}
+
+.top-course-item__meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.top-course-item__meta-text {
+    font-size: 0.78rem;
+    color: var(--admin-text-soft);
+}
+
+.top-course-item__right {
+    text-align: right;
+}
+
+.top-course-item__percent {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #16a34a;
+}
+.tab-panel {
+    display: none;
+}
+
+.tab-panel--active {
+    display: block;
+}
+/* Responsive específico del dashboard */
+
+@media (max-width: 1024px) {
+    .dashboard-row--split {
+        grid-template-columns: minmax(0, 1fr);
     }
+}
 
-    .top-course-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 10px;
-        padding: 9px 0;
-        border-bottom: 1px solid var(--admin-border-subtle);
-    }
-
-        .top-course-item:last-child {
-            border-bottom: none;
-        }
-
-    .top-course-item__left {
-        display: flex;
-        align-items: flex-start;
-        gap: 10px;
-    }
-
-    .top-course-item__rank {
-        width: 24px;
-        height: 24px;
-        border-radius: 999px;
-        background-color: #eef2ff;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.78rem;
-        font-weight: 600;
-        color: var(--griver-navy-700);
-    }
-
-    .top-course-item__info {
-        display: flex;
+@media (max-width: 768px) {
+    .dashboard-header {
         flex-direction: column;
-        gap: 2px;
+        align-items: flex-start;
     }
-
-    .top-course-item__title {
-        font-weight: 500;
-    }
-
-    .top-course-item__meta {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .top-course-item__meta-text {
-        font-size: 0.78rem;
-        color: var(--admin-text-soft);
-    }
-
-    .top-course-item__right {
-        text-align: right;
-    }
-
-    .top-course-item__percent {
-        font-weight: 600;
-        font-size: 0.9rem;
-        color: #16a34a;
-    }
-
-    /* Responsive ajustes específicos del dashboard */
-
-    @media (max-width: 1024px) {
-        .dashboard-row--split {
-            grid-template-columns: minmax(0, 1fr);
-        }
-    }
-
-    @media (max-width: 768px) {
-        .dashboard-header {
-            flex-direction: column;
-            align-items: flex-start;
-        }
-    }
+}
 
 /* ==========================================================================
    RESPONSIVE BÁSICO
@@ -1323,10 +1430,14 @@
         overflow-x: auto;
         border-right: none;
         border-bottom: 1px solid var(--admin-border-subtle);
+        /* Desactivar el “fixed” en móvil */
+        position: static;
+        height: auto;
     }
 
     .admin-shell {
         flex: none;
+        margin-left: 0; /* ya no hay sidebar fijo a la izquierda */
     }
 
     .metric-grid,
@@ -1347,130 +1458,136 @@
    DECORACIÓN EXTRA DEL DASHBOARD
    ========================================================================== */
 
-/* Fondo suave en la zona de contenido derecho */
+/* Si quieres el fondo degradado en el contenido, descomenta este bloque
 .admin-main {
-    /*background: radial-gradient(circle at 0 0, rgba(129, 140, 248, 0.18), transparent 55%), radial-gradient(circle at 100% 100%, rgba(45, 212, 191, 0.18), transparent 55%), var(--admin-bg);
-}*/
-    /* Cabecera del dashboard más protagonista */
-    .admin-page-title {
-        font-size: 1.6rem;
-    }
+    background:
+        radial-gradient(circle at 0 0, rgba(129, 140, 248, 0.18), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(45, 212, 191, 0.18), transparent 55%),
+        var(--admin-bg);
+}
+*/
 
-    .admin-page-subtitle {
-        position: relative;
-        padding-left: 10px;
-    }
+.admin-page-title {
+    font-size: 1.6rem;
+}
 
-        .admin-page-subtitle::before {
-            content: "";
-            position: absolute;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 3px;
-            height: 70%;
-            border-radius: 999px;
-            background: linear-gradient(180deg, #4f46e5, #22c55e);
-        }
-    /* Tarjetas de métricas superiores con degradado suave */
-    .metric-card {
-        border-radius: 24px;
-        background: linear-gradient(145deg, #ffffff, #f3f4ff);
-        box-shadow: var(--shadow-card);
-    }
-    /* Bloques grandes: Actividad, Acciones rápidas, Métricas avanzadas */
-    .activity-card,
-    .quick-actions-card,
-    .analytics-card {
-        border-radius: 26px;
-        background: linear-gradient(145deg, #ffffff, #f9fafb);
-        box-shadow: var(--shadow-card);
-    }
-    /* Línea de tiempo en Actividad Reciente */
-    .activity-list {
-        margin-top: 8px;
-        padding-left: 4px;
-        position: relative;
-    }
+.admin-page-subtitle {
+    position: relative;
+    padding-left: 10px;
+}
 
-        .activity-list::before {
-            content: "";
-            position: absolute;
-            left: 26px;
-            top: 0;
-            bottom: 0;
-            width: 2px;
-            background: rgba(209, 213, 219, 0.9);
-        }
-
-    .activity-item {
-        position: relative;
-        padding-left: 10px;
-    }
-
-    .activity-item__left {
-        position: relative;
-    }
-
-    .activity-item__badge {
-        border: 1px solid rgba(129, 140, 248, 0.45);
-        background: #eef2ff;
-    }
-    /* Punto brillante sobre la línea de tiempo */
-    .activity-item__left::before {
+    .admin-page-subtitle::before {
         content: "";
         position: absolute;
-        left: 20px;
-        top: 32px;
-        width: 10px;
-        height: 10px;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 3px;
+        height: 70%;
         border-radius: 999px;
-        background: #4f46e5;
-        box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.35);
-    }
-    /* Métricas avanzadas un poco más coloridas */
-    .simple-metric {
-        background: linear-gradient(145deg, #f9fafb, #eef2ff);
-        border-color: rgba(129, 140, 248, 0.25);
-    }
-    /* ==========================================================================
-   TARJETAS DE CURSO, USUARIO, PROGRESO, GRÁFICAS
-   ========================================================================== */
-    .course-card,
-    .user-card,
-    .progress-card {
-        ...
-    }
-    /* Grid de tarjetas de usuarios en Gestión de Usuarios */
-    .user-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 16px;
-        margin-top: 16px;
-    }
-    /* Ajustes responsive del grid de usuarios */
-    @media (max-width: 1024px) {
-        .user-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
+        background: linear-gradient(180deg, #4f46e5, #22c55e);
     }
 
-    @media (max-width: 768px) {
-        .user-grid {
-            grid-template-columns: minmax(0, 1fr);
-        }
+/* Tarjetas de métricas superiores con degradado suave */
+.metric-card {
+    border-radius: 24px;
+    background: linear-gradient(145deg, #ffffff, #f3f4ff);
+    box-shadow: var(--shadow-card);
+}
+
+/* Bloques grandes: Actividad, Acciones rápidas, Métricas avanzadas */
+.activity-card,
+.quick-actions-card,
+.analytics-chart-card {
+    border-radius: 26px;
+    background: linear-gradient(145deg, #ffffff, #f9fafb);
+    box-shadow: var(--shadow-card);
+}
+
+/* Línea de tiempo en Actividad Reciente */
+.activity-list {
+    margin-top: 8px;
+    padding-left: 4px;
+    position: relative;
+}
+
+    .activity-list::before {
+        content: "";
+        position: absolute;
+        left: 26px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: rgba(209, 213, 219, 0.9);
     }
-    /* Avatar redondo con iniciales (se reaprovecha en varias vistas) */
-    .user-card__avatar {
-        width: 42px;
-        height: 42px;
-        border-radius: 999px;
-        background-color: #e5edff;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        font-size: 0.9rem;
-        color: #1d4ed8;
+
+.activity-item {
+    position: relative;
+    padding-left: 10px;
+}
+
+.activity-item__left {
+    position: relative;
+}
+
+.activity-item__badge {
+    border: 1px solid rgba(129, 140, 248, 0.45);
+    background: #eef2ff;
+}
+
+/* Punto brillante sobre la línea de tiempo */
+.activity-item__left::before {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: 32px;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #4f46e5;
+    box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.35);
+}
+
+/* Métricas avanzadas un poco más coloridas */
+.simple-metric {
+    background: linear-gradient(145deg, #f9fafb, #eef2ff);
+    border-color: rgba(129, 140, 248, 0.25);
+}
+
+/* ==========================================================================
+   GRID DE TARJETAS DE USUARIO – GESTIÓN DE USUARIOS
+   ========================================================================== */
+
+.user-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+@media (max-width: 1024px) {
+    .user-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
+
+@media (max-width: 768px) {
+    .user-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+/* Avatar redondo con iniciales */
+.user-card__avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    background-color: #e5edff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #1d4ed8;
+}
+

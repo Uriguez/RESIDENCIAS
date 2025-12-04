@@ -1,0 +1,163 @@
+﻿@model SistemaCapacitacion.Core.ViewModels.CreateUserViewModel
+
+<div id="createUserModal" class="modal">
+    <div class="modal__dialog">
+        <form asp-controller="Admin"
+              asp-action="CreateUser"
+              method="post"
+              id="createUserForm">
+            @Html.AntiForgeryToken()
+
+            <!-- HEADER -->
+            <div class="modal__header">
+                <div>
+                    <div class="modal__title">Crear Nuevo Usuario</div>
+                    <div class="admin-section-caption">
+                        Agrega un nuevo empleado o becario al sistema Griver.
+                    </div>
+                </div>
+                <button type="button" class="btn btn--ghost" data-create-user-close>
+                    <span class="material-icons-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- BODY -->
+            <div class="modal__body">
+
+                <!-- ================== BLOQUE: DATOS BÁSICOS ================== -->
+                <div class="settings-section card" style="margin-bottom:16px;">
+                    <div class="settings-block__title" style="margin-bottom:10px;">
+                        <span class="material-icons-outlined" style="font-size:18px;margin-right:4px;">person_add</span>
+                        Crear nuevo usuario
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-field">
+                            <label asp-for="FullName" class="form-label"></label>
+                            <input asp-for="FullName" class="form-input" />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-input" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" type="password" class="form-input" />
+                            <small class="admin-section-caption">
+                                Si lo dejas vacío y está activado “Generar contraseña temporal”,
+                                el sistema generará una contraseña segura automáticamente.
+                            </small>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="Phone" class="form-label"></label>
+                            <input asp-for="Phone" class="form-input" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================== BLOQUE: INFORMACIÓN ORGANIZACIONAL ================== -->
+                <div class="settings-section card" style="margin-bottom:16px;">
+                    <div class="settings-block__title" style="margin-bottom:8px;">
+                        <span class="material-icons-outlined" style="font-size:18px;margin-right:4px;">badge</span>
+                        Información organizacional
+                    </div>
+
+                    <div class="form-grid-2">
+                        <div class="form-field">
+                            <label asp-for="RoleId" class="form-label"></label>
+                            <select asp-for="RoleId"
+                                    asp-items="Model.Roles"
+                                    class="form-select">
+                                <option value="">Seleccionar rol</option>
+                            </select>
+                            <span asp-validation-for="RoleId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-field">
+                            <label asp-for="DepartmentId" class="form-label"></label>
+                            <select asp-for="DepartmentId"
+                                    asp-items="Model.Departments"
+                                    class="form-select">
+                                <option value="">Seleccionar departamento</option>
+                            </select>
+                            <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================== BLOQUE: CONFIGURACIÓN DE ACCESO ================== -->
+                <div class="settings-section card">
+                    <div class="settings-block__title" style="margin-bottom:8px;">
+                        <span class="material-icons-outlined" style="font-size:18px;margin-right:4px;">security</span>
+                        Configuración de acceso
+                    </div>
+
+                    <div class="settings-toggle-row">
+                        <label class="settings-toggle-row__label">
+                            @Html.DisplayNameFor(m => m.GenerateTempPassword)
+                            <div class="settings-block__caption">
+                                Si la contraseña está vacía, se generará una contraseña segura que el usuario podrá cambiar.
+                            </div>
+                        </label>
+                        <div class="form-switch">
+                            <input asp-for="GenerateTempPassword" class="form-check-input" type="checkbox" />
+                        </div>
+                    </div>
+
+                    <div class="settings-toggle-row">
+                        <label class="settings-toggle-row__label">
+                            @Html.DisplayNameFor(m => m.SendWelcomeEmail)
+                            <div class="settings-block__caption">
+                                (Opcional) Enviar credenciales e instrucciones por correo.
+                            </div>
+                        </label>
+                        <div class="form-switch">
+                            <input asp-for="SendWelcomeEmail" class="form-check-input" type="checkbox" />
+                        </div>
+                    </div>
+
+                    <div class="settings-toggle-row">
+                        <label class="settings-toggle-row__label">
+                            @Html.DisplayNameFor(m => m.RequirePasswordChange)
+                            <div class="settings-block__caption">
+                                Obligar al usuario a cambiar su contraseña en el primer acceso.
+                            </div>
+                        </label>
+                        <div class="form-switch">
+                            <input asp-for="RequirePasswordChange" class="form-check-input" type="checkbox" />
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="settings-toggle-row">
+                        <label class="settings-toggle-row__label">
+                            @Html.DisplayNameFor(m => m.IsActive)
+                            <div class="settings-block__caption">
+                                Si está desactivado, el usuario no podrá iniciar sesión.
+                            </div>
+                        </label>
+                        <div class="form-switch">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal__footer">
+                <button type="button" class="btn btn--secondary" data-create-user-close>
+                    Cancelar
+                </button>
+                <button type="submit" class="btn btn--primary">
+                    Crear usuario
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

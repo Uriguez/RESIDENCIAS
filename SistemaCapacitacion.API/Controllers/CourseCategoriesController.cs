@@ -13,14 +13,14 @@ public class CourseCategoriesController : ControllerBase
     public CourseCategoriesController(ApplicationDbContext db) => _db = db;
 
     [HttpGet]
-    public async Task<IActionResult> Get() => Ok(await _db.CourseCategories.ToListAsync());
+    public async Task<IActionResult> Get() => Ok(await _db.CourseCategory.ToListAsync());
 
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CourseCategory model)
     {
         if (string.IsNullOrWhiteSpace(model.Name))
             return BadRequest("Name es requerido.");
-        _db.CourseCategories.Add(model);
+        _db.CourseCategory.Add(model);
         await _db.SaveChangesAsync();
         return Ok(model);
     }

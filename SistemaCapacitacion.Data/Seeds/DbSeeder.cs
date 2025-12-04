@@ -48,16 +48,16 @@ public static class DbSeeder
         }
 
         // Categoría + Curso + Contenido de ejemplo
-        if (!db.CourseCategories.Any())
+        if (!db.CourseCategory.Any())
         {
-            db.CourseCategories.Add(new CourseCategory { Name = "Tecnología", Description = "Cursos de TI" });
+            db.CourseCategory.Add(new CourseCategory { Name = "Tecnología", Description = "Cursos de TI" });
         }
 
         await db.SaveChangesAsync();
 
         if (!db.Courses.Any())
         {
-            var categId = db.CourseCategories.Select(c => c.IdCourCateg).First();
+            var categId = db.CourseCategory.Select(c => c.IdCourCateg).First();
             var createdBy = db.Users.Select(u => u.IdUser).First();
 
             db.Courses.Add(new Course

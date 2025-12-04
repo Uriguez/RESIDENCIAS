@@ -29,6 +29,9 @@ namespace SistemaCapacitacion.Core.ViewModels
         /// </summary>
         public double AverageCompletion { get; set; }
 
+        public List<AssignUserItemViewModel> AllUsers { get; set; } = new();
+
+
         /// <summary>
         /// Lista de cursos mostrados en la grilla principal.
         /// </summary>

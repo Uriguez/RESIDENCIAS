@@ -1,10 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SistemaCapacitacion.Core.ViewModels;
 using SistemaCapacitacion.Data;
+using SistemaCapacitacion.Data.Entities;
+using System;
+using System.Globalization;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace SistemaCapacitacion.API.Controllers
 {
@@ -145,7 +150,8 @@ namespace SistemaCapacitacion.API.Controllers
                     u.Status,
                     DepartmentName = d != null ? d.Name : null,
                     RoleName = r != null ? r.Name : null,
-                    u.Position
+                    u.Position,
+                    u.PhotoUrl 
                 };
 
             // Filtros de rol y estado (para los chips de filtros de la vista)
@@ -200,7 +206,8 @@ namespace SistemaCapacitacion.API.Controllers
                         Position = position,
                         CoursesEnrolled = enrolled,
                         CoursesCompleted = completed,
-                        ProgressPercent = progress
+                        ProgressPercent = progress,
+                        PhotoUrl = u.PhotoUrl
                     };
                 })
                 .ToList();
@@ -244,5 +251,384 @@ namespace SistemaCapacitacion.API.Controllers
 
             return createdAt.ToString("dd/MM/yyyy");
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateUser(CreateUserViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Verifica la información del formulario.";
+                return RedirectToAction("Users");
+            }
+
+            // Validar correo único
+            var exists = await _db.Users.AnyAsync(u => u.Email == model.Email);
+            if (exists)
+            {
+                TempData["Error"] = "Ya existe un usuario con ese correo.";
+                return RedirectToAction("Users");
+            }
+
+            // Rol seleccionado
+            var role = await _db.Roles
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.IdRole == model.RoleId);
+
+            if (role == null)
+            {
+                TempData["Error"] = "Rol seleccionado no es válido.";
+                return RedirectToAction("Users");
+            }
+
+            // Determinar contraseña final
+            string password = (model.Password ?? string.Empty).Trim();
+            if (string.IsNullOrEmpty(password))
+            {
+                if (!model.GenerateTempPassword)
+                {
+                    TempData["Error"] = "Debes escribir una contraseña o activar 'Generar contraseña temporal'.";
+                    return RedirectToAction("Users");
+                }
+
+                password = GenerateTempPassword(10);
+            }
+
+            // Separar nombre y apellidos
+            string firstName = string.Empty;
+            string lastName = string.Empty;
+            var full = (model.FullName ?? string.Empty).Trim();
+
+            if (!string.IsNullOrEmpty(full))
+            {
+                var parts = full.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length > 0) firstName = parts[0];
+                if (parts.Length > 1) lastName = string.Join(" ", parts.Skip(1));
+            }
+
+            var now = DateTime.UtcNow;
+
+            var user = new User
+            {
+                IdUser = Guid.NewGuid(),
+                FirstName = firstName,
+                LastName = lastName,
+                Email = model.Email,
+                Position = role.Name,                // "Administrador", "Recursos Humanos", etc.
+                DepartmentId = model.DepartmentId,
+                Status = model.IsActive ? "Active" : "Inactive",
+                HireDate = now,
+                CreatedAt = now,
+                UpdatedAt = now,
+                Passwords = password                  // se guarda en dbo.User.Passwords
+            };
+
+            _db.Users.Add(user);
+            await _db.SaveChangesAsync();
+
+            // Si luego quieres usar dbo.UserRole, aquí puedes insertar relación.
+
+            TempData["Success"] = "Usuario creado correctamente.";
+            return RedirectToAction("Users");
+        }
+
+        private static string GenerateTempPassword(int length = 10)
+        {
+            const string chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@$%";
+            var bytes = new byte[length];
+            RandomNumberGenerator.Fill(bytes);
+
+            var sb = new StringBuilder(length);
+            for (int i = 0; i < length; i++)
+            {
+                sb.Append(chars[bytes[i] % chars.Length]);
+            }
+            return sb.ToString();
+        }
+
+        // ...
+
+        public async Task<IActionResult> Analytics()
+    {
+        var vm = new AdvancedAnalyticsViewModel();
+
+        var now = DateTime.UtcNow;
+        var today = now.Date;
+
+        // ───────────────── Tarjetas superiores ─────────────────
+
+        vm.TotalUsers = await _db.Users.CountAsync();
+
+        // Usuarios activos = con progreso en últimos 30 días
+        var startCurrent = today.AddDays(-30);
+        var startPrevious = today.AddDays(-60);
+        var endPrevious = startCurrent.AddDays(-1);
+
+        var activeCurrent = await _db.Progress
+            .Where(p => p.LastAccessed >= startCurrent)
+            .Select(p => p.UserId)
+            .Distinct()
+            .CountAsync();
+
+        var activePrevious = await _db.Progress
+            .Where(p => p.LastAccessed >= startPrevious && p.LastAccessed < startCurrent)
+            .Select(p => p.UserId)
+            .Distinct()
+            .CountAsync();
+
+        vm.ActiveUsersLast30Days = activeCurrent;
+        vm.ActiveUsersDeltaPercent = activePrevious == 0
+            ? 0
+            : Math.Round(((double)activeCurrent - activePrevious) / activePrevious * 100, 1);
+
+        // Tasa global de finalización
+        var totalAssignments = await _db.UserCourses.CountAsync();
+        var completedAssignments = await _db.UserCourses
+            .CountAsync(uc => uc.Status == "Completed");
+
+        vm.GlobalCompletionRate = totalAssignments == 0
+            ? 0
+            : Math.Round((double)completedAssignments / totalAssignments * 100, 1);
+
+        // Para el delta, comparamos últimos 30 días vs 30 días previos
+        var completedCurrentPeriod = await _db.UserCourses
+            .Where(uc => uc.CompletionDate != null && uc.CompletionDate >= startCurrent)
+            .CountAsync();
+
+        var completedPreviousPeriod = await _db.UserCourses
+            .Where(uc => uc.CompletionDate != null &&
+                         uc.CompletionDate >= startPrevious &&
+                         uc.CompletionDate < startCurrent)
+            .CountAsync();
+
+        vm.CompletionDeltaPercent = completedPreviousPeriod == 0
+            ? 0
+            : Math.Round(((double)completedCurrentPeriod - completedPreviousPeriod) /
+                         completedPreviousPeriod * 100, 1);
+
+        // Satisfacción promedio: usamos Progress.Score como "calificación" 0–100
+        var scoresCurrent = await _db.Progress
+            .Where(p => p.Score != null)
+            .Select(p => p.Score!.Value)
+            .ToListAsync();
+
+        vm.AverageScore = scoresCurrent.Count == 0
+            ? 0
+            : Math.Round(scoresCurrent.Average(), 1);
+
+        // Delta de score entre últimos 30 días y 30 previos
+        var scoresPrevWindow = await _db.Progress
+            .Where(p => p.Score != null &&
+                        p.LastAccessed >= startPrevious &&
+                        p.LastAccessed < startCurrent)
+            .Select(p => p.Score!.Value)
+            .ToListAsync();
+
+        var avgCurrentScore = scoresCurrent.Count == 0 ? 0 : scoresCurrent.Average();
+        var avgPrevScore = scoresPrevWindow.Count == 0 ? 0 : scoresPrevWindow.Average();
+
+        vm.ScoreDeltaPercent = avgPrevScore == 0
+            ? 0
+            : Math.Round((avgCurrentScore - avgPrevScore) / avgPrevScore * 100, 1);
+
+        // Horas de aprendizaje = sum(TimeSpentMinutes) / 60
+        var minutesCurrent = await _db.Progress
+            .Where(p => p.LastAccessed >= startCurrent)
+            .Select(p => p.TimeSpentMinutes)
+            .ToListAsync();
+
+        vm.TotalLearningHours = minutesCurrent.Sum() / 60.0;
+
+        var minutesPrev = await _db.Progress
+            .Where(p => p.LastAccessed >= startPrevious &&
+                        p.LastAccessed < startCurrent)
+            .Select(p => p.TimeSpentMinutes)
+            .ToListAsync();
+
+        var hoursCurrent = minutesCurrent.Sum() / 60.0;
+        var hoursPrev = minutesPrev.Sum() / 60.0;
+
+        vm.LearningHoursDeltaPercent = hoursPrev == 0
+            ? 0
+            : Math.Round((hoursCurrent - hoursPrev) / hoursPrev * 100, 1);
+
+        // ───────────────── Resumen general (últimos 6 meses) ─────────────────
+
+        var start6Months = new DateTime(today.Year, today.Month, 1).AddMonths(-5);
+
+        // Inscripciones / finalizaciones por mes
+        var rawMonthlyEnrollments = await _db.UserCourses
+            .Where(uc => uc.AssignedDate != null && uc.AssignedDate >= start6Months)
+            .GroupBy(uc => new { uc.AssignedDate!.Value.Year, uc.AssignedDate!.Value.Month })
+            .Select(g => new
+            {
+                g.Key.Year,
+                g.Key.Month,
+                Enrolled = g.Count(),
+                Completed = g.Count(uc => uc.Status == "Completed")
+            })
+            .ToListAsync();
+
+        var monthlyEnrollments = new List<MonthlyEnrollmentPoint>();
+        for (int i = 0; i < 6; i++)
+        {
+            var date = start6Months.AddMonths(i);
+            var data = rawMonthlyEnrollments
+                .FirstOrDefault(x => x.Year == date.Year && x.Month == date.Month);
+
+            monthlyEnrollments.Add(new MonthlyEnrollmentPoint
+            {
+                Label = $"{CultureInfo.GetCultureInfo("es-MX").DateTimeFormat.GetAbbreviatedMonthName(date.Month)} {date.Year}",
+                Enrolled = data?.Enrolled ?? 0,
+                Completed = data?.Completed ?? 0
+            });
+        }
+        vm.MonthlyEnrollments = monthlyEnrollments;
+
+        // Crecimiento de usuarios por mes
+        var rawMonthlyUsers = await _db.Users
+            .Where(u => u.CreatedAt >= start6Months)
+            .GroupBy(u => new { u.CreatedAt.Year, u.CreatedAt.Month })
+            .Select(g => new
+            {
+                g.Key.Year,
+                g.Key.Month,
+                NewUsers = g.Count()
+            })
+            .ToListAsync();
+
+        var monthlyUsers = new List<MonthlyUserGrowthPoint>();
+        int accumulated = 0;
+
+        for (int i = 0; i < 6; i++)
+        {
+            var date = start6Months.AddMonths(i);
+            var data = rawMonthlyUsers
+                .FirstOrDefault(x => x.Year == date.Year && x.Month == date.Month);
+
+            var newUsers = data?.NewUsers ?? 0;
+            accumulated += newUsers;
+
+            monthlyUsers.Add(new MonthlyUserGrowthPoint
+            {
+                Label = $"{CultureInfo.GetCultureInfo("es-MX").DateTimeFormat.GetAbbreviatedMonthName(date.Month)} {date.Year}",
+                NewUsers = newUsers,
+                AccumulatedUsers = accumulated
+            });
+        }
+        vm.MonthlyUserGrowth = monthlyUsers;
+
+        // ───────────────── Análisis por curso ─────────────────
+
+        var coursePerf = await _db.UserCourses
+            .Include(uc => uc.Course)
+            .GroupBy(uc => uc.CourseId)
+            .Select(g => new CoursePerformanceItem
+            {
+                CourseTitle = g.Select(x => x.Course.Title).FirstOrDefault() ?? "Curso",
+                Enrolled = g.Count(),
+                Completed = g.Count(x => x.Status == "Completed")
+            })
+            .OrderByDescending(x => x.Enrolled)
+            .ToListAsync();
+
+        vm.CoursePerformance = coursePerf;
+
+        // "Satisfacción" por curso = promedio de Score del progreso de ese curso
+        var courseScores = await _db.Progress
+            .Where(p => p.Score != null)
+            .Include(p => p.Course)
+            .GroupBy(p => p.CourseId)
+            .Select(g => new CourseScoreItem
+            {
+                CourseTitle = g.Select(x => x.Course.Title).FirstOrDefault() ?? "Curso",
+                AverageScore = g.Average(x => x.Score) ?? 0
+            })
+            .OrderByDescending(x => x.AverageScore)
+            .ToListAsync();
+
+        vm.CourseScores = courseScores;
+
+        // ───────────────── Participación por departamento ─────────────────
+
+        var totalUsersForDept = await _db.Users.CountAsync();
+
+        var deptData = await _db.Users
+            .Include(u => u.Department)
+            .Where(u => u.DepartmentId != null)
+            .GroupBy(u => new { u.DepartmentId, u.Department.Name })
+            .Select(g => new DepartmentParticipationItem
+            {
+                DepartmentName = g.Key.Name,
+                UsersCount = g.Count()
+            })
+            .ToListAsync();
+
+        foreach (var d in deptData)
+        {
+            d.Percent = totalUsersForDept == 0
+                ? 0
+                : Math.Round((double)d.UsersCount / totalUsersForDept * 100, 1);
+        }
+
+        vm.DepartmentParticipation = deptData;
+
+        // ───────────────── Progreso temporal (últimas 6 semanas) ─────────────────
+
+        // Tomamos las últimas 6 semanas completas
+        // referenciando lunes como inicio de semana
+        int diffToMonday = ((int)today.DayOfWeek + 6) % 7; // 0=lunes, ..., 6=domingo
+        var thisWeekStart = today.AddDays(-diffToMonday);
+        var start6Weeks = thisWeekStart.AddDays(-7 * 5); // 6 semanas incluyendo la actual
+
+        var progressLastWeeks = await _db.Progress
+            .Where(p => p.LastAccessed >= start6Weeks)
+            .Select(p => new { p.LastAccessed, p.CompletionPercentage })
+            .ToListAsync();
+
+        var weeklyPoints = new List<WeeklyProgressPoint>();
+
+        for (int i = 0; i < 6; i++)
+        {
+            var weekStart = start6Weeks.AddDays(7 * i);
+            var weekEnd = weekStart.AddDays(7);
+
+            var weekData = progressLastWeeks
+                .Where(p => p.LastAccessed >= weekStart && p.LastAccessed < weekEnd)
+                .Select(p => p.CompletionPercentage)
+                .ToList();
+
+            double avg = weekData.Count == 0 ? 0 : weekData.Average();
+
+            weeklyPoints.Add(new WeeklyProgressPoint
+            {
+                Label = $"Sem {i + 1}",
+                AvgProgressPercent = Math.Round(avg, 1)
+            });
+        }
+
+        vm.WeeklyProgress = weeklyPoints;
+
+        // Resumen semanal
+        if (weeklyPoints.Count > 0)
+        {
+            var last = weeklyPoints[^1];
+            vm.WeeklySummary.ThisWeekPercent = last.AvgProgressPercent;
+
+            var best = weeklyPoints.OrderByDescending(p => p.AvgProgressPercent).First();
+            vm.WeeklySummary.BestWeekPercent = best.AvgProgressPercent;
+            vm.WeeklySummary.BestWeekLabel = best.Label;
+
+            var prev = weeklyPoints.Count >= 2 ? weeklyPoints[^2].AvgProgressPercent : 0;
+            vm.WeeklySummary.TrendPercent = Math.Round(last.AvgProgressPercent - prev, 1);
+        }
+
+        ViewBag.UnreadNotifications = 0;
+        ViewBag.Notifications = Array.Empty<object>();
+
+        return View("Analytics", vm);
     }
+
+}
 }

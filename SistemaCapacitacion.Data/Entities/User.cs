@@ -18,6 +18,9 @@ public class User
 
     public int? DepartmentId { get; set; }      // FK → Department.IdDepartment
     public string Status { get; set; } = "Active";
+
+    public string? PhotoUrl { get; set; }
+
     public DateTime? HireDate { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -26,4 +29,5 @@ public class User
     // Navegación (opcional)
     public Department? Department { get; set; }
     public string? Passwords { get; set; }
+
 }

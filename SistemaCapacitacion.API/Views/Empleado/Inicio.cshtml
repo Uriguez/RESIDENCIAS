@@ -1,104 +1,69 @@
-﻿@{
+@using SistemaCapacitacion.Core.ViewModels
+@model DashboardEmployeeViewModel
+
+@{
     ViewData["Title"] = "Mi Panel de Aprendizaje";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/_LayoutEmployee.cshtml";
 }
 
-<div class="mb-8">
-    <div class="bg-gradient-to-r from-[#1a365d] to-[#2b77ad] rounded-2xl p-8 text-white shadow-lg">
-        <h1 class="text-3xl font-bold mb-2">Hola, @User.Identity.Name 👋</h1>
-        <p class="text-blue-100 text-lg">Tienes <span class="font-bold text-white">@ViewBag.PendingCourses cursos pendientes</span> por completar este mes.</p>
-
-        <div class="mt-6 flex gap-4">
-            <button class="bg-white text-[#1a365d] px-6 py-2 rounded-lg font-semibold hover:bg-gray-100 transition">
-                Continuar aprendiendo
-            </button>
-            <button class="bg-white/20 text-white px-6 py-2 rounded-lg font-semibold hover:bg-white/30 transition">
-                Ver catálogo
-            </button>
-        </div>
-    </div>
+<div class="welcome-box">
+    <h1>Hola, @Model.FullName 👋</h1>
+    <p>
+        Tienes
+        <span class="highlight">@Model.MyCourses.Count(c => c.ProgressPercent < 100) cursos pendientes</span>
+        por completar este mes.
+    </p>
 </div>
 
-<h3 class="text-xl font-bold text-gray-800 mb-4">Mis Cursos Asignados</h3>
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<h3 class="section-title">Mis Cursos Asignados</h3>
 
-    <!-- Course Card 1 -->
-    <div class="card p-0 overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
-        <div class="h-32 bg-gray-200 relative">
-            <!-- Placeholder para imagen de curso -->
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                <span class="bg-orange-500 text-white text-xs px-2 py-1 rounded font-medium">Obligatorio</span>
-            </div>
+<div class="course-grid">
+    @if (!Model.MyCourses.Any())
+    {
+        <p>No tienes cursos asignados todavía.</p>
+    }
+    else
+    {
+        foreach (var course in Model.MyCourses)
+        {
+            <div class="course-card">
+                <div class="course-thumb">
+                    @if (course.ProgressPercent == 0)
+                    {
+                        <div class="course-status-pill course-status-new">Asignado</div>
+                    }
+                    else if (course.ProgressPercent < 100)
+                    {
+                        <div class="course-status-pill course-status-progress">En progreso</div>
+                    }
+                    else
+                    {
+                        <div class="course-status-pill course-status-completed">Completado</div>
+                    }
         </div>
-        <div class="p-5 flex-1 flex flex-col">
-            <h4 class="font-bold text-lg text-gray-800 mb-2">Seguridad en el Trabajo: Protocolos 2025</h4>
-            <p class="text-sm text-gray-500 mb-4 line-clamp-2">Aprende los nuevos protocolos de seguridad industrial implementados en Griver para este año.</p>
 
-            <div class="mt-auto">
-                <div class="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>Progreso</span>
-                    <span>65%</span>
+        <div class="course-body">
+            <h4 class="course-title">@course.Title</h4>
+            <p class="course-meta">Categoría: @course.Category</p>
+
+            <div class="progress-section">
+                <span class="progress-label">Progreso: @course.ProgressPercent%</span>
+
+                <div class="progress-track">
+                    <div class="progress-fill" style="width:@course.ProgressPercent%"></div>
                 </div>
-                <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
-                    <div class="bg-green-500 h-2 rounded-full" style="width: 65%"></div>
+
+                <a asp-controller="Empleado"
+                   asp-action="VerCurso"
+                   asp-route-id="@course.CourseId"
+                   class="btn-course-primary w-100">
+                    @(course.ProgressPercent == 0 ? "Iniciar Curso" :
+                                        course.ProgressPercent < 100 ? "Reanudar Curso" :
+                                        "Ver Certificado")
+                        </a>
+                    </div>
                 </div>
-                <button class="w-full bg-[#2b77ad] text-white py-2 rounded-md font-medium hover:bg-[#1a365d] transition">
-                    Reanudar Curso
-                </button>
             </div>
-        </div>
-    </div>
-
-    <!-- Course Card 2 -->
-    <div class="card p-0 overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
-        <div class="h-32 bg-gray-200 relative">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded font-medium">Técnico</span>
-            </div>
-        </div>
-        <div class="p-5 flex-1 flex flex-col">
-            <h4 class="font-bold text-lg text-gray-800 mb-2">Introducción a ASP.NET Core MVC</h4>
-            <p class="text-sm text-gray-500 mb-4 line-clamp-2">Fundamentos del desarrollo web utilizando la arquitectura Modelo Vista Controlador.</p>
-
-            <div class="mt-auto">
-                <div class="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>Progreso</span>
-                    <span>0%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
-                    <div class="bg-gray-300 h-2 rounded-full" style="width: 0%"></div>
-                </div>
-                <button class="w-full border border-[#2b77ad] text-[#2b77ad] py-2 rounded-md font-medium hover:bg-blue-50 transition">
-                    Iniciar Curso
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Course Card 3 -->
-    <div class="card p-0 overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col">
-        <div class="h-32 bg-gray-200 relative">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-4">
-                <span class="bg-purple-500 text-white text-xs px-2 py-1 rounded font-medium">Habilidades Blandas</span>
-            </div>
-        </div>
-        <div class="p-5 flex-1 flex flex-col">
-            <h4 class="font-bold text-lg text-gray-800 mb-2">Comunicación Efectiva</h4>
-            <p class="text-sm text-gray-500 mb-4 line-clamp-2">Mejora tus habilidades de comunicación con el equipo y clientes.</p>
-
-            <div class="mt-auto">
-                <div class="flex justify-between text-xs text-gray-500 mb-1">
-                    <span>Progreso</span>
-                    <span>100%</span>
-                </div>
-                <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
-                    <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
-                </div>
-                <button class="w-full bg-green-600 text-white py-2 rounded-md font-medium hover:bg-green-700 transition">
-                    <i class="fas fa-download mr-2"></i> Descargar Certificado
-                </button>
-            </div>
-        </div>
-    </div>
-
+        }
+    }
 </div>
