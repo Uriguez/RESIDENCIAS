@@ -103,25 +103,37 @@
 }
 
 /* ============================================================
-   BOTÓN INICIAR CURSO – ESTILO GRIVER (NARANJA)
+   ESTADOS DEL BOTÓN DE CURSO
 ============================================================ */
-.btn-course-primary {
+
+/* INICIAR CURSO – NARANJA (ACCIÓN PRINCIPAL) */
+.btn-start {
     background: linear-gradient(135deg, #f15a29, #ff784f) !important;
-    color: white !important;
-    padding: 12px 22px !important;
-    border-radius: 14px !important;
-    font-size: 14px;
-    font-weight: 700;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 8px 20px rgba(241, 90, 41, 0.45);
-    transition: transform .2s ease, box-shadow .2s ease, opacity .2s;
+    box-shadow: 0 8px 20px rgba(241,90,41,.45);
 }
 
-.btn-course-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(241, 90, 41, 0.6);
-    opacity: 0.95;
+.btn-start:hover {
+    box-shadow: 0 12px 28px rgba(241,90,41,.6);
+}
+
+/* REANUDAR CURSO – AZUL (CONTINUAR) */
+.btn-resume {
+    background: linear-gradient(135deg, #004c97, #2563eb) !important;
+    box-shadow: 0 8px 20px rgba(0,76,151,.45);
+}
+
+.btn-resume:hover {
+    box-shadow: 0 12px 28px rgba(0,76,151,.6);
+}
+
+/* VER CERTIFICADO – VERDE (LOGRO) */
+.btn-finish {
+    background: linear-gradient(135deg, #059669, #22c55e) !important;
+    box-shadow: 0 8px 20px rgba(5,150,105,.45);
+}
+
+.btn-finish:hover {
+    box-shadow: 0 12px 28px rgba(5,150,105,.6);
 }
 
 
