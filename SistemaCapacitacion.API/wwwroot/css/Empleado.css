@@ -1,3 +1,10 @@
+:root {
+    --azul-principal: #0d6efd;
+    --azul-suave: #e7f1ff;
+    --verde-principal: #059669;
+    --naranja-acento: #f59e0b;
+    --sombra-suave: 0 12px 30px rgba(0,0,0,.08);
+}
 /* ============================================================
    RESET / BASE
    ============================================================ */
@@ -12,14 +19,10 @@ body {
    TOPBAR
    ============================================================ */
 .topbar {
-    height: 60px;
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
-    padding: 0 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    background: linear-gradient(90deg, #ffffff, #f8fafc);
+    box-shadow: 0 4px 12px rgba(0,0,0,.05);
 }
+
 
 .menu-icon {
     font-size: 22px;
@@ -120,19 +123,17 @@ body {
     padding: 0 14px;
 }
 
-.sidebar nav a {
-    padding: 12px 16px;
-    text-decoration: none;
-    border-radius: 8px;
-    color: #1f2937;
-    font-weight: 500;
-    transition: background .2s, color .2s;
+.sidebar nav a.active {
+    background: var(--azul-suave);
+    color: var(--azul-principal);
+    font-weight: 700;
 }
 
-    .sidebar nav a:hover {
-        background: #e8fff3;
-        color: #059669; /* Verde */
-    }
+.sidebar nav a:hover {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
 
 .sidebar-footer {
     margin-top: 40px;
@@ -164,27 +165,24 @@ body {
    PANEL DE BIENVENIDA (MEJORADO)
    ============================================================ */
 .welcome-box {
-    background: white;
-    padding: 32px;
-    border-radius: 18px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, .05);
+    background: linear-gradient(135deg, #0d6efd, #2563eb);
+    color: white;
+    border: none;
+    box-shadow: var(--sombra-suave);
 }
 
-    .welcome-box h1 {
-        font-size: 28px;
-        margin-bottom: 6px;
-        color: #111827;
-    }
+.welcome-box h1 {
+    color: white;
+}
 
-    .welcome-box p {
-        font-size: 15px;
-    }
+.welcome-box p {
+    color: #e0e7ff;
+}
 
 .highlight {
-    font-weight: 600;
-    color: #059669; /* Verde */
+    color: #bbf7d0;
 }
+
 
 .welcome-actions {
     display: flex;
@@ -243,18 +241,13 @@ body {
    TARJETA DE CURSO — DISEÑO CORPORATIVO VERDE
    ============================================================ */
 .course-card {
-    background: white;
-    border-radius: 14px;
-    padding: 26px;
-    border: 1px solid #e5e7eb;
-    box-shadow: 0 4px 12px rgba(0,0,0,.06);
-    transition: transform .18s, box-shadow .18s;
+    border-left: 6px solid var(--verde-principal);
 }
 
-    .course-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 6px 16px rgba(0,0,0,.12);
-    }
+.course-card:hover {
+    border-left-color: var(--azul-principal);
+}
+
 
 /* Subtítulo del curso */
 .course-subtitle {
@@ -296,10 +289,9 @@ body {
 }
 
 .progress-fill {
-    height: 100%;
-    background: #059669; /* verde */
-    transition: width .4s ease;
+    background: linear-gradient(90deg, #22c55e, #4ade80);
 }
+
 
 /* ============================================================
    OVERRIDE AZUL PARA BOTONES
@@ -307,13 +299,11 @@ body {
    ============================================================ */
 
 .btn-course-primary {
-    background: #0d6efd !important; /* Azul */
-    color: white !important;
+    border-radius: 10px !important;
+    padding: 10px 18px !important;
+    box-shadow: 0 6px 14px rgba(13,110,253,.35);
 }
 
-    .btn-course-primary:hover {
-        background: #0b5ed7 !important;
-    }
 
 .btn-outline {
     border: 2px solid #0d6efd !important;
