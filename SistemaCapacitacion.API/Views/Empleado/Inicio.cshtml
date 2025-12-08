@@ -7,7 +7,7 @@
 }
 
 <div class="welcome-box">
-    <h1>Hola, @Model.FullName 👋</h1>
+    <h1>Hola, @User.Identity.Name 👋</h1>
     <p>
         Tienes
         <span class="highlight">@Model.MyCourses.Count(c => c.ProgressPercent < 100) cursos pendientes</span>
