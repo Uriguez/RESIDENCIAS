@@ -53,15 +53,18 @@
                     <div class="progress-fill" style="width:@course.ProgressPercent%"></div>
                 </div>
 
-                <a asp-controller="Empleado"
-                   asp-action="VerCurso"
-                   asp-route-id="@course.CourseId"
-                  class="btn-course-primary w-100
-                  @(course.ProgressPercent == 0 ? "btn-start" :
-                  course.ProgressPercent < 100 ? "btn-resume" :
-                 "btn-finish")">
+               <a asp-controller="Empleado"
+   asp-action="VerCurso"
+   asp-route-id="@course.CourseId"
+   class="btn-course-primary w-100
+   @(course.ProgressPercent == 0 ? "btn-start" :
+     course.ProgressPercent < 100 ? "btn-resume" :
+     "btn-finish")">
 
-                        </a>
+    @(course.ProgressPercent == 0 ? "Iniciar Curso" :
+      course.ProgressPercent < 100 ? "Reanudar Curso" :
+      "Ver Certificado")
+</a>
                     </div>
                 </div>
             </div>
