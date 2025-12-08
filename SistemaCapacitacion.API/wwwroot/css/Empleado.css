@@ -103,26 +103,27 @@
 }
 
 /* ============================================================
-   BOTÓN INICIAR CURSO – PROTAGONISTA
+   BOTÓN INICIAR CURSO – ESTILO GRIVER (NARANJA)
 ============================================================ */
 .btn-course-primary {
-    background: linear-gradient(
-        135deg,
-        #0d6efd,
-        #2563eb
-    ) !important;
+    background: linear-gradient(135deg, #f15a29, #ff784f) !important;
     color: white !important;
     padding: 12px 22px !important;
     border-radius: 14px !important;
+    font-size: 14px;
     font-weight: 700;
-    box-shadow: 0 8px 20px rgba(13,110,253,.45);
-    transition: transform .2s, box-shadow .2s;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(241, 90, 41, 0.45);
+    transition: transform .2s ease, box-shadow .2s ease, opacity .2s;
 }
 
 .btn-course-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(13,110,253,.6);
+    box-shadow: 0 12px 28px rgba(241, 90, 41, 0.6);
+    opacity: 0.95;
 }
+
 
 /* ============================================================
    SIDEBAR – UN POCO MÁS DE VIDA
