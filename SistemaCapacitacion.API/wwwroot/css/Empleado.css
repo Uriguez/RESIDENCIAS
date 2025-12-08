@@ -28,10 +28,13 @@ body {
     z-index: 100;
 }
 
-.logo2 {
-    height: 38px;
-    width: auto;
+/* LOGO CONTROLADO */
+.topbar img.logo2 {
+    height: 32px !important;
+    max-height: 32px !important;
+    width: auto !important;
     object-fit: contain;
+    flex-shrink: 0;
 }
 
 .brand-title {
@@ -218,14 +221,12 @@ body {
     box-shadow: 0 22px 45px rgba(0,0,0,.16);
 }
 
-/* BANDA SUPERIOR */
 .course-thumb {
     height: 110px;
     background: linear-gradient(135deg, #6366f1, #22c55e);
     position: relative;
 }
 
-/* ESTADO */
 .course-status-pill {
     position: absolute;
     top: 12px;
@@ -237,19 +238,10 @@ body {
     color: white;
 }
 
-.course-status-new {
-    background: #f15a29;
-}
+.course-status-new { background: #f15a29; }
+.course-status-progress { background: #004c97; }
+.course-status-completed { background: #16a34a; }
 
-.course-status-progress {
-    background: #004c97;
-}
-
-.course-status-completed {
-    background: #16a34a;
-}
-
-/* CUERPO */
 .course-body {
     padding: 18px;
 }
@@ -273,7 +265,6 @@ body {
     font-size: 12px;
     font-weight: 600;
     margin-bottom: 6px;
-    display: block;
 }
 
 .progress-track {
@@ -291,18 +282,17 @@ body {
 }
 
 /* ============================================================
-   BOTÓN
+   BOTÓN DE CURSO
 ============================================================ */
 .btn-course-primary {
     width: 100%;
-    border: none;
     padding: 12px 16px;
     font-weight: 700;
     border-radius: 12px;
     color: white !important;
-    text-align: center;
     text-decoration: none;
     display: inline-block;
+    text-align: center;
     transition: transform .2s ease, box-shadow .2s ease;
 }
 
@@ -310,7 +300,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* ESTADOS */
 .btn-start {
     background: linear-gradient(135deg, #f15a29, #ff784f);
     box-shadow: 0 10px 24px rgba(241,90,41,.55);
