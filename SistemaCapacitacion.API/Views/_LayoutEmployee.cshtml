@@ -33,7 +33,11 @@
                 @User.Identity.Name
                 <div class="user-dropdown-menu">
                     <a asp-controller="Perfil" asp-action="Index">Mi Perfil</a>
-                    <a asp-controller="Auth" asp-action="Logout">Cerrar Sesión</a>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="w-full">
+                    <button type="submit" class="nav-item w-full text-left cursor-pointer border-0 bg-transparent">
+                        <i class="fas fa-sign-out-alt nav-icon"></i> Cerrar Sesión
+                    </button>
+                </form>
                 </div>
             </div>
         </div>
