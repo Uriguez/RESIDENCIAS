@@ -99,8 +99,9 @@ body {
 ============================================================ */
 .sidebar {
     width: 230px;
-    background: #ffffff;
-    border-right: 1px solid #e5e7eb;
+    background: linear-gradient(180deg, #0d6efd, #22c55e); /* gradiente azul-verde */
+    color: #ffffff; /* texto en blanco */
+    border-right: 1px solid rgba(255, 255, 255, 0.2); /* borde más sutil */
     position: fixed;
     top: 64px;
     bottom: 0;
@@ -108,34 +109,33 @@ body {
     padding: 16px 0;
 }
 
-.sidebar-nav {
-    display: flex;
-    flex-direction: column;
-}
-
+/* Links dentro del sidebar */
 .sidebar-nav a {
     padding: 12px 22px;
-    color: #374151;
+    color: #ffffff;
     font-weight: 500;
     text-decoration: none;
+    transition: background 0.3s;
 }
 
 .sidebar-nav a:hover {
-    background: #f3f4f6;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
 }
 
+/* Link activo */
 .sidebar nav a.active {
-    background: linear-gradient(135deg, #e0e7ff, #dbeafe);
-    color: #1d4ed8;
+    background: rgba(255, 255, 255, 0.3);
     font-weight: 700;
-    box-shadow: inset 4px 0 0 #2563eb;
+    box-shadow: inset 4px 0 0 rgba(255, 255, 255, 0.7);
 }
 
+/* Footer del sidebar */
 .sidebar-footer {
     margin-top: auto;
     padding: 18px 22px;
     font-size: 12px;
-    color: #9ca3af;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 /* ============================================================
