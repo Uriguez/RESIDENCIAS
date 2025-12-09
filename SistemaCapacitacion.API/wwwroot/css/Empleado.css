@@ -100,32 +100,40 @@ body {
 .sidebar {
     width: 230px;
     background: linear-gradient(180deg, #0d6efd, #22c55e); /* gradiente azul-verde */
-    color: #ffffff; /* texto en blanco */
-    border-right: 1px solid rgba(255, 255, 255, 0.2); /* borde más sutil */
+    color: #ffffff; /* texto principal en blanco */
+    border-right: 1px solid rgba(255, 255, 255, 0.2); /* borde sutil */
     position: fixed;
     top: 64px;
     bottom: 0;
     left: 0;
     padding: 16px 0;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Links dentro del sidebar */
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+}
+
 .sidebar-nav a {
     padding: 12px 22px;
     color: #ffffff;
     font-weight: 500;
     text-decoration: none;
-    transition: background 0.3s;
+    transition: all 0.3s;
+    border-radius: 8px;
 }
 
 .sidebar-nav a:hover {
     background: rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
 }
 
 /* Link activo */
-.sidebar nav a.active {
+.sidebar-nav a.active {
     background: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
     font-weight: 700;
     box-shadow: inset 4px 0 0 rgba(255, 255, 255, 0.7);
 }
