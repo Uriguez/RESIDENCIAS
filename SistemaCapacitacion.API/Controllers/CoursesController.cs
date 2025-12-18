@@ -297,7 +297,35 @@ namespace SistemaCapacitacion.API.Controllers
             // PRG: Post-Redirect-Get
             return RedirectToAction(nameof(Index));
         }
+        [HttpGet("{id:int}")]
 
+        //----PARA EDITAR EL CURSO----//
+        public async Task<IActionResult> GetById(int id)
+        {
+            var entity = await _db.Courses
+           .AsNoTracking()
+           .FirstOrDefaultAsync(c => c.IdCourse == id);
+
+            return entity is null ? NotFound() : Ok(entity);
+        }
+
+        // PUT: api/courses/{id}
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Update(int id, [FromBody] Course model)
+        {
+            var entity = await _db.Courses.FindAsync(id);
+            if (entity is null) return NotFound();
+
+            // Title NO editable (se conserva el existente)
+            entity.Description = model.Description;
+            entity.CategoryId = model.CategoryId;
+            entity.IsActive = model.IsActive;
+            entity.UpdatedAt = DateTime.UtcNow;
+
+            await _db.SaveChangesAsync();
+            return NoContent();
+        
+        }
         // =========================================================
         //  ASIGNAR USUARIOS A UN CURSO (POST desde el modal RH)
         // =========================================================
@@ -351,5 +379,132 @@ namespace SistemaCapacitacion.API.Controllers
             // Volvemos a la lista de cursos
             return RedirectToAction(nameof(Index));
         }
+
+        // =========================
+        // API: Obtener curso + contenido principal para EDITAR (JSON)
+        // =========================
+        [Authorize(Roles = "Admin")]
+        [HttpGet("/api/Courses/{id:int}")]
+        public async Task<IActionResult> ApiGetCourseForEdit(int id)
+        {
+            var course = await _db.Courses
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.IdCourse == id);
+
+            if (course == null) return NotFound();
+
+            var main = await _db.CourseContents
+                .AsNoTracking()
+                .Where(cc => cc.CourseId == id)
+                .OrderBy(cc => cc.OrderIndex)
+                .FirstOrDefaultAsync();
+
+            return Ok(new
+            {
+                idCourse = course.IdCourse,
+                title = course.Title,
+                description = course.Description ?? string.Empty,
+                categoryId = course.CategoryId,
+                isActive = course.IsActive,
+                content = main == null ? null : new
+                {
+                    idCourCont = main.IdCourCont,
+                    title = main.Title ?? string.Empty,
+                    contentType = main.ContentType,
+                    contentUrl = main.ContentUrl ?? string.Empty,
+                    durationMinutes = main.DurationMinutes,
+                    minimumScore = main.MinimumScore,
+                    isRequired = main.IsRequired
+                }
+            });
+        }
+
+        // =========================
+        // API: Guardar cambios (NO permite cambiar Title)
+        // =========================
+        public class CourseEditDto
+        {
+            public string? Description { get; set; }
+            public int? CategoryId { get; set; }
+            public bool IsActive { get; set; }
+
+            public int? ContentId { get; set; }
+            public string? ContentTitle { get; set; }
+            public int ContentType { get; set; } // 1 Video, 2 Documento, 3 Enlace externo
+            public string? ContentUrl { get; set; }
+            public int DurationMinutes { get; set; }
+            public int MinimumScore { get; set; }
+            public bool IsRequired { get; set; }
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("/api/Courses/{id:int}")]
+        public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDto dto)
+        {
+            var course = await _db.Courses.FirstOrDefaultAsync(c => c.IdCourse == id);
+            if (course == null) return NotFound();
+
+            // Title NO editable (se conserva)
+            course.Description = dto.Description;
+            course.CategoryId = dto.CategoryId;
+            course.IsActive = dto.IsActive;
+            course.UpdatedAt = DateTime.UtcNow;
+
+            // Actualizar contenido principal (si existe)
+            if (dto.ContentId.HasValue)
+            {
+                var content = await _db.CourseContents
+                    .FirstOrDefaultAsync(cc => cc.IdCourCont == dto.ContentId.Value && cc.CourseId == id);
+
+                if (content != null)
+                {
+                    content.Title = dto.ContentTitle;
+                    content.ContentType = dto.ContentType;
+                    content.ContentUrl = dto.ContentUrl;
+                    content.DurationMinutes = dto.DurationMinutes;
+                    content.MinimumScore = dto.MinimumScore;
+                    content.IsRequired = dto.IsRequired;
+                }
+            }
+
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteCourse(int id)
+        {
+            var course = await _db.Courses
+                .FirstOrDefaultAsync(c => c.IdCourse == id);
+
+            if (course == null)
+                return NotFound();
+
+            // 1) Eliminar dependencias (si no tienes cascade delete)
+            var contents = await _db.CourseContents
+                .Where(cc => cc.CourseId == id)
+                .ToListAsync();
+
+            if (contents.Any())
+                _db.CourseContents.RemoveRange(contents);
+
+            var assignments = await _db.UserCourses
+                .Where(uc => uc.CourseId == id)
+                .ToListAsync();
+
+            if (assignments.Any())
+                _db.UserCourses.RemoveRange(assignments);
+
+            // 2) Eliminar el curso
+            _db.Courses.Remove(course);
+
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
     }
 }

@@ -3,15 +3,19 @@
 <div id="courseModal" class="modal">
     <div class="modal__dialog">
         <button type="button" class="btn btn--ghost" data-course-close>✕</button>
-        <form asp-controller="Courses"
+        <form id="courseForm"
+              asp-controller="Courses"
               asp-action="CreateCourse"
               method="post">
             @Html.AntiForgeryToken()
+            <input type="hidden" id="EditCourseId" value="" />
+            <input type="hidden" id="EditContentId" value="" />
+
 
             <!-- HEADER -->
             <div class="modal__header">
                 <div>
-                    <div class="modal__title">Crear Nuevo Curso</div>
+                    <div class="modal__title" id="courseModalTitle">Crear Nuevo Curso</div>
                     <div class="admin-section-caption">
                         Completa la información del nuevo curso de capacitación en Griver.
                     </div>
@@ -101,6 +105,30 @@
                             <span asp-validation-for="ContentUrl" class="text-danger"></span>
                         </div>
 
+                        <!-- Dropzone (solo Video/Documento) -->
+                        <div class="form-field" style="grid-column:1 / span 2; display:none;" id="dropzoneField">
+                            <label class="form-label">Subir archivo (arrastrar y soltar)</label>
+
+                            <div id="dropzone"
+                                 class="dropzone"
+                                 tabindex="0"
+                                 role="button"
+                                 aria-label="Arrastra un archivo aquí o haz clic para seleccionar">
+                                <div class="dropzone__inner">
+                                    <div class="dropzone__title">Arrastra tu archivo aquí</div>
+                                    <div class="dropzone__subtitle">o haz clic para seleccionar</div>
+                                    <div class="dropzone__hint" id="dropzoneHint">Formatos permitidos: según tipo de contenido</div>
+                                </div>
+                            </div>
+
+                            <!-- Input real -->
+                            <input type="file" id="ContentFile" style="display:none;" />
+
+                            <div class="small text-muted" id="uploadStatus" style="margin-top:8px;"></div>
+                            <div id="uploadPreview" style="margin-top:12px;"></div>
+                        </div>
+
+
                         <div class="form-field">
                             <label asp-for="DurationMinutes" class="form-label">Duración (minutos)</label>
                             <input asp-for="DurationMinutes" type="number" min="0" class="form-input" />
@@ -130,9 +158,10 @@
                 <button type="button" class="btn btn--secondary" data-course-close>
                     Cancelar
                 </button>
-                <button type="submit" class="btn btn--primary">
+                <button type="submit" class="btn btn--primary" id="courseSubmitBtn">
                     Crear curso
                 </button>
+
             </div>
         </form>
     </div>

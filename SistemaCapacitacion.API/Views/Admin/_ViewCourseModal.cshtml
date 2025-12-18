@@ -1,0 +1,34 @@
+﻿<div id="courseViewModal" class="modal">
+    <div class="modal__dialog">
+        <button type="button" class="btn btn--ghost" data-view-close>✕</button>
+
+        <div class="modal__header">
+            <div>
+                <div class="modal__title" id="viewCourseTitle">Detalle del curso</div>
+                <div class="admin-section-caption" id="viewCourseCategory"></div>
+            </div>
+
+            <button type="button" class="btn btn--ghost" data-view-close>
+                <span class="material-icons-outlined">close</span>
+            </button>
+        </div>
+
+        <div class="modal__body">
+            <div class="settings-section card" style="margin-bottom:16px;">
+                <div class="settings-block__title" style="margin-bottom:8px;">Descripción</div>
+                <p id="viewCourseDescription" class="mb-0"></p>
+            </div>
+
+            <div class="settings-section card">
+                <div class="settings-block__title" style="margin-bottom:8px;">Contenido principal</div>
+                <div id="viewCourseContent"></div>
+            </div>
+        </div>
+
+        <div class="modal__footer">
+            <button type="button" class="btn btn--secondary" data-view-close>
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>

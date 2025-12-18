@@ -1385,6 +1385,79 @@
 .tab-panel--active {
     display: block;
 }
+.dropzone {
+    border: 2px dashed #d6deea;
+    border-radius: 16px;
+    padding: 18px;
+    background: #f7f9ff;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease, transform .12s ease, box-shadow .15s ease;
+}
+
+.dropzone__inner {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+}
+
+.dropzone__icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef2ff;
+    color: #1d4ed8;
+    flex: 0 0 auto;
+}
+
+.dropzone__title {
+    font-weight: 700;
+    margin: 0;
+    color: #0f172a;
+}
+
+.dropzone__subtitle {
+    margin: 3px 0 0 0;
+    color: #64748b;
+    font-size: .92rem;
+}
+
+.dropzone__hint {
+    margin-top: 6px;
+    color: #94a3b8;
+    font-size: .85rem;
+}
+
+.dropzone--over {
+    border-color: #2563eb;
+    background: #eef6ff;
+    transform: scale(1.01);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .10);
+}
+
+.upload-status {
+    margin-top: 10px;
+    font-size: .9rem;
+}
+
+.upload-status--error {
+    color: #dc2626;
+}
+
+.upload-status--ok {
+    color: #16a34a;
+}
+
+.upload-preview {
+    margin-top: 12px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #e5eaf3;
+    background: #fff;
+}
+
 /* Responsive específico del dashboard */
 
 @media (max-width: 1024px) {
@@ -1399,6 +1472,7 @@
         align-items: flex-start;
     }
 }
+
 
 /* ==========================================================================
    RESPONSIVE BÁSICO

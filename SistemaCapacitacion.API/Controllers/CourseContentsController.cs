@@ -30,4 +30,24 @@ public class CourseContentsController : ControllerBase
         await _db.SaveChangesAsync();
         return Ok(model);
     }
+
+    [HttpPut("{contentId:int}")]
+    public async Task<IActionResult> Update(int courseId, int contentId, [FromBody] CourseContent model)
+    {
+        var entity = await _db.CourseContents
+            .FirstOrDefaultAsync(x => x.CourseId == courseId && x.IdCourCont == contentId);
+
+        if (entity is null) return NotFound();
+
+        entity.Title = model.Title;
+        entity.ContentType = model.ContentType;
+        entity.ContentUrl = model.ContentUrl;
+        entity.DurationMinutes = model.DurationMinutes;
+        entity.MinimumScore = model.MinimumScore;
+        entity.IsRequired = model.IsRequired;
+
+        await _db.SaveChangesAsync();
+        return NoContent();
+    }
+
 }

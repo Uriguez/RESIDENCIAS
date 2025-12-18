@@ -196,29 +196,29 @@
                         </div>
 
                         <div class="d-flex gap-2">
-                            <a asp-controller="Courses"
-                               asp-action="Details"
-                               asp-route-id="@c.IdCourse"
-                               class="btn btn-sm btn--secondary">
+                            <button type="button"
+                                    class="btn btn-sm btn--secondary js-view-course"
+                                    data-course-id="@c.IdCourse">
                                 Ver
-                            </a>
+                            </button>
 
                             @if (isAdmin)
                             {
-                                <a asp-controller="Courses"
-                                   asp-action="Edit"
-                                   asp-route-id="@c.IdCourse"
-                                   class="btn btn-sm btn--secondary">
+                                <button type="button"
+                                        class="btn btn-sm btn--secondary js-edit-course"
+                                        data-course-id="@c.IdCourse">
                                     Editar
-                                </a>
+                                </button>
+
                                 <form asp-controller="Courses"
-                                      asp-action="Delete"
+                                      asp-action="DeleteCourse"
                                       asp-route-id="@c.IdCourse"
                                       method="post"
                                       class="d-inline">
+                                    @Html.AntiForgeryToken()
                                     <button type="submit"
                                             class="btn btn-sm btn--danger"
-                                            onclick="return confirm('¿Eliminar este curso?');">
+                                            onclick="return confirm('¿Eliminar este curso? Esta acción no se puede deshacer.');">
                                         Eliminar
                                     </button>
                                 </form>
@@ -233,9 +233,6 @@
                                         data-assign-modal-id="assignModal-@c.IdCourse">
                                     Asignar
                                 </button>
-
-                             
-
                             }
                         </div>
                     </article>
@@ -310,5 +307,243 @@
                 }
             });
         });
+                document.querySelectorAll('.js-edit-course').forEach(btn => {
+          btn.addEventListener('click', async () => {
+            try {
+              const id = btn.getAttribute('data-course-id');
+
+              // 1) Pedir datos a BD vía API
+              const r = await fetch(`/api/Courses/${id}`);
+              if (!r.ok) throw new Error(await r.text());
+              const course = await r.json();
+
+              // 2) Precargar inputs del modal existente (el mismo de Crear)
+              document.getElementById('Title').value = course.title ?? '';
+              document.getElementById('Title').readOnly = true; // NO editable
+              document.getElementById('CategoryId').value = course.categoryId ?? '';
+              document.getElementById('Description').value = course.description ?? '';
+              document.getElementById('IsActive').checked = !!course.isActive;
+
+              // 3) Cambiar texto del modal (opcional)
+              const courseModal = document.getElementById('courseModal');
+              const titleEl  = courseModal.querySelector('.modal__title');
+              const submitEl = courseModal.querySelector('.modal__footer button[type="submit"]');
+              if (titleEl) titleEl.textContent = 'Editar curso';
+              if (submitEl) submitEl.textContent = 'Guardar cambios';
+
+              // 4) Abrir modal
+              courseModal.classList.add('modal--open');
+
+            } catch (e) {
+              console.error(e);
+              alert('No se pudieron cargar los datos del curso para edición.');
+            }
+          });
+        });
+
+        //--------------------------EDITAR--------------------------------------//
+
+                document.addEventListener('DOMContentLoaded', () => {
+          const courseModal = document.getElementById('courseModal');
+          const courseForm  = courseModal?.querySelector('form');
+
+          if (!courseForm) return;
+
+          // Evitar registrar el handler múltiples veces si recargas parcial/scripts
+          if (window.__courseEditSubmitBound) return;
+          window.__courseEditSubmitBound = true;
+
+          courseForm.addEventListener('submit', async (e) => {
+            const editId = document.getElementById('EditCourseId')?.value;
+
+            // Si NO hay id -> es Crear -> se deja tu flujo actual intacto
+            if (!editId) return;
+
+            // Si hay id -> es Edición -> cancelar POST CreateCourse
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            try {
+              // PUT /api/Courses/{id} (tu endpoint absoluto)
+              const payload = {
+                description: document.getElementById('Description').value,
+                categoryId: Number(document.getElementById('CategoryId').value) || null,
+                isActive: document.getElementById('IsActive').checked,
+
+                // Si ya estás actualizando contenido, agrega aquí lo necesario:
+                contentId: Number(document.getElementById('EditContentId')?.value) || null,
+                contentTitle: document.getElementById('ContentTitle').value,
+                contentType: Number(document.getElementById('ContentType').value) || 0,
+                contentUrl: document.getElementById('ContentUrl').value,
+                durationMinutes: Number(document.getElementById('DurationMinutes').value) || 0,
+                minimumScore: Number(document.getElementById('MinimumScore').value) || 0,
+                isRequired: document.getElementById('IsRequired').checked
+              };
+
+              const r = await fetch(`/api/Courses/${editId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+
+              if (!r.ok) throw new Error(await r.text());
+
+              // Cerrar modal y limpiar modo edición
+              courseModal.classList.remove('modal--open');
+              document.getElementById('EditCourseId').value = '';
+              const titleInput = document.getElementById('Title');
+              if (titleInput) titleInput.readOnly = false;
+
+              location.reload();
+            } catch (err) {
+              console.error(err);
+              alert('No se pudieron guardar los cambios.');
+            }
+          }, true); // 👈 capture=true: se ejecuta antes del submit normal
+        });
+
+
+                // ====== Dropzone Upload (Video/Documento) ======
+        (function(){
+          const dropzoneField = document.getElementById('dropzoneField');
+          const dropzone = document.getElementById('dropzone');
+          const fileInput = document.getElementById('ContentFile');
+          const uploadStatus = document.getElementById('uploadStatus');
+          const uploadPreview = document.getElementById('uploadPreview');
+          const hint = document.getElementById('dropzoneHint');
+
+          const contentType = document.getElementById('ContentType'); // 1,2,3
+          const contentUrl = document.getElementById('ContentUrl');
+          const contentUrlField = document.getElementById('contentUrlField'); // si lo envolviste
+
+          if(!dropzone || !fileInput || !contentType || !contentUrl) return;
+
+          function setStatus(msg){ if(uploadStatus) uploadStatus.textContent = msg || ''; }
+
+          function renderPreview(url, type){
+            if(!uploadPreview) return;
+            uploadPreview.innerHTML = '';
+            if(!url) return;
+
+            if(Number(type) === 1){
+              uploadPreview.innerHTML = `
+                <video controls style="width:100%; max-height:360px; border-radius:12px;">
+                  <source src="${url}" type="video/mp4">
+                </video>`;
+              return;
+            }
+
+            if(url.toLowerCase().endsWith('.pdf')){
+              uploadPreview.innerHTML = `<iframe src="${url}" style="width:100%; height:380px; border:0; border-radius:12px;"></iframe>`;
+              return;
+            }
+
+            uploadPreview.innerHTML = `<a class="btn btn--secondary" href="${url}" target="_blank" rel="noopener">Abrir archivo</a>`;
+          }
+
+          function allowedForType(file, type){
+            // type: 1 video, 2 documento, 3 enlace
+            if(Number(type) === 1){
+              // mp4 (puedes ampliar a video/* si quieres)
+              return file.type === 'video/mp4' || file.name.toLowerCase().endsWith('.mp4');
+            }
+            if(Number(type) === 2){
+              const name = file.name.toLowerCase();
+              return (
+                name.endsWith('.pdf') || name.endsWith('.doc') || name.endsWith('.docx') ||
+                name.endsWith('.ppt') || name.endsWith('.pptx') || name.endsWith('.xls') ||
+                name.endsWith('.xlsx') || name.endsWith('.png') || name.endsWith('.jpg') ||
+                name.endsWith('.jpeg')
+              );
+            }
+            return false;
+          }
+
+          async function uploadFile(file){
+            const type = Number(contentType.value);
+
+            if(!allowedForType(file, type)){
+              setStatus('Archivo no permitido para el tipo seleccionado.');
+              return;
+            }
+
+            setStatus('Subiendo archivo...');
+            const fd = new FormData();
+            fd.append('file', file);
+
+            const r = await fetch('/api/Upload/content', { method: 'POST', body: fd });
+            if(!r.ok){
+              setStatus('Error al subir el archivo.');
+              return;
+            }
+            const data = await r.json();
+
+            // Guardar URL resultante en el campo que ya se persiste en BD
+            contentUrl.value = data.url || '';
+            setStatus('Archivo subido correctamente.');
+            renderPreview(contentUrl.value, type);
+          }
+
+          function updateUI(){
+            const type = Number(contentType.value);
+
+            if(type === 1 || type === 2){
+              // Video/Documento: mostrar dropzone, ocultar url visible
+              if(dropzoneField) dropzoneField.style.display = '';
+              if(contentUrlField) contentUrlField.style.display = 'none';
+
+              hint.textContent = (type === 1)
+                ? 'Formato permitido: .mp4'
+                : 'Formatos permitidos: PDF, DOC/DOCX, PPT/PPTX, XLS/XLSX, PNG/JPG';
+
+              // si ya hay URL precargada, mostrar preview
+              renderPreview(contentUrl.value, type);
+
+            } else {
+              // Enlace externo: ocultar dropzone, mostrar URL
+              if(dropzoneField) dropzoneField.style.display = 'none';
+              if(contentUrlField) contentUrlField.style.display = '';
+
+              setStatus('');
+              if(uploadPreview) uploadPreview.innerHTML = '';
+              fileInput.value = '';
+            }
+          }
+
+          contentType.addEventListener('change', updateUI);
+          updateUI();
+
+          // Click abre selector
+          dropzone.addEventListener('click', () => fileInput.click());
+          dropzone.addEventListener('keydown', (e) => {
+            if(e.key === 'Enter' || e.key === ' ') fileInput.click();
+          });
+
+          // Input change
+          fileInput.addEventListener('change', async () => {
+            const f = fileInput.files && fileInput.files[0];
+            if(f) await uploadFile(f);
+          });
+
+          // Drag events
+          dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dropzone--over');
+          });
+
+          dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('dropzone--over');
+          });
+
+          dropzone.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dropzone--over');
+
+            const f = e.dataTransfer.files && e.dataTransfer.files[0];
+            if(f) await uploadFile(f);
+          });
+        })();
+
+
     </script>
 }
