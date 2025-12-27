@@ -1,0 +1,44 @@
+﻿@model SistemaCapacitacion.Core.ViewModels.CursoContenidoViewModel
+
+@{
+    ViewData["Title"] = Model.Titulo;
+    Layout = "~/Views/_LayoutEmployee.cshtml";
+}
+
+<link rel="stylesheet" href="~/css/curso-detalle.css" asp-append-version="true" />
+
+<div class="container py-4">
+
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-4">
+
+            <h3 class="fw-bold mb-2">@Model.Titulo</h3>
+            <p class="text-muted">@Model.Descripcion</p>
+
+            <hr />
+
+            @if (Model.EsVideo)
+            {
+                <!-- VIDEO -->
+                <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
+                    <video controls controlsList="nodownload">
+                        <source src="@Model.RutaContenido" type="video/mp4">
+                        Tu navegador no soporta video.
+                    </video>
+                </div>
+            }
+            else
+            {
+                <!-- DOCUMENTO -->
+                <iframe src="@Model.RutaContenido"
+                        class="w-100 rounded shadow-sm"
+                        style="height: 600px;"
+                        frameborder="0"
+                        allowfullscreen>
+                </iframe>
+            }
+
+        </div>
+    </div>
+
+</div>
