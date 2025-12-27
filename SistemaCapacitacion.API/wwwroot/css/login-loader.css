@@ -1,0 +1,46 @@
+﻿/* ============================================================
+   LOGIN LOADER (MÓDULO INDEPENDIENTE)
+============================================================ */
+.login-loader {
+    position: fixed;
+    inset: 0;
+    background: #f3f4f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .3s ease, visibility .3s ease;
+}
+
+    .login-loader.hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+.login-loader-box {
+    text-align: center;
+}
+
+.login-loader-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #e5e7eb;
+    border-top: 5px solid #059669;
+    border-radius: 50%;
+    animation: login-spin 1s linear infinite;
+    margin: 0 auto 12px;
+}
+
+.login-loader-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+}
+
+@keyframes login-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
