@@ -21,11 +21,15 @@
             {
                 <!-- VIDEO -->
                 <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
-                    <video controls controlsList="nodownload">
-                        <source src="@Model.RutaContenido" type="video/mp4">
-                        Tu navegador no soporta video.
+                    <video class="w-100 h-100"
+                           controls
+                           preload="metadata"
+                           controlsList="nodownload">
+                        <source src="@Url.Content(Model.RutaContenido)" type="video/mp4" />
+                        Tu navegador no soporta el video.
                     </video>
                 </div>
+
             }
             else
             {
