@@ -1,21 +1,30 @@
-﻿namespace SistemaCapacitacion.Core.ViewModels
+public class CursoContenidoController : Controller
 {
-    public class CursoContenidoViewModel
+    private readonly ApplicationDbContext _db;
+
+    public CursoContenidoController(ApplicationDbContext db)
     {
-        public int CursoId { get; set; }
+        _db = db;
+    }
 
-        public string Titulo { get; set; } = string.Empty;
+    public async Task<IActionResult> DetalleCurso(int cursoId)
+    {
+        // Obtener todos los contenidos del curso
+        var contenidos = await _db.CourseContents
+            .Where(c => c.CourseId == cursoId)
+            .OrderBy(c => c.OrderIndex) // Orden del curso
+            .Select(cc => new CursoContenidoViewModel
+            {
+                CursoId = cc.CourseId,
+                Titulo = cc.Title,
+                Descripcion = cc.Description,
+                RutaContenido = cc.ContentUrl,
+                EsVideo = cc.ContentType == 1 // 1 = Video, 2 = Documento / URL
+            })
+            .ToListAsync();
 
-        public string Descripcion { get; set; } = string.Empty;
+        if (!contenidos.Any()) return View("SinContenidos"); // Vista opcional si no hay contenidos
 
-        /// <summary>
-        /// Ruta del archivo (video MP4 o documento PDF)
-        /// </summary>
-        public string RutaContenido { get; set; } = string.Empty;
-
-        /// <summary>
-        /// true = Video | false = Documento
-        /// </summary>
-        public bool EsVideo { get; set; }
+        return View(contenidos);
     }
 }
