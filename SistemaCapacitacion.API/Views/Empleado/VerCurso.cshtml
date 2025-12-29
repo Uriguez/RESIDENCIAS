@@ -1,48 +1,58 @@
-﻿@model SistemaCapacitacion.Core.ViewModels.CursoContenidoViewModel
+@model List<SistemaCapacitacion.Core.ViewModels.CursoContenidoViewModel>
 
 @{
-    ViewData["Title"] = Model.Titulo;
+    ViewData["Title"] = "Detalle del Curso";
     Layout = "~/Views/_LayoutEmployee.cshtml";
 }
 
 <link rel="stylesheet" href="~/css/curso-detalle.css" asp-append-version="true" />
 
 <div class="container py-4">
+    @if (!Model.Any())
+    {
+        <p class="text-center text-muted">Este curso no tiene contenidos todavía.</p>
+    }
+    else
+    {
+        @foreach (var contenido in Model)
+        {
+            <div class="card shadow-lg border-0 rounded-4 mb-3">
+                <div class="card-body p-4">
+                    <h3 class="fw-bold mb-2">@contenido.Titulo</h3>
+                    <p class="text-muted">@contenido.Descripcion</p>
+                    <hr />
 
-    <div class="card shadow-lg border-0 rounded-4">
-        <div class="card-body p-4">
-
-            <h3 class="fw-bold mb-2">@Model.Titulo</h3>
-            <p class="text-muted">@Model.Descripcion</p>
-
-            <hr />
-
-            @if (Model.EsVideo)
-            {
-                <!-- VIDEO -->
-                <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
-                    <video class="w-100 h-100"
-                           controls
-                           preload="metadata"
-                           controlsList="nodownload">
-                        <source src="@Url.Content(Model.RutaContenido)" type="video/mp4" />
-                        Tu navegador no soporta el video.
-                    </video>
+                    @if (contenido.EsVideo)
+                    {
+                        <!-- VIDEO -->
+                        <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
+                            <video class="w-100 h-100" controls preload="metadata" controlsList="nodownload">
+                                <source src="@Url.Content(contenido.RutaContenido)" type="video/mp4" />
+                                Tu navegador no soporta el video.
+                            </video>
+                        </div>
+                    }
+                    else if (contenido.RutaContenido.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <!-- DOCUMENTO PDF -->
+                        <iframe src="@Url.Content(contenido.RutaContenido)"
+                                class="w-100 rounded shadow-sm"
+                                style="height: 600px;"
+                                frameborder="0"
+                                allowfullscreen>
+                        </iframe>
+                    }
+                    else
+                    {
+                        <!-- ENLACE EXTERNO -->
+                        <div class="mb-2">
+                            <a href="@contenido.RutaContenido" target="_blank" class="btn btn-primary">
+                                Abrir enlace externo
+                            </a>
+                        </div>
+                    }
                 </div>
-
-            }
-            else
-            {
-                <!-- DOCUMENTO -->
-                <iframe src="@Model.RutaContenido"
-                        class="w-100 rounded shadow-sm"
-                        style="height: 600px;"
-                        frameborder="0"
-                        allowfullscreen>
-                </iframe>
-            }
-
-        </div>
-    </div>
-
+            </div>
+        }
+    }
 </div>
