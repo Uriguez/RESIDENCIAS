@@ -256,43 +256,84 @@ namespace SistemaCapacitacion.API.Controllers
                 return View("~/Views/Admin/Courses.cshtml", vm);
             }
 
-            // ===== 1) Crear Course =====
-            var course = new Course
-            {
-                Title = model.Title,
-                Description = model.Description,
-                CategoryId = model.CategoryId,
-                IsActive = model.IsActive,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
+            // =========================================================
+            // SOLUCIÓN APLICADA: VALIDAR SI ES EDICIÓN O CREACIÓN
+            // =========================================================
 
-            // si tienes CreatedById en la tabla Course
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!string.IsNullOrEmpty(userIdStr) &&
-                Guid.TryParse(userIdStr, out var userId))
+            // Si trae ID mayor a 0, es que ya existe y solo vamos a actualizarlo
+            if (model.IdCourse > 0)
             {
-                course.CreatedById = userId;
+                // --- 1. Buscar el curso y el contenido existentes ---
+                var course = await _db.Courses.FindAsync(model.IdCourse);
+                if (course == null) return NotFound();
+
+                var content = await _db.CourseContents
+                    .FirstOrDefaultAsync(c => c.CourseId == model.IdCourse);
+
+                // --- 2. Actualizar datos del Curso ---
+                course.Title = model.Title; // Opcional: si permites editar título
+                course.Description = model.Description;
+                course.CategoryId = model.CategoryId;
+                course.IsActive = model.IsActive;
+                course.UpdatedAt = DateTime.UtcNow;
+
+                // --- 3. Actualizar datos del Contenido ---
+                if (content != null)
+                {
+                    content.Title = model.ContentTitle;
+                    content.ContentType = model.ContentType;
+                    content.ContentUrl = model.ContentUrl;
+                    content.DurationMinutes = model.DurationMinutes;
+                    content.IsRequired = model.IsRequired;
+                    content.MinimumScore = model.MinimumScore ?? 0;
+
+                    _db.CourseContents.Update(content);
+                }
+
+                _db.Courses.Update(course);
+                await _db.SaveChangesAsync(); // Guardamos los cambios de la edición
             }
-
-            _db.Courses.Add(course);
-            await _db.SaveChangesAsync();   // ya tenemos course.IdCourse
-
-            // ===== 2) Crear CourseContent principal =====
-            var content = new CourseContent
+            else
             {
-                CourseId = course.IdCourse,
-                Title = model.ContentTitle,
-                ContentType = model.ContentType,          // int ya mapeado
-                ContentUrl = model.ContentUrl,
-                DurationMinutes = model.DurationMinutes,
-                OrderIndex = 1,
-                IsRequired = model.IsRequired,
-                MinimumScore = model.MinimumScore ?? 0
-            };
 
-            _db.CourseContents.Add(content);
-            await _db.SaveChangesAsync();
+                // ===== 1) Crear Course =====
+                var course = new Course
+                {
+                    Title = model.Title,
+                    Description = model.Description,
+                    CategoryId = model.CategoryId,
+                    IsActive = model.IsActive,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                // si tienes CreatedById en la tabla Course
+                var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (!string.IsNullOrEmpty(userIdStr) &&
+                    Guid.TryParse(userIdStr, out var userId))
+                {
+                    course.CreatedById = userId;
+                }
+
+                _db.Courses.Add(course);
+                await _db.SaveChangesAsync();   // Guardamos para obtener el IdCourse generado
+
+                // ===== 2) Crear CourseContent principal =====
+                var content = new CourseContent
+                {
+                    CourseId = course.IdCourse,
+                    Title = model.ContentTitle,
+                    ContentType = model.ContentType,
+                    ContentUrl = model.ContentUrl,
+                    DurationMinutes = model.DurationMinutes,
+                    OrderIndex = 1,
+                    IsRequired = model.IsRequired,
+                    MinimumScore = model.MinimumScore ?? 0
+                };
+
+                _db.CourseContents.Add(content);
+                await _db.SaveChangesAsync(); // Guardamos el contenido
+            }
 
             // PRG: Post-Redirect-Get
             return RedirectToAction(nameof(Index));
