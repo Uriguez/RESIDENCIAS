@@ -544,6 +544,52 @@
           });
         })();
 
+        ///-----------------------LIMPIAR SECCION DE CREAR CURSO PARA QUE NO TENGA CONFLICTOS CON EL DE CREAR CURSO----------------------------//
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Identificar el botón de "Nuevo Curso" usando su atributo data
+            const btnNuevoCurso = document.querySelector('[data-open-course-modal]');
 
+            // 2. Identificar el formulario y los elementos clave del modal
+            const courseForm = document.getElementById('courseForm');
+            const modalTitle = document.getElementById('courseModalTitle');
+            const hiddenId = document.getElementById('EditCourseId'); // ID que usas para saber si es edición
+            const hiddenContentId = document.getElementById('EditContentId');
+            const submitBtn = document.getElementById('courseSubmitBtn'); // Botón de enviar del modal
+
+            if (btnNuevoCurso) {
+                btnNuevoCurso.addEventListener('click', () => {
+                    // A) CAMBIAR TÍTULO Y TEXTOS VISUALES
+                    if (modalTitle) modalTitle.innerText = 'Crear Nuevo Curso';
+                    if (submitBtn) submitBtn.innerText = 'Crear curso';
+
+                    // B) LIMPIAR EL FORMULARIO COMPLETO
+                    if (courseForm) {
+                        courseForm.reset();
+                        // .reset() borra textos, checkboxes y selects a su valor por defecto
+
+                        // Si tienes validaciones de ASP.NET (jQuery Validation), esto limpia los mensajes de error rojos:
+                        // $(courseForm).validate().resetForm(); // Descomenta si usas jQuery Validation
+                        const errorSpans = courseForm.querySelectorAll('.text-danger');
+                        errorSpans.forEach(span => span.innerText = ''); // Limpieza manual de errores
+                    }
+
+                    // C) RESETEAR IDs OCULTOS (CRUCIAL)
+                    // Esto le dice al controlador que es un registro NUEVO (ID = 0 o vacío)
+                    if (hiddenId) hiddenId.value = '';
+                    if (hiddenContentId) hiddenContentId.value = '';
+
+                    // D) RESETEAR ELEMENTOS UI PERSONALIZADOS
+                    // Si tu Dropzone o vista previa de imagen se quedan con la imagen anterior:
+                    const uploadPreview = document.getElementById('uploadPreview');
+                    const dropzoneField = document.getElementById('dropzoneField');
+                    if (uploadPreview) uploadPreview.innerHTML = '';
+                    if (dropzoneField) dropzoneField.style.display = 'block'; // Volver a mostrar zona de carga
+
+                    // Si manipulas la acción del formulario en Edición, regrésala a "Create"
+                    courseForm.setAttribute('action', '/Courses/CreateCourse');
+                    courseForm.setAttribute('method', 'post');
+                });
+            }
+        });
     </script>
 }
