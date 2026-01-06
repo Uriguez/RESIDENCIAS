@@ -7,6 +7,8 @@ namespace SistemaCapacitacion.Core.ViewModels
 {
     public class CreateCourseViewModel
     {
+        public int IdCourse { get; set; }
+
         // ====== datos de Course ======
         [Required]
         [Display(Name = "Título del curso")]
