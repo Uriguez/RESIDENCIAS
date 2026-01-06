@@ -322,7 +322,57 @@
               document.getElementById('Title').readOnly = true; // NO editable
               document.getElementById('CategoryId').value = course.categoryId ?? '';
               document.getElementById('Description').value = course.description ?? '';
-              document.getElementById('IsActive').checked = !!course.isActive;
+                document.getElementById('IsActive').checked = !!course.isActive;
+
+            // =======================================================
+            //       CÓDIGO DE LA VISUALIZACIÓN DE PDF O VIDEOS
+            // =======================================================
+
+                const previewContainer = document.getElementById('uploadPreview');
+                const dropzoneText = document.getElementById('dropzoneHint'); // O el elemento de texto que tengas
+
+                // Limpiar previo
+                if (previewContainer) previewContainer.innerHTML = '';
+
+                // Verificar si el objeto 'course' trae la info del contenido (ajusta según tu JSON de respuesta)
+                // Nota: En tu controlador API debes asegurarte de devolver 'content' dentro del objeto json
+                if (course.content && course.content.contentUrl) {
+
+                    // Rellenar inputs ocultos de contenido si existen
+                    if (document.getElementById('ContentTitle'))
+                        document.getElementById('ContentTitle').value = course.content.title;
+                    if (document.getElementById('ContentUrl'))
+                        document.getElementById('ContentUrl').value = course.content.contentUrl;
+
+                    // MOSTRAR ARCHIVO ACTUAL
+                    if (previewContainer) {
+                        let archivoHTML = '';
+                        // Tipo 1 = Video, Tipo 2 = Documento
+                        if (course.content.contentType === 1) {
+                            archivoHTML = `
+                                <div class="existing-file-alert success">
+                                    <span class="material-icons-outlined">play_circle</span>
+                                    <div>
+                                        <strong>Video actual cargado</strong><br>
+                                        <a href="${course.content.contentUrl}" target="_blank">Ver video actual</a>
+                                    </div>
+                                </div>`;
+                        } else {
+                            archivoHTML = `
+                                <div class="existing-file-alert info">
+                                    <span class="material-icons-outlined">description</span>
+                                    <div>
+                                        <strong>Documento actual cargado</strong><br>
+                                        <a href="${course.content.contentUrl}" target="_blank">Ver documento</a>
+                                    </div>
+                                </div>`;
+                        }
+                        previewContainer.innerHTML = archivoHTML;
+                    }
+                } else {
+                    // Si no hay contenido, limpiar mensaje
+                    if (previewContainer) previewContainer.innerHTML = '';
+                }
 
               // 3) Cambiar texto del modal (opcional)
               const courseModal = document.getElementById('courseModal');
