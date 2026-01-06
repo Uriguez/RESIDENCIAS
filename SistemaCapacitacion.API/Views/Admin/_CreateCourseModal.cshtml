@@ -9,6 +9,7 @@
               method="post">
             @Html.AntiForgeryToken()
             <input type="hidden" id="EditCourseId" value="" />
+            <input type="hidden" asp-for="IdCourse" id="EditCourseId" />
             <input type="hidden" id="EditContentId" value="" />
 
 

@@ -318,6 +318,7 @@
               const course = await r.json();
 
               // 2) Precargar inputs del modal existente (el mismo de Crear)
+              document.getElementById('EditCourseId').value = course.idCourse;
               document.getElementById('Title').value = course.title ?? '';
               document.getElementById('Title').readOnly = true; // NO editable
               document.getElementById('CategoryId').value = course.categoryId ?? '';
