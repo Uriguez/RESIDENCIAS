@@ -137,18 +137,26 @@ public class EmpleadoController : Controller
             .FirstOrDefaultAsync();
 
         if (content == null)
-            return NotFound("El curso no tiene contenido.");
+        {
+            // Opcional: Retornar vista con lista vacía para que no de error 404 feo, 
+            // o dejar el NotFound si prefieres.
+            return NotFound("El curso no tiene contenido cargado.");
+        }
 
-        // 3️⃣ ViewModel correcto
+        // 3️⃣ Crear el ViewModel del objeto único
         var vm = new CursoContenidoViewModel
         {
             CursoId = course.IdCourse,
-            Titulo = course.Title ?? "Curso",
+            Titulo = course.Title ?? "Curso", // Usamos el título del curso o del contenido según prefieras
             Descripcion = course.Description ?? string.Empty,
             RutaContenido = content.ContentUrl ?? string.Empty,
             EsVideo = content.ContentType == 1 // 1 = Video | 2 = Documento
         };
 
-        return View(vm);
+        // 4️⃣ SOLUCIÓN: Meter el objeto en una LISTA
+        var listaContenidos = new List<CursoContenidoViewModel> { vm };
+
+        // Enviamos la lista a la vista
+        return View(listaContenidos);
     }
 }
