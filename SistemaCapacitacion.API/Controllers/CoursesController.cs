@@ -478,7 +478,7 @@ namespace SistemaCapacitacion.API.Controllers
             public int MinimumScore { get; set; }
             public bool IsRequired { get; set; }
         }
-
+        
 [Authorize(Roles = "Admin")]
 [HttpPut("/api/Courses/{id:int}")]
 public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDto dto)
@@ -492,31 +492,35 @@ public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDt
         // Actualizamos Curso
         course.Description = dto.Description ?? ""; 
         course.IsActive = dto.IsActive;
-        course.UpdatedAt = DateTime.UtcNow;
+        course.UpdatedAt = DateTime.UtcNow; // Este SÍ existe en Course
         if (dto.CategoryId.HasValue && dto.CategoryId.Value > 0) course.CategoryId = dto.CategoryId.Value;
 
         // 2. Buscamos contenido
         var content = await _db.CourseContents.FirstOrDefaultAsync(cc => cc.CourseId == id);
 
-        // 3. Crear o Actualizar
+        // 3. Crear o Actualizar (SIN FECHAS EN CourseContent)
         if (content == null)
         {
-            // CASO A: CREAR (Aquí estaba fallando por falta de fecha)
+            // CASO A: CREAR
             content = new CourseContent
             {
                 CourseId = id,
-                Title = !string.IsNullOrEmpty(dto.ContentTitle) ? dto.ContentTitle : "Contenido del Curso",
-                
-                // ✅ AHORA SÍ PODEMOS ASIGNAR ESTO
-                CreationDate = DateTime.UtcNow, 
-                
+                // Si el título viene vacío, ponemos uno por defecto
+                Title = !string.IsNullOrEmpty(dto.ContentTitle) ? dto.ContentTitle : "Material del Curso",
                 OrderIndex = 1,
-                ContentType = dto.ContentType > 0 ? dto.ContentType : 3,
-                ContentUrl = dto.ContentUrl ?? "#",
+                
+                // Aseguramos que los números no sean null
                 DurationMinutes = dto.DurationMinutes,
                 MinimumScore = dto.MinimumScore,
-                IsRequired = dto.IsRequired
+                IsRequired = dto.IsRequired,
+                
+                // Si la URL es null, ponemos un string vacío
+                ContentUrl = dto.ContentUrl ?? "", 
+                
+                // Tipo por defecto 3 (Link) si viene 0
+                ContentType = dto.ContentType > 0 ? dto.ContentType : 3
             };
+            
             _db.CourseContents.Add(content);
         }
         else
@@ -529,21 +533,17 @@ public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDt
             content.MinimumScore = dto.MinimumScore;
             content.IsRequired = dto.IsRequired;
             
-            // ✅ Actualizamos fecha de modificación
-            content.UpdateDate = DateTime.UtcNow;
-
             if (dto.ContentType > 0) content.ContentType = dto.ContentType;
             
             _db.CourseContents.Update(content);
         }
 
-        // Lógica de respaldo para el tipo
-        if (content.ContentType == 0 && !string.IsNullOrEmpty(content.ContentUrl))
+        // Lógica de respaldo para adivinar tipo si es 0
+        if (content.ContentType == 0 || content.ContentType == 3)
         {
-             var url = content.ContentUrl.ToLower();
+             var url = (content.ContentUrl ?? "").ToLower();
              if (url.EndsWith(".pdf")) content.ContentType = 2;
-             else if (url.EndsWith(".mp4")) content.ContentType = 1;
-             else content.ContentType = 3;
+             else if (url.EndsWith(".mp4") || url.EndsWith(".mov")) content.ContentType = 1;
         }
 
         await _db.SaveChangesAsync();
@@ -551,9 +551,9 @@ public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDt
     }
     catch (Exception ex)
     {
-        // Esto atrapará cualquier otro error
+        // Esto mandará el error exacto al navegador
         var msg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
-        return StatusCode(500, $"ERROR REAL: {msg}");
+        return BadRequest($"ERROR SQL: {msg}");
     }
 }
 
@@ -592,4 +592,5 @@ public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDt
         }
     }
 }
+
 
