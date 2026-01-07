@@ -24,40 +24,41 @@
 
                     @* LOGICA ROBUSTA BASADA EN TIPO *@
                     
-                    @if (contenido.TipoContenido == 1) 
-                    {
-                        <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
-                            <video class="w-100 h-100" controls controlsList="nodownload">
-                                <source src="@Url.Content(contenido.RutaContenido)" type="video/mp4" />
-                                Tu navegador no soporta el video.
-                            </video>
-                        </div>
-                    }
-                    else if (contenido.TipoContenido == 2) 
-                    {
-                        <div style="height: 80vh; min-height: 500px;">
-                            <iframe src="@Url.Content(contenido.RutaContenido)" 
-                                    class="w-100 h-100 rounded shadow-sm border"
-                                    frameborder="0">
-                            </iframe>
-                        </div>
-                        
-                        <div class="mt-2 text-end">
-                             <a href="@Url.Content(contenido.RutaContenido)" target="_blank" class="btn btn-sm btn-outline-secondary">
-                                <i class="fa fa-external-link"></i> Abrir en ventana nueva
-                            </a>
-                        </div>
-                    }
-                    else 
-                    {
-                        <div class="alert alert-secondary text-center p-5">
-                            <h4>Recurso Externo</h4>
-                            <p>El contenido de este curso se encuentra en el siguiente enlace:</p>
-                            <a href="@contenido.RutaContenido" target="_blank" class="btn btn-primary btn-lg px-5">
-                                Abrir Contenido
-                            </a>
-                        </div>
-                    }
+                   @* PRIORIDAD 1: Si dice explícitamente que es PDF (Tipo 2) O si la URL termina en .pdf *@
+@if (contenido.TipoContenido == 2 || contenido.RutaContenido.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+{
+    <div style="height: 80vh; min-height: 500px;">
+        <iframe src="@Url.Content(contenido.RutaContenido)" 
+                class="w-100 h-100 rounded shadow-sm border"
+                frameborder="0">
+        </iframe>
+    </div>
+    <div class="mt-2 text-end">
+         <a href="@Url.Content(contenido.RutaContenido)" target="_blank" class="btn btn-sm btn-outline-secondary">
+            <i class="fa fa-external-link"></i> Abrir en ventana nueva
+        </a>
+    </div>
+}
+@* PRIORIDAD 2: Si es Video (Tipo 1) *@
+else if (contenido.TipoContenido == 1 || contenido.EsVideo)
+{
+    <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
+        <video class="w-100 h-100" controls controlsList="nodownload">
+            <source src="@Url.Content(contenido.RutaContenido)" type="video/mp4" />
+            Tu navegador no soporta el video.
+        </video>
+    </div>
+}
+@* PRIORIDAD 3: Cualquier otra cosa es un enlace *@
+else 
+{
+    <div class="alert alert-secondary text-center p-5">
+        <h4>Recurso Externo</h4>
+        <a href="@contenido.RutaContenido" target="_blank" class="btn btn-primary btn-lg px-5">
+            Abrir Contenido
+        </a>
+    </div>
+}
                 </div>
             </div>
         }
