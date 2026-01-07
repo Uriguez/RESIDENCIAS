@@ -22,5 +22,7 @@ public class CourseContent
 
     // Navegación (opcional)
     public Course? Course { get; set; }
+    public DateTime CreationDate { get; set; }
+    public DateTime? UpdateDate { get; set; }
 }
 
