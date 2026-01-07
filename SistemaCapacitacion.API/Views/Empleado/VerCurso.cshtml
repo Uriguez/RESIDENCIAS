@@ -5,62 +5,61 @@
     Layout = "~/Views/_LayoutEmployee.cshtml";
 }
 
-<link rel="stylesheet" href="~/css/curso-detalle.css" asp-append-version="true" />
-
 <div class="container py-4">
     @if (!Model.Any())
     {
-        <p class="text-center text-muted">Este curso no tiene contenidos todavía.</p>
+        <div class="alert alert-warning text-center">
+            Este curso no tiene contenidos cargados correctamente.
+        </div>
     }
     else
     {
         @foreach (var contenido in Model)
-{
-    <div class="card shadow-lg border-0 rounded-4 mb-3">
-        <div class="card-body p-4">
-            <h3 class="fw-bold mb-2">@contenido.Titulo</h3>
-            <p class="text-muted">@contenido.Descripcion</p>
-            <hr />
+        {
+            <div class="card shadow-lg border-0 rounded-4 mb-3">
+                <div class="card-body p-4">
+                    <h3 class="fw-bold mb-2">@contenido.Titulo</h3>
+                    <p class="text-muted">@contenido.Descripcion</p>
+                    <hr />
 
-            @* CASO 1: VIDEO *@
-            @if (contenido.TipoContenido == 1)
-            {
-                <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
-                    <video class="w-100 h-100" controls controlsList="nodownload">
-                        <source src="@Url.Content(contenido.RutaContenido)" type="video/mp4" />
-                        Tu navegador no soporta el video.
-                    </video>
+                    @* LOGICA ROBUSTA BASADA EN TIPO *@
+                    
+                    @if (contenido.TipoContenido == 1) 
+                    {
+                        <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
+                            <video class="w-100 h-100" controls controlsList="nodownload">
+                                <source src="@Url.Content(contenido.RutaContenido)" type="video/mp4" />
+                                Tu navegador no soporta el video.
+                            </video>
+                        </div>
+                    }
+                    else if (contenido.TipoContenido == 2) 
+                    {
+                        <div style="height: 80vh; min-height: 500px;">
+                            <iframe src="@Url.Content(contenido.RutaContenido)" 
+                                    class="w-100 h-100 rounded shadow-sm border"
+                                    frameborder="0">
+                            </iframe>
+                        </div>
+                        
+                        <div class="mt-2 text-end">
+                             <a href="@Url.Content(contenido.RutaContenido)" target="_blank" class="btn btn-sm btn-outline-secondary">
+                                <i class="fa fa-external-link"></i> Abrir en ventana nueva
+                            </a>
+                        </div>
+                    }
+                    else 
+                    {
+                        <div class="alert alert-secondary text-center p-5">
+                            <h4>Recurso Externo</h4>
+                            <p>El contenido de este curso se encuentra en el siguiente enlace:</p>
+                            <a href="@contenido.RutaContenido" target="_blank" class="btn btn-primary btn-lg px-5">
+                                Abrir Contenido
+                            </a>
+                        </div>
+                    }
                 </div>
-            }
-            @* CASO 2: DOCUMENTO / PDF *@
-            else if (contenido.TipoContenido == 2)
-            {
-                <div class="ratio" style="--bs-aspect-ratio: 100%; height: 600px;">
-                     <iframe src="@Url.Content(contenido.RutaContenido)" 
-                            class="w-100 h-100 rounded shadow-sm" 
-                            frameborder="0">
-                    </iframe>
-                </div>
-                
-                <div class="mt-2 text-end">
-                    <a href="@Url.Content(contenido.RutaContenido)" target="_blank" class="btn btn-sm btn-outline-secondary">
-                        <i class="fa fa-external-link"></i> Abrir en ventana nueva
-                    </a>
-                </div>
-            }
-            @* CASO 3: ENLACE EXTERNO O CUALQUIER OTRO *@
-            else 
-            {
-                <div class="alert alert-info text-center p-4">
-                    <h5>Contenido Externo</h5>
-                    <p>Este material requiere abrirse en una nueva pestaña.</p>
-                    <a href="@contenido.RutaContenido" target="_blank" class="btn btn-primary px-4">
-                        Abrir Recurso
-                    </a>
-                </div>
-            }
-        </div>
-    </div>
-}
+            </div>
+        }
     }
 </div>
