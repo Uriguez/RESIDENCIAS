@@ -15,44 +15,52 @@
     else
     {
         @foreach (var contenido in Model)
-        {
-            <div class="card shadow-lg border-0 rounded-4 mb-3">
-                <div class="card-body p-4">
-                    <h3 class="fw-bold mb-2">@contenido.Titulo</h3>
-                    <p class="text-muted">@contenido.Descripcion</p>
-                    <hr />
+{
+    <div class="card shadow-lg border-0 rounded-4 mb-3">
+        <div class="card-body p-4">
+            <h3 class="fw-bold mb-2">@contenido.Titulo</h3>
+            <p class="text-muted">@contenido.Descripcion</p>
+            <hr />
 
-                    @if (contenido.EsVideo)
-                    {
-                        <!-- VIDEO -->
-                        <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
-                            <video class="w-100 h-100" controls preload="metadata" controlsList="nodownload">
-                                <source src="@Url.Content(contenido.RutaContenido)" type="video/mp4" />
-                                Tu navegador no soporta el video.
-                            </video>
-                        </div>
-                    }
-                    else if (contenido.RutaContenido.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
-                    {
-                        <!-- DOCUMENTO PDF -->
-                        <iframe src="@Url.Content(contenido.RutaContenido)"
-                                class="w-100 rounded shadow-sm"
-                                style="height: 600px;"
-                                frameborder="0"
-                                allowfullscreen>
-                        </iframe>
-                    }
-                    else
-                    {
-                        <!-- ENLACE EXTERNO -->
-                        <div class="mb-2">
-                            <a href="@contenido.RutaContenido" target="_blank" class="btn btn-primary">
-                                Abrir enlace externo
-                            </a>
-                        </div>
-                    }
+            @* CASO 1: VIDEO *@
+            @if (contenido.TipoContenido == 1)
+            {
+                <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
+                    <video class="w-100 h-100" controls controlsList="nodownload">
+                        <source src="@Url.Content(contenido.RutaContenido)" type="video/mp4" />
+                        Tu navegador no soporta el video.
+                    </video>
                 </div>
-            </div>
-        }
+            }
+            @* CASO 2: DOCUMENTO / PDF *@
+            else if (contenido.TipoContenido == 2)
+            {
+                <div class="ratio" style="--bs-aspect-ratio: 100%; height: 600px;">
+                     <iframe src="@Url.Content(contenido.RutaContenido)" 
+                            class="w-100 h-100 rounded shadow-sm" 
+                            frameborder="0">
+                    </iframe>
+                </div>
+                
+                <div class="mt-2 text-end">
+                    <a href="@Url.Content(contenido.RutaContenido)" target="_blank" class="btn btn-sm btn-outline-secondary">
+                        <i class="fa fa-external-link"></i> Abrir en ventana nueva
+                    </a>
+                </div>
+            }
+            @* CASO 3: ENLACE EXTERNO O CUALQUIER OTRO *@
+            else 
+            {
+                <div class="alert alert-info text-center p-4">
+                    <h5>Contenido Externo</h5>
+                    <p>Este material requiere abrirse en una nueva pestaña.</p>
+                    <a href="@contenido.RutaContenido" target="_blank" class="btn btn-primary px-4">
+                        Abrir Recurso
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+}
     }
 </div>
