@@ -337,6 +337,7 @@ namespace SistemaCapacitacion.API.Controllers
 
             // PRG: Post-Redirect-Get
             return RedirectToAction(nameof(Index));
+
         }
         [HttpGet("{id:int}")]
 
@@ -480,37 +481,46 @@ namespace SistemaCapacitacion.API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPut("/api/Courses/{id:int}")]
-        public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDto dto)
-        {
-            var course = await _db.Courses.FirstOrDefaultAsync(c => c.IdCourse == id);
-            if (course == null) return NotFound();
+       // REEMPLAZA TU MÉTODO ApiUpdateCourse CON ESTE:
 
-            // Title NO editable (se conserva)
-            course.Description = dto.Description;
-            course.CategoryId = dto.CategoryId;
-            course.IsActive = dto.IsActive;
-            course.UpdatedAt = DateTime.UtcNow;
+[Authorize(Roles = "Admin")]
+[HttpPut("/api/Courses/{id:int}")]
+public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDto dto)
+{
+    // 1. Buscamos el curso
+    var course = await _db.Courses.FirstOrDefaultAsync(c => c.IdCourse == id);
+    if (course == null) return NotFound();
 
-            // Actualizar contenido principal (si existe)
-            if (dto.ContentId.HasValue)
-            {
-                var content = await _db.CourseContents
-                    .FirstOrDefaultAsync(cc => cc.IdCourCont == dto.ContentId.Value && cc.CourseId == id);
+    // 2. Actualizamos datos del Curso
+    course.Description = dto.Description;
+    course.CategoryId = dto.CategoryId;
+    course.IsActive = dto.IsActive;
+    course.UpdatedAt = DateTime.UtcNow;
 
-                if (content != null)
-                {
-                    content.Title = dto.ContentTitle;
-                    content.ContentType = dto.ContentType;
-                    content.ContentUrl = dto.ContentUrl;
-                    content.DurationMinutes = dto.DurationMinutes;
-                    content.MinimumScore = dto.MinimumScore;
-                    content.IsRequired = dto.IsRequired;
-                }
-            }
+    // 3. CORRECCIÓN: Buscamos el contenido por el ID DEL CURSO (infalible)
+    // Ya no dependemos de si dto.ContentId tiene valor o no.
+    var content = await _db.CourseContents
+        .FirstOrDefaultAsync(cc => cc.CourseId == id);
 
-            await _db.SaveChangesAsync();
-            return NoContent();
-        }
+    if (content != null)
+    {
+        // Actualizamos los datos del contenido
+        content.Title = dto.ContentTitle;
+        content.ContentType = dto.ContentType;
+        content.ContentUrl = dto.ContentUrl;
+        content.DurationMinutes = dto.DurationMinutes;
+        content.MinimumScore = dto.MinimumScore;
+        content.IsRequired = dto.IsRequired;
+        
+        // Marcamos que se modificó
+        _db.CourseContents.Update(content);
+    }
+    // Si no existiera contenido, aquí podrías crearlo (opcional), 
+    // pero por ahora solo aseguramos que si existe, se actualice.
+
+    await _db.SaveChangesAsync();
+    return NoContent();
+}
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
