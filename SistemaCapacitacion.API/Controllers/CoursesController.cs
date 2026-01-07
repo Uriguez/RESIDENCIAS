@@ -488,11 +488,11 @@ public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDt
 {
     try
     {
-        // 1. Buscamos el curso (Si no existe, error inmediato)
+        // 1. Buscamos el curso (Validamos que exista)
         var course = await _db.Courses.FirstOrDefaultAsync(c => c.IdCourse == id);
-        if (course == null) return NotFound("El curso con ID " + id + " no existe.");
+        if (course == null) return NotFound("El curso no existe.");
 
-        // 2. Actualizamos datos básicos del Curso
+        // 2. Actualizamos datos del Curso (Este sí tiene fechas)
         course.Description = dto.Description;
         course.CategoryId = dto.CategoryId;
         course.IsActive = dto.IsActive;
@@ -501,60 +501,63 @@ public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDt
         // 3. Buscamos si ya tiene contenido
         var content = await _db.CourseContents.FirstOrDefaultAsync(cc => cc.CourseId == id);
 
-        // --- AQUÍ ESTÁ LA MAGIA: CREAR SI NO EXISTE ---
+        // === ZONA DE MAGIA: CREAR O ACTUALIZAR (UPSERT) ===
         if (content == null)
         {
-            // ¡No existía! Creamos uno nuevo
+            // CASO A: No tiene contenido -> LO CREAMOS
             content = new CourseContent
             {
                 CourseId = id,
-                Title = dto.ContentTitle ?? "Contenido del curso",
-                CreationDate = DateTime.UtcNow
+                Title = dto.ContentTitle ?? "Contenido del Curso",
+                // CreationDate ELIMINADO porque no existe en tu BD
+                OrderIndex = 1
             };
-            // Lo marcamos para AGREGAR
+            // Importante: Avisar a la BD que vamos a AGREGAR
             _db.CourseContents.Add(content);
         }
         else
         {
-            // Ya existía, solo actualizamos el título si cambió
-             if (!string.IsNullOrEmpty(dto.ContentTitle)) content.Title = dto.ContentTitle;
-             // Lo marcamos para ACTUALIZAR
+            // CASO B: Ya tiene contenido -> SOLO ACTUALIZAMOS TÍTULO
+            if (!string.IsNullOrEmpty(dto.ContentTitle)) 
+                content.Title = dto.ContentTitle;
+                
+            // Importante: Avisar a la BD que vamos a MODIFICAR
             _db.CourseContents.Update(content);
         }
 
-        // 4. Actualizamos las propiedades comunes (URL, Tipo, etc.)
+        // 4. Asignamos los valores comunes (para ambos casos)
         content.ContentUrl = dto.ContentUrl;
         content.DurationMinutes = dto.DurationMinutes;
         content.MinimumScore = dto.MinimumScore;
         content.IsRequired = dto.IsRequired;
-        content.UpdateDate = DateTime.UtcNow;
+        // UpdateDate ELIMINADO porque no existe en tu BD
 
-        // 5. Lógica de Autodetección de Tipo (Video/PDF/Link)
-        // Si el usuario eligió algo en el dropdown, lo respetamos
+        // 5. Lógica para detectar Tipo (Video/PDF/Link)
+        // Si viene > 0, usamos lo que eligió el usuario
         if (dto.ContentType > 0)
         {
             content.ContentType = dto.ContentType;
         }
-        // Si no (es 0), intentamos adivinar por la URL
+        // Si es 0 o null, intentamos adivinar por la extensión del archivo
         else if (!string.IsNullOrEmpty(dto.ContentUrl))
         {
-            var urlLower = dto.ContentUrl.ToLower();
-            if (urlLower.EndsWith(".mp4") || urlLower.EndsWith(".mov")) content.ContentType = 1;
-            else if (urlLower.EndsWith(".pdf")) content.ContentType = 2;
+            var url = dto.ContentUrl.ToLower();
+            if (url.EndsWith(".mp4") || url.EndsWith(".mov")) content.ContentType = 1;
+            else if (url.EndsWith(".pdf")) content.ContentType = 2;
             else content.ContentType = 3;
         }
-        // Si sigue siendo 0 (ni eligió ni adivinamos), forzamos Link (3) para que no falle la BD
-        if (content.ContentType == 0) content.ContentType = 3; 
+        
+        // Si aun así es 0, forzamos Link (3) para evitar error de BD
+        if (content.ContentType == 0) content.ContentType = 3;
 
-        // 6. Guardamos todo
+        // 6. Guardamos los cambios
         await _db.SaveChangesAsync();
         return NoContent();
     }
     catch (Exception ex)
     {
-        // ESTO ES CLAVE: Devuelve el error real para que lo veamos
-        // Puede ser un error de base de datos (FK) o validación
-        return StatusCode(500, "Error interno: " + ex.Message + (ex.InnerException != null ? " | Detalles: " + ex.InnerException.Message : ""));
+        // Esto mostrará el error real en la consola del navegador si falla
+        return StatusCode(500, "Error interno: " + ex.Message);
     }
 }
 
@@ -591,8 +594,5 @@ public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDt
 
             return RedirectToAction(nameof(Index));
         }
-
-
     }
 }
-
