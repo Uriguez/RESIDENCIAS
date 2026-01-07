@@ -118,6 +118,7 @@ public class EmpleadoController : Controller
     // ===============================
     // VER CONTENIDO DEL CURSO
     // ===============================
+
     [HttpGet]
     public async Task<IActionResult> VerCurso(int id)
     {
@@ -147,10 +148,14 @@ public class EmpleadoController : Controller
         var vm = new CursoContenidoViewModel
         {
             CursoId = course.IdCourse,
-            Titulo = course.Title ?? "Curso", // Usamos el título del curso o del contenido según prefieras
+            Titulo = course.Title ?? "Curso",
             Descripcion = course.Description ?? string.Empty,
             RutaContenido = content.ContentUrl ?? string.Empty,
-            EsVideo = content.ContentType == 1 // 1 = Video | 2 = Documento
+    
+            // AQUÍ EL CAMBIO IMPORTANTE:
+            // Pasamos el tipo exacto (1, 2 o 3) directamente de la base de datos
+            TipoContenido = content.ContentType, 
+            EsVideo = content.ContentType == 1
         };
 
         // 4️⃣ SOLUCIÓN: Meter el objeto en una LISTA
