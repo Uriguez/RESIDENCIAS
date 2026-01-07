@@ -40,7 +40,8 @@
     </div>
 }
 @* PRIORIDAD 2: Si es Video (Tipo 1) *@
-else if (contenido.TipoContenido == 1 || contenido.EsVideo)
+// Agregamos la validación de extensión mp4 por si la BD falla
+else if (contenido.TipoContenido == 1 || contenido.EsVideo || contenido.RutaContenido.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase))
 {
     <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
         <video class="w-100 h-100" controls controlsList="nodownload">
