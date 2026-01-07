@@ -479,85 +479,81 @@ namespace SistemaCapacitacion.API.Controllers
             public bool IsRequired { get; set; }
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpPut("/api/Courses/{id:int}")]
-       // REEMPLAZA TU MÉTODO ApiUpdateCourse CON ESTE:
 [Authorize(Roles = "Admin")]
 [HttpPut("/api/Courses/{id:int}")]
 public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDto dto)
 {
     try
     {
-        // 1. Buscamos el curso (Validamos que exista)
+        // 1. Buscamos el curso
         var course = await _db.Courses.FirstOrDefaultAsync(c => c.IdCourse == id);
         if (course == null) return NotFound("El curso no existe.");
 
-        // 2. Actualizamos datos del Curso (Este sí tiene fechas)
-        course.Description = dto.Description;
-        course.CategoryId = dto.CategoryId;
+        // Actualizamos Curso
+        course.Description = dto.Description ?? ""; 
         course.IsActive = dto.IsActive;
         course.UpdatedAt = DateTime.UtcNow;
+        if (dto.CategoryId.HasValue && dto.CategoryId.Value > 0) course.CategoryId = dto.CategoryId.Value;
 
-        // 3. Buscamos si ya tiene contenido
+        // 2. Buscamos contenido
         var content = await _db.CourseContents.FirstOrDefaultAsync(cc => cc.CourseId == id);
 
-        // === ZONA DE MAGIA: CREAR O ACTUALIZAR (UPSERT) ===
+        // 3. Crear o Actualizar
         if (content == null)
         {
-            // CASO A: No tiene contenido -> LO CREAMOS
+            // CASO A: CREAR (Aquí estaba fallando por falta de fecha)
             content = new CourseContent
             {
                 CourseId = id,
-                Title = dto.ContentTitle ?? "Contenido del Curso",
-                // CreationDate ELIMINADO porque no existe en tu BD
-                OrderIndex = 1
+                Title = !string.IsNullOrEmpty(dto.ContentTitle) ? dto.ContentTitle : "Contenido del Curso",
+                
+                // ✅ AHORA SÍ PODEMOS ASIGNAR ESTO
+                CreationDate = DateTime.UtcNow, 
+                
+                OrderIndex = 1,
+                ContentType = dto.ContentType > 0 ? dto.ContentType : 3,
+                ContentUrl = dto.ContentUrl ?? "#",
+                DurationMinutes = dto.DurationMinutes,
+                MinimumScore = dto.MinimumScore,
+                IsRequired = dto.IsRequired
             };
-            // Importante: Avisar a la BD que vamos a AGREGAR
             _db.CourseContents.Add(content);
         }
         else
         {
-            // CASO B: Ya tiene contenido -> SOLO ACTUALIZAMOS TÍTULO
-            if (!string.IsNullOrEmpty(dto.ContentTitle)) 
-                content.Title = dto.ContentTitle;
-                
-            // Importante: Avisar a la BD que vamos a MODIFICAR
+            // CASO B: ACTUALIZAR
+            if (!string.IsNullOrEmpty(dto.ContentTitle)) content.Title = dto.ContentTitle;
+            
+            content.ContentUrl = dto.ContentUrl ?? content.ContentUrl;
+            content.DurationMinutes = dto.DurationMinutes;
+            content.MinimumScore = dto.MinimumScore;
+            content.IsRequired = dto.IsRequired;
+            
+            // ✅ Actualizamos fecha de modificación
+            content.UpdateDate = DateTime.UtcNow;
+
+            if (dto.ContentType > 0) content.ContentType = dto.ContentType;
+            
             _db.CourseContents.Update(content);
         }
 
-        // 4. Asignamos los valores comunes (para ambos casos)
-        content.ContentUrl = dto.ContentUrl;
-        content.DurationMinutes = dto.DurationMinutes;
-        content.MinimumScore = dto.MinimumScore;
-        content.IsRequired = dto.IsRequired;
-        // UpdateDate ELIMINADO porque no existe en tu BD
-
-        // 5. Lógica para detectar Tipo (Video/PDF/Link)
-        // Si viene > 0, usamos lo que eligió el usuario
-        if (dto.ContentType > 0)
+        // Lógica de respaldo para el tipo
+        if (content.ContentType == 0 && !string.IsNullOrEmpty(content.ContentUrl))
         {
-            content.ContentType = dto.ContentType;
+             var url = content.ContentUrl.ToLower();
+             if (url.EndsWith(".pdf")) content.ContentType = 2;
+             else if (url.EndsWith(".mp4")) content.ContentType = 1;
+             else content.ContentType = 3;
         }
-        // Si es 0 o null, intentamos adivinar por la extensión del archivo
-        else if (!string.IsNullOrEmpty(dto.ContentUrl))
-        {
-            var url = dto.ContentUrl.ToLower();
-            if (url.EndsWith(".mp4") || url.EndsWith(".mov")) content.ContentType = 1;
-            else if (url.EndsWith(".pdf")) content.ContentType = 2;
-            else content.ContentType = 3;
-        }
-        
-        // Si aun así es 0, forzamos Link (3) para evitar error de BD
-        if (content.ContentType == 0) content.ContentType = 3;
 
-        // 6. Guardamos los cambios
         await _db.SaveChangesAsync();
         return NoContent();
     }
     catch (Exception ex)
     {
-        // Esto mostrará el error real en la consola del navegador si falla
-        return StatusCode(500, "Error interno: " + ex.Message);
+        // Esto atrapará cualquier otro error
+        var msg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        return StatusCode(500, $"ERROR REAL: {msg}");
     }
 }
 
@@ -596,3 +592,4 @@ public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDt
         }
     }
 }
+
