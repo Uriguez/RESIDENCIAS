@@ -89,3 +89,40 @@
         </form>
     </div>
 </div>
+<script>
+    // Función que se debe llamar al abrir el modal de asignación
+    function prepareAssignModal(courseId) {
+        
+        // 1. Limpiar todos los checkboxes primero (resetear estado)
+        const allCheckboxes = document.querySelectorAll('.user-checkbox'); // Asegúrate que tus checkbox tengan esta clase
+        allCheckboxes.forEach(chk => {
+            chk.checked = false;
+            chk.disabled = false;
+            chk.parentElement.classList.remove('text-muted'); // Opcional: quitar color gris del texto
+        });
+
+        // 2. Establecer el ID del curso en el input oculto (si lo usas para el POST)
+        // document.getElementById('InputCourseId').value = courseId; 
+
+        // 3. Consultar a la API quiénes ya lo tienen
+        fetch(`/api/Courses/${courseId}/assignments`)
+            .then(response => response.json())
+            .then(existingUserIds => {
+                
+                // 4. Recorrer los IDs que nos devolvió el servidor
+                existingUserIds.forEach(userId => {
+                    // Buscar el checkbox que tenga este value
+                    const checkbox = document.querySelector(`input[type="checkbox"][value="${userId}"]`);
+                    
+                    if (checkbox) {
+                        checkbox.checked = true;    // Lo marcamos
+                        checkbox.disabled = true;   // Lo bloqueamos (gris)
+                        
+                        Poner el texto en gris también para que se note más
+                        checkbox.parentElement.classList.add('text-muted'); 
+                    }
+                });
+            })
+            .catch(error => console.error('Error cargando asignaciones:', error));
+    }
+</script>
