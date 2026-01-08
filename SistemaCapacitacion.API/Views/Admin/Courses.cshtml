@@ -230,7 +230,8 @@
                                 <button type="button"
                                         class="btn btn--primary"
                                         data-open-assign-modal
-                                        data-assign-modal-id="assignModal-@c.IdCourse">
+                                        data-assign-modal-id="assignModal-@c.IdCourse"
+                                        onclick="prepareAssignModal(@c.IdCourse, 'assignModal-@c.IdCourse')">
                                     Asignar
                                 </button>
                             }
@@ -641,6 +642,7 @@
                     courseForm.setAttribute('method', 'post');
                 });
             }
+
         });
     </script>
 }
