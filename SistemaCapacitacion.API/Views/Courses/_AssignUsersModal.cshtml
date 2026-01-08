@@ -4,7 +4,8 @@
     <div class="modal__dialog">
         <form asp-controller="Courses"
               asp-action="AssignUsers"
-              method="post">
+              method="post"
+              onsubmit="desbloquearAntesDeEnviar(this)"> 
             @Html.AntiForgeryToken()
 
             <input type="hidden" name="CourseId" value="@Model.CourseId" />
