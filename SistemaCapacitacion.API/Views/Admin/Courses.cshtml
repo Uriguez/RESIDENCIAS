@@ -680,6 +680,19 @@
                 console.error(error);
             }
         }
+function desbloquearAntesDeEnviar(formulario) {
+        // 1. Buscar todas las casillas que están bloqueadas (disabled) dentro de ESTE formulario
+        const casillasBloqueadas = formulario.querySelectorAll('input[type="checkbox"]:disabled');
+        
+        // 2. Desbloquearlas para que el navegador sí las envíe
+        casillasBloqueadas.forEach(chk => {
+            chk.disabled = false; 
+        });
+
+        // 3. El formulario se envía automáticamente con TODOS los datos (viejos y nuevos)
+        return true; 
+    }
     </script>
 }
+
 
