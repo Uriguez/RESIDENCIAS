@@ -672,8 +672,7 @@
                     
                     if (checkbox) {
                         checkbox.checked = true;
-                        checkbox.disabled = true;
-                        if(checkbox.parentElement) checkbox.parentElement.classList.add('text-muted');
+                        if(checkbox.parentElement) checkbox.parentElement.classList.add('fw-bold');
                     }
                 });
             } catch (error) {
@@ -694,5 +693,6 @@ function desbloquearAntesDeEnviar(formulario) {
     }
     </script>
 }
+
 
 
