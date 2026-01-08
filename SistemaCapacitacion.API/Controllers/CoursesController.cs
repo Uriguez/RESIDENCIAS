@@ -235,47 +235,56 @@ namespace SistemaCapacitacion.API.Controllers
         }
 
 [HttpPost]
-[Authorize(Roles = "RH")] // O Admin, según tus reglas
+[Authorize(Roles = "RH")]
 [ValidateAntiForgeryToken]
 public async Task<IActionResult> AssignUsers(AssignUsersToCourseViewModel model)
 {
-    // 1. Obtener la lista ACTUAL de la base de datos (Quiénes están inscritos hoy)
+    // 1. Obtener la lista ACTUAL de la base de datos
     var currentAssignments = await _db.UserCourses
         .Where(x => x.CourseId == model.CourseId)
         .ToListAsync();
 
-    // 2. Obtener la lista NUEVA que viene del formulario (Los que marcaste con palomita)
-    var selectedIds = model.SelectedUserIds ?? new List<string>();
+    // 2. Obtener la lista NUEVA (son Textos/Strings)
+    var selectedStrings = model.SelectedUserIds ?? new List<string>();
 
-    // --- LÓGICA DE SINCRONIZACIÓN (MAGIA) ---
-
-    // A) ¿A QUIÉN METEMOS? (Están marcados en el formulario, pero NO en la BD)
-    foreach (var userId in selectedIds)
+    // === PASO DE CONVERSIÓN (TEXTO -> GUID) ===
+    // Convertimos la lista de textos a una lista de GUIDs reales para evitar errores
+    var selectedGuids = new List<Guid>();
+    foreach(var s in selectedStrings)
     {
-        if (!currentAssignments.Any(x => x.UserId == userId))
+        if(Guid.TryParse(s, out Guid convertedGuid))
+        {
+            selectedGuids.Add(convertedGuid);
+        }
+    }
+
+    // === LÓGICA DE AGREGAR (SI NO ESTÁ, LO METE) ===
+    foreach (var newGuid in selectedGuids)
+    {
+        // Ahora comparamos GUID con GUID 
+        if (!currentAssignments.Any(x => x.UserId == newGuid))
         {
             _db.UserCourses.Add(new UserCourse 
             { 
                 CourseId = model.CourseId, 
-                UserId = userId,
+                UserId = newGuid
             });
         }
     }
 
-    // B) ¿A QUIÉN EXPULSAMOS? (Estaban en la BD, pero YA NO tienen palomita)
+    // === LÓGICA DE EXPULSAR (SI YA NO ESTÁ SELECCIONADO, LO BORRA) ===
     foreach (var existing in currentAssignments)
     {
-        if (!selectedIds.Contains(existing.UserId))
+        // Si el usuario de la BD NO está en la lista nueva... ¡Adiós!
+        if (!selectedGuids.Contains(existing.UserId))
         {
-            // ¡Adiós! Lo sacamos del curso
             _db.UserCourses.Remove(existing);
         }
     }
 
-    // 3. Guardar todos los cambios de golpe
+    // 3. Guardar cambios
     await _db.SaveChangesAsync();
 
-    // 4. Regresar a la lista de cursos
     return RedirectToAction(nameof(Index));
 }
 
@@ -649,6 +658,7 @@ public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDt
             }
     }
 }
+
 
 
 
