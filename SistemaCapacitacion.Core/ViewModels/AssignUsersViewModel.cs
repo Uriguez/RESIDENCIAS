@@ -19,6 +19,7 @@ namespace SistemaCapacitacion.Core.ViewModels
 
         // Lista de usuarios que se pueden asignar
         public List<AssignUserItemViewModel> Users { get; set; } = new();
+        public List<string> SelectedUserIds { get; set; } = new List<string>();
     }
 
     // Modelo que recibe el POST del formulario del modal
