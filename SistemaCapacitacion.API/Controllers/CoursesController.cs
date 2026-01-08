@@ -258,7 +258,6 @@ public async Task<IActionResult> AssignUsers(AssignUsersToCourseViewModel model)
             { 
                 CourseId = model.CourseId, 
                 UserId = userId,
-                AssignmentDate = DateTime.UtcNow
             });
         }
     }
@@ -650,6 +649,7 @@ public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDt
             }
     }
 }
+
 
 
 
