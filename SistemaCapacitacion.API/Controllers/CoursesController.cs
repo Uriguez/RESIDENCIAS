@@ -239,60 +239,60 @@ namespace SistemaCapacitacion.API.Controllers
 [ValidateAntiForgeryToken]
 public async Task<IActionResult> AssignUsers(AssignUsersToCourseViewModel model)
 {
-    // 1. Obtener la lista ACTUAL de la base de datos
-    var currentAssignments = await _db.UserCourses
-        .Where(x => x.CourseId == model.CourseId)
-        .ToListAsync();
-
-    // 2. Obtener la lista NUEVA (son Textos/Strings)
-    var selectedStrings = model.SelectedUserIds ?? new List<string>();
-
-    // === PASO DE CONVERSIÓN (TEXTO -> GUID) ===
-    // Convertimos la lista de textos a una lista de GUIDs reales para evitar errores
-    var selectedGuids = new List<Guid>();
-    foreach(var s in selectedStrings)
+    try 
     {
-        if(Guid.TryParse(s, out Guid convertedGuid))
+        // 1. Obtener la lista ACTUAL de la base de datos
+        var currentAssignments = await _db.UserCourses
+            .Where(x => x.CourseId == model.CourseId)
+            .ToListAsync();
+
+        // 2. Obtener la lista NUEVA (son Textos/Strings)
+        var selectedStrings = model.SelectedUserIds ?? new List<string>();
+
+        // === PASO DE CONVERSIÓN (TEXTO -> GUID) ===
+        var selectedGuids = new List<Guid>();
+        foreach(var s in selectedStrings)
         {
-            selectedGuids.Add(convertedGuid);
+            if(Guid.TryParse(s, out Guid convertedGuid))
+            {
+                selectedGuids.Add(convertedGuid);
+            }
         }
-    }
 
-    // === LÓGICA DE AGREGAR (SI NO ESTÁ, LO METE) ===
-    foreach (var newGuid in selectedGuids)
-    {
-        // Ahora comparamos GUID con GUID 
-        if (!currentAssignments.Any(x => x.UserId == newGuid))
+        // === LÓGICA DE AGREGAR ===
+        foreach (var newGuid in selectedGuids)
         {
-            _db.UserCourses.Add(new UserCourse 
-            { 
-                CourseId = model.CourseId, 
-                UserId = newGuid
-            });
+            if (!currentAssignments.Any(x => x.UserId == newGuid))
+            {
+                _db.UserCourses.Add(new UserCourse 
+                { 
+                    CourseId = model.CourseId, 
+                    UserId = newGuid
+                });
+            }
         }
-    }
 
-    // === LÓGICA DE EXPULSAR (SI YA NO ESTÁ SELECCIONADO, LO BORRA) ===
-    foreach (var existing in currentAssignments)
-    {
-        // Si el usuario de la BD NO está en la lista nueva... ¡Adiós!
-        if (!selectedGuids.Contains(existing.UserId))
+        // === LÓGICA DE EXPULSAR ===
+        foreach (var existing in currentAssignments)
         {
-            _db.UserCourses.Remove(existing);
+            if (!selectedGuids.Contains(existing.UserId))
+            {
+                _db.UserCourses.Remove(existing);
+            }
         }
-    }
 
-    // 3. Guardar cambios
-    await _db.SaveChangesAsync();
+        // 3. Guardar cambios
+        await _db.SaveChangesAsync();
 
-    return RedirectToAction(nameof(Index));
-}
-catch (Exception ex)
+        return RedirectToAction(nameof(Index));
+    } 
+    catch (Exception ex)
     {
+        // Si hay error, lo mostramos en pantalla
         var errorReal = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
         return Content($"💀 ERROR DEL SERVIDOR: {errorReal} \n\n Pila: {ex.StackTrace}");
     }
-
+}
         // =========================================================
         //  CREAR CURSO (POST desde el modal)
         // =========================================================
@@ -663,6 +663,7 @@ public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDt
             }
     }
 }
+
 
 
 
