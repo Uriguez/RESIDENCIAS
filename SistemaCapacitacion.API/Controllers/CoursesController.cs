@@ -287,6 +287,11 @@ public async Task<IActionResult> AssignUsers(AssignUsersToCourseViewModel model)
 
     return RedirectToAction(nameof(Index));
 }
+catch (Exception ex)
+    {
+        var errorReal = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        return Content($"💀 ERROR DEL SERVIDOR: {errorReal} \n\n Pila: {ex.StackTrace}");
+    }
 
         // =========================================================
         //  CREAR CURSO (POST desde el modal)
@@ -658,6 +663,7 @@ public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDt
             }
     }
 }
+
 
 
 
