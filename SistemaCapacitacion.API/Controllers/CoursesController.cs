@@ -234,6 +234,52 @@ namespace SistemaCapacitacion.API.Controllers
             return View("AssignUsers", course);
         }
 
+[HttpPost]
+[Authorize(Roles = "RH")] // O Admin, según tus reglas
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> AssignUsers(AssignUsersToCourseViewModel model)
+{
+    // 1. Obtener la lista ACTUAL de la base de datos (Quiénes están inscritos hoy)
+    var currentAssignments = await _db.UserCourses
+        .Where(x => x.CourseId == model.CourseId)
+        .ToListAsync();
+
+    // 2. Obtener la lista NUEVA que viene del formulario (Los que marcaste con palomita)
+    var selectedIds = model.SelectedUserIds ?? new List<string>();
+
+    // --- LÓGICA DE SINCRONIZACIÓN (MAGIA) ---
+
+    // A) ¿A QUIÉN METEMOS? (Están marcados en el formulario, pero NO en la BD)
+    foreach (var userId in selectedIds)
+    {
+        if (!currentAssignments.Any(x => x.UserId == userId))
+        {
+            _db.UserCourses.Add(new UserCourse 
+            { 
+                CourseId = model.CourseId, 
+                UserId = userId,
+                AssignmentDate = DateTime.UtcNow
+            });
+        }
+    }
+
+    // B) ¿A QUIÉN EXPULSAMOS? (Estaban en la BD, pero YA NO tienen palomita)
+    foreach (var existing in currentAssignments)
+    {
+        if (!selectedIds.Contains(existing.UserId))
+        {
+            // ¡Adiós! Lo sacamos del curso
+            _db.UserCourses.Remove(existing);
+        }
+    }
+
+    // 3. Guardar todos los cambios de golpe
+    await _db.SaveChangesAsync();
+
+    // 4. Regresar a la lista de cursos
+    return RedirectToAction(nameof(Index));
+}
+
         // =========================================================
         //  CREAR CURSO (POST desde el modal)
         // =========================================================
@@ -604,6 +650,7 @@ public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDt
             }
     }
 }
+
 
 
 
