@@ -644,5 +644,42 @@
             }
 
         });
+
+        async function prepareAssignModal(courseId) {
+            // 1. Identificamos la modal ESPECÍFICA de este curso
+            const modalId = 'assignModal-' + courseId;
+            const modal = document.getElementById(modalId);
+            
+            if (!modal) return; 
+
+            // 2. Limpiamos SOLO los checkboxes de esta modal
+            const allCheckboxes = modal.querySelectorAll('.user-checkbox');
+            allCheckboxes.forEach(chk => {
+                chk.checked = false;
+                chk.disabled = false;
+                if(chk.parentElement) chk.parentElement.classList.remove('text-muted');
+            });
+
+            // 3. Consultamos la API
+            try {
+                const response = await fetch(`/api/Courses/${courseId}/assignments`);
+                if (!response.ok) throw new Error("Error API");
+                const existingUserIds = await response.json();
+
+                // 4. Marcamos SOLO dentro de esta modal
+                existingUserIds.forEach(userId => {
+                    const checkbox = modal.querySelector(`input[value="${userId}"]`);
+                    
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        checkbox.disabled = true;
+                        if(checkbox.parentElement) checkbox.parentElement.classList.add('text-muted');
+                    }
+                });
+            } catch (error) {
+                console.error(error);
+            }
+        }
     </script>
 }
+
