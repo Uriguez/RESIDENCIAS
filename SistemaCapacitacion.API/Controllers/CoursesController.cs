@@ -590,7 +590,20 @@ public async Task<IActionResult> ApiUpdateCourse(int id, [FromBody] CourseEditDt
 
             return RedirectToAction(nameof(Index));
         }
+        [HttpGet("api/Courses/{courseId}/assignments")]
+        [Authorize(Roles = "RH")] // Asegura que solo admin/rh pueda ver esto
+        public async Task<IActionResult> GetAssignedUserIds(int courseId)
+            {
+            // Buscamos solo los IDs de los usuarios que ya tienen este curso
+                var userIds = await _db.UserCourses
+                .Where(uc => uc.CourseId == courseId)
+                .Select(uc => uc.UserId)
+                .ToListAsync();
+
+                return Ok(userIds);
+            }
     }
 }
+
 
 
