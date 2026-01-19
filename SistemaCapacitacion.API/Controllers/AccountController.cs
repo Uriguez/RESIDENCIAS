@@ -93,6 +93,108 @@ public class AccountController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateProfile(EditProfileViewModel model, string? removePhoto)
+    {
+        // 1. Validar que el usuario esté logueado
+        var idStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(idStr, out var idUser))
+            return RedirectToAction(nameof(Login));
+
+        // 2. Traer el usuario de la BD (con tracking para poder editarlo)
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.IdUser == idUser);
+        if (user == null)
+            return RedirectToAction(nameof(Login));
+
+        // ---------------------------------------------------------
+        // CASO A: ELIMINAR FOTO (Botón de basura)
+        // ---------------------------------------------------------
+        if (removePhoto == "true")
+        {
+            // Borramos el archivo físico si existe
+            if (!string.IsNullOrEmpty(user.PhotoUrl))
+            {
+                var oldPath = Path.Combine(_env.WebRootPath, user.PhotoUrl.TrimStart('/', '\\'));
+                if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
+            }
+
+            // Limpiamos la BD
+            user.PhotoUrl = null;
+            await _db.SaveChangesAsync();
+
+            // Recargamos la página
+            return RedirigirSegunRol(); 
+        }
+
+        // ---------------------------------------------------------
+        // CASO B: GUARDAR CAMBIOS (Nombre, Depto y Nueva Foto)
+        // ---------------------------------------------------------
+
+        // 1. Actualizar Nombre Completo
+        // Separamos "Juan Perez" en FirstName y LastName
+        if (!string.IsNullOrWhiteSpace(model.FullName))
+        {
+            var parts = model.FullName.Trim().Split(' ', 2);
+            user.FirstName = parts[0];
+            user.LastName = parts.Length > 1 ? parts[1] : "";
+        }
+
+        // 2. Actualizar Departamento
+        if (model.DepartmentId > 0)
+        {
+            user.DepartmentId = model.DepartmentId;
+        }
+
+        // 3. Subir Nueva Foto
+        if (model.NewPhoto != null && model.NewPhoto.Length > 0)
+        {
+            var uploadsRoot = Path.Combine(_env.WebRootPath, "uploads", "avatars");
+            
+            // Crear carpeta si no existe
+            if (!Directory.Exists(uploadsRoot)) 
+                Directory.CreateDirectory(uploadsRoot);
+
+            // Borrar foto vieja para no llenar el servidor de basura
+            if (!string.IsNullOrEmpty(user.PhotoUrl))
+            {
+                var oldPath = Path.Combine(_env.WebRootPath, user.PhotoUrl.TrimStart('/', '\\'));
+                if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
+            }
+
+            var ext = Path.GetExtension(model.NewPhoto.FileName);
+            var fileName = $"{user.IdUser}_{Guid.NewGuid()}{ext}";
+            var filePath = Path.Combine(uploadsRoot, fileName);
+
+            // Guardar archivo
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await model.NewPhoto.CopyToAsync(stream);
+            }
+
+            // Actualizar ruta en BD
+            user.PhotoUrl = $"/uploads/avatars/{fileName}";
+        }
+
+        // 4. Guardar Todo en Base de Datos
+        await _db.SaveChangesAsync();
+
+        return RedirigirSegunRol();
+    }
+
+    // Método auxiliar para saber a dónde mandarlos después de guardar
+    private IActionResult RedirigirSegunRol()
+    {
+        // Usamos los Claims que ya tiene la cookie para decidir
+        if (User.IsInRole("Admin") || User.IsInRole("RH"))
+        {
+            return RedirectToAction("Dashboard", "Admin");
+        }
+        
+        // Empleados y cualquier otro
+        return RedirectToAction("Inicio", "Empleado");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
